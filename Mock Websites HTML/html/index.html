@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthyLah</title>
+  <style>
+    /* === Base === */
+    body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #333;
+    }
+
+    /* === Header === */
+    header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-bottom: 3px solid #A4D038;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    }
+    .logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #3399CC;
+    }
+    .auth a {
+    margin-left: 15px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #3399CC;
+    }
+
+    /* === Navigation === */
+    nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 15px 0;
+    background-color: #f9fdfb;
+    border-bottom: 1px solid #e1f0e5;
+    }
+    nav a {
+    font-size: 1.1em;
+    text-decoration: none;
+    color: #3399CC;
+    font-weight: bold;
+    }
+    nav a:hover {
+    color: #A4D038;
+    }
+
+    /* === Welcome & Headings === */
+    .welcome,
+    .section-title {
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #2B7DA4;
+    margin: 30px 0 15px;
+    }
+    .section-title {
+    font-size: 1.4em;
+    border-bottom: 3px solid #A4D038;
+    display: inline-block;
+    padding-bottom: 5px;
+    }
+
+    /* === Sections === */
+    .weather-section,
+    .health-summary,
+    .quick-access {
+    text-align: center;
+    padding: 20px;
+    }
+
+    /* === Weather Box === */
+    .weather-box {
+    border: 2px solid #A4D038;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 300px;
+    margin: 0 auto 15px;
+    background-color: #f9fff4;
+    box-shadow: 0 0 10px rgba(0,0,0,0.03);
+    }
+    .weather-box strong {
+    color: #2B7DA4;
+    }
+
+    /* === Buttons === */
+    .btn-weather {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #3399CC;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    }
+    .btn-weather:hover {
+    background-color: #A4D038;
+    transform: scale(1.03);
+    color: #000;
+    }
+
+    /* === Quick Access === */
+    .quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 0;
+    }
+    .quick-buttons a {
+    text-decoration: none;
+    color: #3399CC;
+    font-weight: bold;
+    font-size: 1em;
+    max-width: 120px;
+    text-align: center;
+    display: inline-block;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 12px 8px;
+    border-radius: 10px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .quick-buttons a:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+    }
+    .quick-access img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+    }
+
+    /* === Health Summary Box === */
+    .health-summary-box {
+    border: 2px solid #A4D038;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #fbfff3;
+    font-weight: normal;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.03);
+    }
+
+    /* === Footer === */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #ffffff;
+      border-top: 3px solid #A4D038;
+      font-size: 1em;
+      margin-top: 40px;
+      color: #3399CC;
+      font-weight: bold;
+    }
+
+    .social-icons {
+      margin-top: 10px;
+    }
+
+    .social-icons a img {
+      width: 24px;
+      height: 24px;
+      margin: 0 8px;
+      vertical-align: middle;
+      transition: transform 0.2s ease;
+    }
+
+    .social-icons a:hover img {
+      transform: scale(1.1);
+    }
+
+    .footer-links {
+      margin-top: 10px;
+      font-weight: normal;
+      font-size: 0.95em;
+    }
+
+    .footer-links a {
+      color: #3399CC;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    .footer-links a:hover {
+      color: #A4D038;
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">HealthyLah</div>
+    <div class="auth">
+      <!-- Uncomment based on login state -->
+      <!-- <a href="login.html">Login</a><a href="register.html">Register</a> -->
+      <img src="images/profile.jpg" alt="Profile" style="width:32px;height:32px;border-radius:50%;vertical-align:middle"> 
+      <span style="margin-left:10px;">Welcome, Mr Tan</span>
+    </div>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="weather.html">Weather</a>
+    <a href="transport.html">Transport & Facilities</a>
+    <a href="health.html">Health</a>
+    <a href="posts.html">Posts</a>
+  </nav>
+
+  <div class="welcome">Welcome to HealthyLah!</div>
+
+  <section class="weather-section">
+    <h2>Today's Weather</h2>
+    <div class="weather-box">
+      <p><strong>Temperature:</strong> 31°C</p>
+      <p><strong>UV Index:</strong> Moderate (4)</p>
+      <p><strong>Condition:</strong> Partly Cloudy</p>
+      <a href="weather.html#recommendation" class="btn-weather">See Outfit Suggestion</a>
+    </div>
+  </section>
+
+  <section class="quick-access">
+    <h2>Quick Access</h2>
+    <div class="quick-buttons">
+      <a href="transport.html">
+        <img src="images/transport.png" alt="Transport">
+        <div>Transport & Local Facilities</div>
+      </a>
+      <a href="medications.html">
+        <img src="images/medications.png" alt="Medications">
+        <div>Medication Management</div>
+      </a>
+      <a href="appointments.html">
+        <img src="images/appointments.png" alt="Appointments">
+        <div>Appointment Management</div>
+      </a>
+      <a href="community.html">
+        <img src="images/community.png" alt="Community">
+        <div>Community</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="health-summary">
+    <h2>Your Health Summary</h2>
+    <!-- Logged-in version -->
+    <div class="health-summary-box">
+      <p><strong>BMI:</strong> 23.4 (Normal)</p>
+      <p><strong>Weight:</strong> 64kg</p>
+      <p><strong>Tip of the Day:</strong> Remember to drink at least 8 glasses of water.</p>
+    </div>
+    <!-- Guest version -->
+    <!-- <p>Please log in to view your health summary.</p> -->
+  </section>
+
+  <footer>
+    &copy; 2025 HealthyLah • Designed with care for our seniors
+
+    <div class="social-icons">
+      <a href="#"><img src="images/facebook.png" alt="Facebook" title="Facebook" /></a>
+      <a href="#"><img src="images/twitter.png" alt="Twitter" title="Twitter" /></a>
+      <a href="#"><img src="images/instagram.png" alt="Instagram" title="Instagram" /></a>
+      <a href="mailto:hello@healthylah.sg"><img src="images/email.png" alt="Email" title="Email Us" /></a>
+    </div>
+
+    <p class="footer-links">
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms of Use</a> |
+      <a href="credit.html">Credits</a>
+    </p>
+  </footer>
+
+
+</body>
+</html>

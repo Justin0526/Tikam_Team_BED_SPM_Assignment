@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nearby MRT Stations - HealthyLah</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ffffff;
+      padding: 20px 30px;
+      border-bottom: 3px solid #A4D038;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    }
+
+    .logo {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #3399CC;
+    }
+
+    .auth a {
+      margin-left: 15px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #3399CC;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px 0;
+      background-color: #f9fdfb;
+      border-bottom: 1px solid #e1f0e5;
+    }
+
+    nav a {
+      font-size: 1.1em;
+      text-decoration: none;
+      color: #3399CC;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #A4D038;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 30px 0 10px;
+      color: #2B7DA4;
+    }
+
+     .tabs {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #eee;
+      font-weight: bold;
+    }
+
+    .tab.active {
+      background-color: #3399CC;
+      color: #fff;
+    }
+
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 20px;
+      background-color: #f9fff4;
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .crowd {
+      margin-top: 5px;
+    }
+
+    .map-section {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .map-section img {
+      max-width: 90%;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #ffffff;
+      border-top: 3px solid #A4D038;
+      font-size: 1em;
+      color: #3399CC;
+      font-weight: bold;
+    }
+
+    .social-icons {
+      margin-top: 10px;
+    }
+
+    .social-icons a img {
+      width: 24px;
+      height: 24px;
+      margin: 0 8px;
+      vertical-align: middle;
+      transition: transform 0.2s ease;
+    }
+
+    .social-icons a:hover img {
+      transform: scale(1.1);
+    }
+
+    .footer-links {
+      margin-top: 10px;
+      font-weight: normal;
+      font-size: 0.95em;
+    }
+
+    .footer-links a {
+      color: #3399CC;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    .footer-links a:hover {
+      color: #A4D038;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">HealthyLah</div>
+    <div class="auth">
+      <a href="#">Welcome, Mr Tan</a>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="weather.html">Weather</a>
+    <a href="transport.html">Transport & Facilities</a>
+    <a href="health.html">Health</a>
+    <a href="posts.html">Posts</a>
+  </nav>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active"><a href="transport-nearby.html">BUS</a></div>
+    <div class="tab"><a href="mrt.html">MRT/LRT</a></div>
+  </div>
+
+  <div style="background-color: #f9fff4; border: 2px solid #3399CC; border-radius: 12px; padding: 20px; margin: 20px auto; max-width: 700px;">
+  <h3 style="margin-top: 0;">King Albert Park (DT6) • 236m</h3>
+  <p><strong>Line:</strong> Downtown Line</p>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+    <thead>
+      <tr style="background-color: #e7f6f0;">
+        <th style="text-align: left; padding: 8px;">Destination</th>
+        <th style="text-align: center; padding: 8px;">Crowd Level</th>
+        <th style="text-align: center; padding: 8px;">First Train<br><span style="font-weight: normal;">(Mon–Sat)</span></th>
+        <th style="text-align: center; padding: 8px;">First Train<br><span style="font-weight: normal;">(Sun & PH)</span></th>
+        <th style="text-align: center; padding: 8px;">Last Train</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #ccc;">
+        <td style="padding: 8px;">Bukit Panjang</td>
+        <td style="text-align: center;">🟢 Light</td>
+        <td style="text-align: center;">06:06</td>
+        <td style="text-align: center;">06:27</td>
+        <td style="text-align: center;">00:38</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px;">Expo</td>
+        <td style="text-align: center;">🟡 Moderate</td>
+        <td style="text-align: center;">05:39</td>
+        <td style="text-align: center;">05:59</td>
+        <td style="text-align: center;">23:55</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="text-align: right; margin-top: 15px;">
+    <a href="#" style="padding: 10px 15px; background-color: #3399CC; color: white; text-decoration: none; border-radius: 8px;">Take me there &raquo;</a>
+  </div>
+</div>
+
+  <!-- MRT Map -->
+  <div class="map-section">
+    <h2>MRT/LRT System Map</h2>
+    <img src="images/mrt-map.jpg" alt="MRT System Map">
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 HealthyLah • Designed with care for our seniors
+    <div class="social-icons">
+      <a href="#"><img src="images/facebook.png" alt="Facebook" title="Facebook" /></a>
+      <a href="#"><img src="images/twitter.png" alt="Twitter" title="Twitter" /></a>
+      <a href="#"><img src="images/instagram.png" alt="Instagram" title="Instagram" /></a>
+      <a href="mailto:hello@healthylah.sg"><img src="images/email.png" alt="Email" title="Email Us" /></a>
+    </div>
+    <p class="footer-links">
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms of Use</a> |
+      <a href="credit.html">Credits</a>
+    </p>
+  </footer>
+
+</body>
+</html>
