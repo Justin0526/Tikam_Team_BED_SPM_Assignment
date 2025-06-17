@@ -1,0 +1,145 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #F9FFF4;
+  color: #000000;
+}
+
+.logo-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #F9FFF4;
+  border-bottom: 2px solid #A4D038;
+}
+
+/* Left side logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.logo-text {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #3399CC;
+}
+
+/* Right side profile */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-pic {
+  width: 60px;
+  height: 60px;
+  background-color: #D9D9D9;
+  border-radius: 50%;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 1em;
+  color: #000000;
+}
+
+
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  background-color: #FFFFFF;
+  border-top: 2px solid #A4D038;
+  padding: 10px 0;
+  gap: 30px;
+}
+
+.nav-bar a {
+  text-decoration: none;
+  color: #2B7DA4;
+  font-weight: bold;
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: url("../images/about_us_image.jpg"); /* Replace with your image */
+  background-size: cover;
+  background-position: center;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-section h1 {
+  font-size: 36px;
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+
+/* Content */
+.content {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.content p {
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* Developer Section */
+.developed-by {
+  margin-top: 40px;
+  font-weight: bold;
+}
+
+/* Team Circles */
+.team-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 40px;
+  gap: 40px;
+}
+
+.member {
+  text-align: center;
+}
+
+.circle {
+  width: 100px;
+  height: 100px;
+  background-color: #D9D9D9;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 10px;
+  font-weight: bold;
+  color: #2B7DA4;
+}
+
+
+/* Footer */
+footer {
+  background-color: #3399CC;
+  color: #FFFFFF;
+  padding: 20px;
+  text-align: center;
+  border-top: 5px solid #A4D038;
+}
+
+footer a {
+  color: #FFFFFF;
+  text-decoration: underline;
+  margin: 0 10px;
+}
