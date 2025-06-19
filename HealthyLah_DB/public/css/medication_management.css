@@ -67,6 +67,82 @@ body {
   font-weight: bold;
 }
 
+.medication-main {
+  padding: 30px;
+  font-size: 1.1em;
+}
+
+.page-title h1 {
+  font-size: 2em;
+  color: #2B7DA4;
+  margin-bottom: 0;
+}
+
+.page-title p {
+  font-style: italic;
+  color: #555;
+  margin-top: 5px;
+}
+
+.medication-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.medication-table th,
+.medication-table td {
+  border: 1px solid #A4D038;
+  padding: 12px;
+  text-align: left;
+}
+
+.status.taken {
+  color: green;
+  font-weight: bold;
+}
+
+.status.not-yet {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+.mark-btn,
+.add-btn,
+.sync-btn {
+  background-color: #A4D038;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.mark-btn:hover,
+.add-btn:hover,
+.sync-btn:hover {
+  background-color: #8bb030;
+}
+
+.add-medication form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.add-medication input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.sync-btn {
+  background-color: #3399CC;
+}
+
 /* Footer */
 footer {
   background-color: #3399CC;

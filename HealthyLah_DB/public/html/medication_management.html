@@ -19,13 +19,69 @@
         </div>
         <nav class="nav-bar">
         <a href="#">Home</a>
-        <a href="#">About us</a>
+        <a href="about_us.html">About Us</a>
         <a href="#">Weather</a>
         <a href="#">Transport & Facilities</a>
         <a href="#">Health</a>
         <a href="#">Post</a>
         </nav>
     </header>
+
+    <main class="medication-main">
+        <section class="page-title">
+            <h1>Manage My Medications</h1>
+            <p>Take care of your health, Mr Tan.</p>
+        </section>
+
+        <section class="today-medications">
+            <h2>Today's Medications</h2>
+            <table class="medication-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Medication</th>
+                        <th>Dosage</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>8:00 AM</td>
+                        <td>Panadol</td>
+                        <td>2 Tablets</td>
+                        <td class="status not-yet">Not Yet</td>
+                        <td><button class="mark-btn">Mark As Taken</button></td>
+                    </tr>
+                    <tr>
+                        <td>2:00 PM</td>
+                        <td>Vitamin D</td>
+                        <td>1 Capsule</td>
+                        <td class="status taken">Taken</td>
+                        <td><span class="action-menu">⋮</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="upcoming-reminders">
+            <h2>Upcoming Reminders</h2>
+            <ul>
+                <li>6:00 PM – Omega 3 (1 softgel)</li>
+            </ul>
+        </section>
+
+        <section class="add-medication">
+            <h2>Add New Medication</h2>
+            <form>
+                <input type="text" placeholder="Medication Name" required />
+                <input type="text" placeholder="Dosage" required />
+                <input type="time" required />
+                <button type="submit" class="add-btn">Add Medication</button>
+            </form>
+            <button class="sync-btn">Sync to Calendar</button>
+        </section>
+    </main>
 
     <footer>
     <p>© 2025 HealthyLah – Designed with care for our seniors</p>
