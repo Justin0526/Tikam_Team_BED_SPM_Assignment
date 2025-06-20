@@ -69,12 +69,14 @@ body {
 
 .credit-section {
     max-width: 800px;
+    min-height: 500px;
     margin: 40px auto;
-    padding: 30px;
+    padding: 40px 60px;
     background-color: #f9fff4;
     border: 2px solid #A4D038;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.03);
+    text-align: left;
 }
 
 h2 {
@@ -85,13 +87,20 @@ h2 {
 }
 
 .credit-section ul {
+    text-align: left;
+    display: block;
+    width: 100%;
     list-style-type: none;
     padding-left: 0;
 }
 
 .credit-section li {
+    text-align: left;
+    display: block;
+    width: 100%;
+    word-wrap: break-word;
     margin-bottom: 18px;
-    font-size: 1.05em;
+    font-size: 1.5em;
     color: #2B7DA4;
 }
 
