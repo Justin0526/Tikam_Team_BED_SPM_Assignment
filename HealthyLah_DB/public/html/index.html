@@ -1,11 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+  <meta charset="UTF-8">
+  <title>Home Page - HealthyLah</title>
+  <link rel="stylesheet" href="../css/index.css">
 </head>
 <body>
-    
+    <header class="top-bar">
+        <div class="logo-bar">
+            <div class="logo-container">
+                <img src="../images/logo_horizontal.png" alt="HealthyLah Logo" class="logo-img"> <!-- Replace with actual logo path -->
+                <span class="logo-text">HealthyLah</span>
+            </div>
+            <div class="profile">
+                <div class="profile-pic"></div>
+                <span class="profile-name">Welcome, Mr Tan</span>
+            </div>
+        </div>
+        <nav class="nav-bar">
+        <a href="#">Home</a>
+        <a href="#">About us</a>
+        <a href="#">Weather</a>
+        <a href="#">Transport & Facilities</a>
+        <a href="#">Health</a>
+        <a href="#">Post</a>
+        </nav>
+    </header>
+
+   <div class="welcome">Welcome to HealthyLah!</div>
+
+  <section class="weather-section">
+    <h2>Today's Weather</h2>
+    <div class="weather-box">
+      <p><strong>Temperature:</strong> 31°C</p>
+      <p><strong>UV Index:</strong> Moderate (4)</p>
+      <p><strong>Condition:</strong> Partly Cloudy</p>
+      <a href="weather.html#recommendation" class="btn-weather">See Outfit Suggestion</a>
+    </div>
+  </section>
+
+  <section class="quick-access">
+  <h2>Quick Access</h2>
+
+  <!-- First Row -->
+  <div class="quick-buttons-row">
+    <a href="transport.html" class="card">
+      <div class="icon-box"><img src="../images/transport.jpg" alt="Transport"></div>
+      <div>Transport & Local Facilities</div>
+    </a>
+    <a href="medications.html" class="card">
+      <div class="icon-box"><img src="../images/medication.jpg" alt="Medications"></div>
+      <div>Medication Management</div>
+    </a>
+    <a href="appointments.html" class="card">
+      <div class="icon-box"><img src="../images/appointments.jpg" alt="Appointments"></div>
+      <div>Appointment Management</div>
+    </a>
+    <a href="community.html" class="card">
+      <div class="icon-box"><img src="../images/community.jpg" alt="Community"></div>
+      <div>Community</div>
+    </a>
+  </div>
+
+  <!-- Second Row -->
+  <div class="quick-buttons-row">
+    <a href="meals.html" class="card">
+      <div class="icon-box"><img src="../images/meals.jpg" alt="Meals"></div>
+      <div>Meal Logging</div>
+    </a>
+    <a href="profile.html" class="card">
+      <div class="icon-box"><img src="../images/health.jpg" alt="Health"></div>
+      <div>Update Health Profile</div>
+    </a>
+    <a href="bmi.html" class="card">
+      <div class="icon-box"><img src="../images/bmi.jpg" alt="BMI"></div>
+      <div>BMI Calculator</div>
+    </a>
+  </div>
+  </section>
+
+  <section class="health-summary">
+    <h2>Your Health Summary</h2>
+    <!-- Logged-in version -->
+    <div class="health-summary-box">
+      <p><strong>BMI:</strong> 23.4 (Normal)</p>
+      <p><strong>Weight:</strong> 64kg</p>
+      <p><strong>Tip of the Day:</strong> Remember to drink at least 8 glasses of water.</p>
+    </div>
+    <!-- Guest version -->
+    <!-- <p>Please log in to view your health summary.</p> -->
+  </section>
+
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links">
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="#">Email</a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a></p>
+  </footer>
 </body>
 </html>

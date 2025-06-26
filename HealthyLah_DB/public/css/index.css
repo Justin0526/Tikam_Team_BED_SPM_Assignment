@@ -1,0 +1,262 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #F9FFF4;
+  color: #000000;
+}
+
+.logo-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #F9FFF4;
+  border-bottom: 2px solid #A4D038;
+}
+
+/* Left side logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.logo-text {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #3399CC;
+}
+
+/* Right side profile */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-pic {
+  width: 60px;
+  height: 60px;
+  background-color: #D9D9D9;
+  border-radius: 50%;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 1em;
+  color: #000000;
+}
+
+
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  background-color: #FFFFFF;
+  border-top: 2px solid #A4D038;
+  padding: 10px 0;
+  gap: 30px;
+}
+
+.nav-bar a {
+  text-decoration: none;
+  color: #2B7DA4;
+  font-weight: bold;
+}
+
+
+
+
+/* === Welcome & Headings === */
+.welcome,
+.section-title {
+text-align: center;
+font-size: 1.6em;
+font-weight: bold;
+color: #2B7DA4;
+margin: 30px 0 15px;
+}
+.section-title {
+font-size: 1.4em;
+border-bottom: 3px solid #A4D038;
+display: inline-block;
+padding-bottom: 5px;
+}
+
+/* === Sections === */
+.weather-section,
+.health-summary,
+.quick-access {
+text-align: center;
+padding: 20px;
+}
+
+/* === Weather Box === */
+.weather-box {
+border: 2px solid #A4D038;
+border-radius: 10px;
+padding: 20px;
+max-width: 300px;
+margin: 0 auto 15px;
+background-color: #FFFFFF;
+box-shadow: 0 0 10px rgba(0,0,0,0.03);
+}
+.weather-box strong {
+color: #2B7DA4;
+}
+
+/* === Buttons === */
+.btn-weather {
+display: inline-block;
+margin-top: 10px;
+padding: 10px 20px;
+background-color: #3399CC;
+color: #ffffff;
+text-decoration: none;
+border-radius: 8px;
+font-weight: bold;
+font-size: 1em;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+transition: all 0.2s ease;
+}
+.btn-weather:hover {
+background-color: #A4D038;
+transform: scale(1.03);
+color: #000;
+}
+
+/* Section container */
+.quick-access {
+  background-color: #dddddd;
+  padding: 30px;
+  text-align: center;
+}
+
+/* Headline */
+.quick-access h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Flex rows */
+.quick-buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+}
+
+/* Card styling */
+.card {
+  text-decoration: none;
+  color: #2B7DA4;
+  font-weight: bold;
+  font-size: 0.95em;
+  width: 160px;
+  background-color: #f4fdf4;
+  border: 2px solid #A4D038;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Icon box */
+.icon-box {
+  background-color: #D9D9D9;
+  height: 100px;
+  margin-bottom: 10px;
+  border: 2px solid #C0FFC0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Image inside icon box */
+.icon-box img {
+  /* max-height: 60px;
+  max-width: 80%; */
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+
+
+/* .quick-buttons a {
+text-decoration: none;
+color: #3399CC;
+font-weight: bold;
+font-size: 1em;
+max-width: 120px;
+text-align: center;
+display: inline-block;
+background-color: #ffffff;
+border: 1px solid #e0e0e0;
+padding: 12px 8px;
+border-radius: 10px;
+transition: box-shadow 0.2s ease, transform 0.2s ease;
+} */
+
+/* .quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-items: center;
+  gap: 25px;
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.quick-buttons a:hover {
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+transform: translateY(-2px);
+}
+
+.quick-access img {
+width: 60px;
+height: 60px;
+margin-bottom: 8px;
+} */
+
+/* === Health Summary Box === */
+.health-summary-box {
+border: 2px solid #A4D038;
+border-radius: 10px;
+padding: 20px;
+max-width: 400px;
+margin: 0 auto;
+background-color: #FFFFFF;
+font-weight: normal;
+box-shadow: 0 0 8px rgba(0, 0, 0, 0.03);
+}
+
+
+
+
+
+/* Footer */
+footer {
+  background-color: #3399CC;
+  color: #FFFFFF;
+  padding: 20px;
+  text-align: center;
+  border-top: 5px solid #A4D038;
+}
+
+footer a {
+  color: #FFFFFF;
+  text-decoration: underline;
+  margin: 0 10px;
+}
