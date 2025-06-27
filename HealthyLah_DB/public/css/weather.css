@@ -90,7 +90,7 @@
   padding: 20px;
 }
 
-.card {
+.hourly-card, .day-card, .summary-card, .outfit-card, .definition-card {
   background: #FFFFFF;
   border: 2px solid #E1F0E5;
   border-radius: 12px;
@@ -136,18 +136,19 @@
 }
 
 .icon {
-  font-size: 1.5em;
+  width: 30px;
+  height: 30px;
   margin-right: 10px;
 }
 
-.suggested-outfit .outfit-content {
+.outfit-card .outfit-content {
   display: flex;
   align-items: center;
   gap: 30px;
   flex-wrap: wrap;
 }
 
-.suggested-outfit img {
+.outfit-card img {
   width: 200px;
   height: 200px;
   background-color: #D9D9D9;
@@ -204,7 +205,7 @@
   color: #FFFFFF;
 }
 
-.forecast-grid {
+.forecast-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 15px;
@@ -235,9 +236,28 @@
   font-size: 1em;
 }
 
-.forecast-wind {
+.forecast-desc {
   font-size: 0.9em;
   font-weight: normal;
+}
+
+.definition {
+  margin: 8px 0 16px 20px;
+  padding: 8px 12px;
+  background: #f4faef;
+  border-left: 4px solid #a4d038;
+  border-radius: 8px;
+  font-size: 0.95em;
+}
+
+.hidden {
+  display: none;
+}
+
+li[data-target] {
+  cursor: pointer;
+  font-weight: bold;
+  margin: 10px 0;
 }
 
 /* Footer */

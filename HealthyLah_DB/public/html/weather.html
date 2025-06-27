@@ -1,187 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>HealthyLah - Weather & Outfit</title>
-  <link rel="stylesheet" href="../css/weather.css">
-</head>
-<body>
-  <header class="top-bar">
-    <div class="logo-bar">
-      <div class="logo-container">
-        <img src="../images/logo_horizontal.png" alt="HealthyLah Logo" class="logo-img">
-      </div>
-      <div class="profile">
-        <div class="profile-pic"></div>
-        <span class="profile-name">Welcome, Mr Tan</span>
-      </div>
-    </div>
-    <nav class="nav-bar">
-      <a href="#">Home</a>
-      <a href="#">About us</a>
-      <a href="#">Weather</a>
-      <a href="#">Transport & Facilities</a>
-      <a href="#">Health</a>
-      <a href="#">Post</a>
-    </nav>
-  </header>
-
-  <div class="banner">
-    <img src="../images/weather_pic.jpg" alt="Weather Banner">
-    <div class="banner-text">Today's Weather & Outfit<br>Stay comfortable, stay safe - with weather-based outfit tips</div>
-  </div>
-
-  <div class="container">
-    <div class="card">
-      <div class="card-title">🌞 Current Weather Summary</div>
-      <div class="weather-container">
-          <div class="weather-item"><span class="icon">🌡️</span> Temperature: 30°C</div>
-          <div class="weather-item"><span class="icon">🌡️</span> Feels Like: 33°C</div>
-          <div class="weather-item"><span class="icon">🌞</span> UV Index: 7 (High)</div>
-          <div class="weather-item"><span class="icon">💧</span> Humidity: 65%</div>
-          <div class="weather-item"><span class="icon">🌬️</span> Wind Speed: 18 km/h</div>
-          <div class="weather-item"><span class="icon">🌫️</span> Air Quality: 105 (Moderate)</div>
-          <div class="weather-item"><span class="icon">🌅</span> Sunrise: 6:50 AM</div>
-          <div class="weather-item"><span class="icon">🌇</span> Sunset: 7:15 PM</div>
-      </div>
-  </div>
-
-  <div class="card suggested-outfit">
-    <div class="card-title">🧑 Suggested Outfit</div>
-    <div class="outfit-content">
-      <img src="outfit.png" alt="Example Outfit">
-      <div class="outfit-text">
-        <p>Wear a breathable long-sleeve shirt, sunglasses, and a hat. Consider a mask if you have respiratory issues.</p>
-
-        <div class="outfit-tags">
-          <div class="tag">❄️ Hot Day</div>
-          <div class="tag">🌞 High UV</div>
-          <div class="tag">😷 Moderate AQI</div>
+  <head>
+    <meta charset="UTF-8">
+    <title>HealthyLah - Weather & Outfit</title>
+    <link rel="stylesheet" href="../css/weather.css">
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="logo-bar">
+        <div class="logo-container">
+          <img src="../images/logo_horizontal.png" alt="HealthyLah Logo" class="logo-img">
         </div>
-
-        <div class="button-group">
-          <a href="#" class="button btn-blue">🎙️ Read Aloud</a>
-          <a href="#" class="button btn-yellow">💖 Like this Outfit</a>
-          <a href="#" class="button btn-yellow">💖 View My Favourite Outfits</a>
+        <div class="profile">
+          <div class="profile-pic"></div>
+          <span class="profile-name">Welcome, Mr Tan</span>
         </div>
       </div>
-    </div>
-  </div>
+      <nav class="nav-bar">
+        <a href="#">Home</a>
+        <a href="#">About us</a>
+        <a href="#">Weather</a>
+        <a href="#">Transport & Facilities</a>
+        <a href="#">Health</a>
+        <a href="#">Post</a>
+      </nav>
+    </header>
 
-  <div class="card">
-    <div class="card-title">🕰️ Hourly Forecast</div>
-    <div class="forecast-grid">
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-time">6AM</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-wind">Windy</div>
-      </div>
+    <div class="banner">
+      <img src="../images/weather_pic.jpg" alt="Weather Banner">
+      <div class="banner-text">Today's Weather & Outfit<br>Stay comfortable, stay safe - with weather-based outfit tips</div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">📅 7-Day Forecast</div>
-    <div class="forecast-grid">
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
-      <div class="forecast-item">
-        <div class="forecast-day">Today</div>
-        <div class="forecast-icon">☁️</div>
-        <div class="forecast-temp">28°C</div>
-        <div class="forecast-rain">Rain: 70%</div>
-      </div>
+    <div class="container">
+      <div class="summary-card">
+        <div class="card-title">🌞 Current Weather Summary</div>
+        <div class="weather-container">
+            <div class="weather-item" >
+              <span class="icon">🌡️</span> 
+              <span id="weather-temperature"></span>
+            </div>
+            <div class="weather-item">
+              <span class="icon">🌡️</span> 
+              <span id="weather-feels-like"></span>
+            </div>
+            <div class="weather-item">
+              <span class="icon">🌞</span>
+              <span id="weather-uv-index"></span>
+            </div>
+            <div class="weather-item">
+              <span class="icon">💧</span>
+              <span id="weather-humidity"></span>
+            </div>
+            <div class="weather-item">
+              <span class="icon">🌬️</span> 
+              <span id="weather-wind-speed"></span>
+            </div>
+            <div class="weather-item">
+              <img id="weather-condition-icon" class="icon" alt="weather-icon">
+              <span id="weather-condition"></span>
+            </div>
+            <div class="weather-item">
+              <span class="icon">🌅</span> 
+              <span id="weather-sunrise"></span>
+            </div>
+            <div class="weather-item">
+              <span class="icon">🌇</span> 
+              <span id="weather-sunset"></span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">ℹ️ What Do These Numbers Mean?</div>
-      <ul>
-        <li>What is UV Index?</li>
-        <li>What is Air Quality Index (AQI)?</li>
-      </ul>
-    </div>
-  </div>
+    <div class="outfit-card">
+      <div class="card-title">🧑 Suggested Outfit</div>
+      <div class="outfit-content">
+        <img src="outfit.png" alt="Example Outfit">
+        <div class="outfit-text">
+          <p>Wear a breathable long-sleeve shirt, sunglasses, and a hat. Consider a mask if you have respiratory issues.</p>
 
-  <footer>
-    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
-    <div class="social-links">
-      <a href="#">Facebook</a>
-      <a href="#">Twitter</a>
-      <a href="#">Instagram</a>
-      <a href="#">Email</a>
+          <div class="outfit-tags">
+            <div class="tag">❄️ Hot Day</div>
+            <div class="tag">🌞 High UV</div>
+            <div class="tag">😷 Moderate AQI</div>
+          </div>
+
+          <div class="button-group">
+            <a href="#" class="button btn-blue">🎙️ Read Aloud</a>
+            <a href="#" class="button btn-yellow">💖 Like this Outfit</a>
+            <a href="#" class="button btn-yellow">💖 View My Favourite Outfits</a>
+          </div>
+        </div>
+      </div>
     </div>
-    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a></p>
-  </footer>
-</body>
+
+    <div class="hourly-card">
+      <div class="card-title">🕰️ Hourly Forecast</div>
+      <div class="forecast-list" id="hourly-forecast-list"></div>
+    </div>
+
+    <div class="day-card">
+      <div class="card-title">📅 7-Day Forecast</div>
+      <div class="forecast-list" id="seven-day-forecast-list"></div>
+    </div>
+
+    <div class="definition-card">
+      <div class="card-title">ℹ️ What Do These Numbers Mean?</div>
+        <ul>
+          <li class="toggle-definition" data-target="uv-def">What is UV Index?</li>
+            <div id="uv-def" class="definition hidden">
+              0–2: Low – Minimal protection needed<br>
+              3–5: Moderate – Hat and sunscreen<br>
+              6–7: High – Seek shade and wear full protection<br>
+              8+: Very High – Avoid exposure
+            </div>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+      <div class="social-links">
+        <a href="#">Facebook</a>
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+        <a href="#">Email</a>
+      </div>
+      <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a></p>
+    </footer>
+    <script src="../js/weather.js"></script>
+  </body>
 </html>
