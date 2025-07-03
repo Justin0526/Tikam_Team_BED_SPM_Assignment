@@ -21,8 +21,16 @@ body {
 }
 
 .logo-img {
-  height: 50px;
-  margin-right: 10px;
+  width: 100px;       /* Fixed width of the space it takes */
+  height: auto;       /* Maintain aspect ratio */
+  display: block;     /* So margin/padding works as expected */
+  
+  transform: scale(4) translateX(30px);   /* Increase visual size by 1.5x */
+  transform-origin: center; /* Scale from the center of the image */
+  
+  /* Optional: smoother scaling */
+  transition: transform 0.3s ease;
+  
 }
 
 .logo-text {
