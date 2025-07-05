@@ -1,0 +1,311 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #F9FFF4;
+  color: #000000;
+}
+
+.logo-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #F9FFF4;
+  border-bottom: 2px solid #A4D038;
+}
+
+/* Left side logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 100px;       /* Fixed width of the space it takes */
+  height: auto;       /* Maintain aspect ratio */
+  display: block;     /* So margin/padding works as expected */
+  
+  transform: scale(4) translateX(30px);   /* Increase visual size by 1.5x */
+  transform-origin: center; /* Scale from the center of the image */
+  
+  /* Optional: smoother scaling */
+  transition: transform 0.3s ease;
+  
+}
+
+.logo-text {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #3399CC;
+}
+
+/* Right side profile */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-pic {
+  width: 60px;
+  height: 60px;
+  background-color: #D9D9D9;
+  border-radius: 50%;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 1em;
+  color: #000000;
+}
+
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  background-color: #FFFFFF;
+  border-top: 2px solid #A4D038;
+  padding: 10px 0;
+  gap: 30px;
+}
+
+.nav-bar a {
+  text-decoration: none;
+  color: #2B7DA4;
+  font-weight: bold;
+}
+
+/* transport.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #F9FFF4;
+  color: #000000;
+}
+
+section {
+  padding: 2.5rem 1.25rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2B7DA4;
+  font-size:2rem
+}
+
+.transport-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #F9FFF4;
+  max-width: 70vw;
+  margin: 0 auto;
+  padding: 3rem 5rem 2rem;
+  gap: 4rem;
+}
+
+.transport-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.transport-info h2 {
+  text-align: left;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1.5rem;
+}
+
+.btn {
+  border: 2px solid #A4D038;
+  padding: 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  border-radius: 12px;
+  width: 13rem;
+  background-color: #FFFFFF;
+  color: #2B7DA4;
+  box-sizing: border-box;
+}
+
+.btn.green {
+  background-color: #118433;
+  color: #FFFFFF;
+}
+
+.picture-placeholder img {
+  width: 30vw;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #A4D038;
+}
+
+.facility-cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: 70vw;
+  margin: 0 auto;
+}
+
+.facility-card {
+  border: 0.165rem solid #A4D038;
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 23.5rem;
+  background-color: #FFFFFF;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.facility-card.highlight {
+  background-color: #118433;
+  color: #FFFFFF;
+}
+
+.facility-card p {
+  margin: 0.5rem 0;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.btn-blue, .btn-green {
+  text-decoration: none;
+  padding: 0.625rem 1.25rem;
+  font-weight: bold;
+  display: inline-block;
+  border-radius: 6px;
+  margin-top: 1rem;
+  background-color: #2B7DA4;
+  color: #FFFFFF;
+  text-align: center;
+  border: none;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: fit-content;
+}
+
+.btn-green {
+  background-color: #E1FF1F;
+  color: #000000;
+}
+
+/* transport.css */
+.transport-section {
+  padding: 0;
+}
+
+.transport-container {
+  display: flex;
+  gap: 0;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.transport-box {
+  flex: 1;
+  background-size: cover;
+  padding: 1.5rem;
+  color: #000000;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+}
+
+.mrt {
+  background-image: url('../images/mrt.jpg');
+}
+
+.bus {
+  background-image: url('../images/bus.jpg');
+}
+
+.transport-box h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+.card-container {
+  padding-top: 3vw;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: nowrap;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 12px;
+  width: 20rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.card p {
+  margin: 0.25rem 0;
+  color: #000000;
+  font-weight: 500;
+}
+
+.btn-yellow {
+  background-color: #E1FF1F;
+  color: #000000;
+  padding: 0.625rem 1.25rem;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  display: inline-block;
+  width: fit-content;
+  align-self: center;
+}
+
+.see-more {
+  align-self: flex-end;
+  font-style: italic;
+  color: #ffffff;
+  font-size: 1.15rem;
+  margin-top: 0;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Footer */
+footer {
+  background-color: #3399CC;
+  color: #FFFFFF;
+  padding: 20px;
+  text-align: center;
+  border-top: 5px solid #A4D038;
+}
+
+footer a {
+  color: #FFFFFF;
+  text-decoration: underline;
+  margin: 0 10px;
+}

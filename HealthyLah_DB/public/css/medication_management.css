@@ -21,8 +21,16 @@ body {
 }
 
 .logo-img {
-  height: 50px;
-  margin-right: 10px;
+  width: 100px;       /* Fixed width of the space it takes */
+  height: auto;       /* Maintain aspect ratio */
+  display: block;     /* So margin/padding works as expected */
+  
+  transform: scale(4) translateX(30px);   /* Increase visual size by 1.5x */
+  transform-origin: center; /* Scale from the center of the image */
+  
+  /* Optional: smoother scaling */
+  transition: transform 0.3s ease;
+  
 }
 
 .logo-text {
@@ -67,9 +75,16 @@ body {
   font-weight: bold;
 }
 
+/* ... existing header and nav styles ... */
+
 .medication-main {
   padding: 30px;
   font-size: 1.1em;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .page-title h1 {
@@ -84,32 +99,122 @@ body {
   margin-top: 5px;
 }
 
-.medication-table {
+/* Card styles */
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #A4D038;
+  padding-bottom: 15px;
+}
+
+.section-header h2 {
+  font-size: 1.4em;
+  color: #2B7DA4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.date-display {
+  font-size: 0.9em;
+  color: #555;
+  font-weight: 500;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  color: #2B7DA4;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Table styles */
+.medication-table, .reminder-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
+  font-size: 1.05em;
 }
 
-.medication-table th,
-.medication-table td {
-  border: 1px solid #A4D038;
-  padding: 12px;
+.medication-table th, .reminder-table th {
+  background-color: #f0f8e4;
+  color: #2B7DA4;
+  font-weight: bold;
   text-align: left;
 }
 
-.status.taken {
-  color: green;
+.medication-table th, .medication-table td,
+.reminder-table th, .reminder-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.medication-table tr:last-child td, 
+.reminder-table tr:last-child td {
+  border-bottom: none;
+}
+
+.medication-table tr:hover,
+.reminder-table tr:hover {
+  background-color: #f9fff4;
+}
+
+.medication-table td:first-child,
+.reminder-table td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status {
   font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  display: inline-block;
+}
+
+.status.taken {
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
 .status.not-yet {
-  color: #d9534f;
-  font-weight: bold;
+  background-color: #ffebee;
+  color: #c62828;
 }
 
-.mark-btn,
-.add-btn,
-.sync-btn {
+/* Buttons */
+.mark-btn, .add-btn, .sync-btn {
   background-color: #A4D038;
   color: white;
   border: none;
@@ -117,30 +222,167 @@ body {
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.95em;
 }
 
-.mark-btn:hover,
-.add-btn:hover,
-.sync-btn:hover {
+.mark-btn:hover, .add-btn:hover, .sync-btn:hover {
   background-color: #8bb030;
+  transform: translateY(-2px);
 }
 
-.add-medication form {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+.mark-btn:active, .add-btn:active, .sync-btn:active {
+  transform: translateY(0);
 }
 
-.add-medication input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.mark-btn.disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .sync-btn {
   background-color: #3399CC;
+}
+
+.sync-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Add Medication Form */
+.medication-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #2B7DA4;
+  font-size: 0.95em;
+}
+
+.form-group input, 
+.form-group select {
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+  border-color: #A4D038;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(164, 208, 56, 0.2);
+}
+
+.add-btn {
+  padding: 13px 20px;
+  font-size: 1.05em;
+}
+
+.form-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: #2e7d32;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  .medication-table, .reminder-table {
+    font-size: 0.95em;
+  }
+  
+  .medication-table th, .medication-table td,
+  .reminder-table th, .reminder-table td {
+    padding: 12px 8px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .sync-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .sync-container button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .medication-main {
+    padding: 20px 15px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Footer */
