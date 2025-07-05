@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Management Page</title>
+  <link rel="stylesheet" href="../css/appointment_management.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="logo-bar">
+      <div class="logo-container">
+        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+      </div>
+      <div class="profile">
+        <div class="profile-pic"></div>
+        <span class="profile-name">Welcome, Mr Tan</span>
+      </div>
+    </div>
+    <nav class="nav-bar">
+      <a href="#">Home</a>
+      <a href="#">About us</a>
+      <a href="#">Weather</a>
+      <a href="#">Transport & Facilities</a>
+      <a href="#">Health</a>
+      <a href="post_forum.html">Post</a>
+    </nav>
+  </header>
+
+  <div class="welcome">Appointment Management</div>
+
+  <form id="appointment-form">
+    <h3 class="section-title">Create Appointment</h3>
+    <label for="doctorName">Doctor’s Name</label>
+    <input type="text" id="doctorName" placeholder="Enter your Doctor’s name here" required>
+
+    <label for="clinicName">Clinic Name</label>
+    <input type="text" id="clinicName" placeholder="Enter your clinic name here" required>
+
+    <label for="appointmentDate">Appointment Date</label>
+    <input type="date" id="appointmentDate" required>
+
+    <label for="appointmentTime">Appointment Time</label>
+    <input type="time" id="appointmentTime" required>
+
+    <label for="purpose">Purpose</label>
+    <input type="text" id="purpose" placeholder="Purpose of Appointment" required>
+
+    <label for="reminderDate">Reminder Date ( Optional )</label>
+    <input type="date" id="reminderDate">
+
+    <button type="submit">Add Appointment</button>
+  </form>
+
+  <div id="successModal" class="modal" style="display: none;">
+     <div class="modal-content">
+        <p>Appointment added successfully.</p>
+        <button onclick="closeSuccessModal()">OK</button>
+    </div>
+  </div>
+   
+
+  <div class="search-filter">
+    <input type="text" id="searchKeyword" placeholder="Search by doctor, clinic or purpose">
+    <button onclick="searchAppointments()">Search</button>
+    <input type="text" id="filterById" placeholder="Filter by AppointmentID">
+    <input type="date" id="filterByDate">
+  </div>
+
+  <div class="quick-access">
+    <h2>Your Appointments</h2>
+    <div class="appointments-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Doctor’s Name</th>
+            <th>Clinic Name</th>
+            <th>Apt Date</th>
+            <th>Apt Time</th>
+            <th>Purpose</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="appointmentsBody">
+          <tr id="emptyState">
+            <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments yet. Add one above to get started.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links">
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="#">Email</a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a></p>
+  </footer>
+
+  <script>
+    let appointments = [];
+    let nextId = 1;
+
+    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const doctor = document.getElementById('doctorName').value;
+      const clinic = document.getElementById('clinicName').value;
+      const date = document.getElementById('appointmentDate').value;
+      const time = document.getElementById('appointmentTime').value;
+      const purpose = document.getElementById('purpose').value;
+
+      let reminder = reminderDate.value;
+      if (!reminder) {
+        const d = new Date(date);
+        d.setDate(d.getDate() - 1);
+        reminder = d.toISOString().split('T')[0];
+      }
+      const appointment = { id: nextId++, doctor, clinic, date, time, purpose, reminder };
+      appointments.push(appointment);
+      renderTable();
+      this.reset();
+
+      // Show success modal
+        document.getElementById('successModal').style.display = 'flex';
+
+
+
+    });
+
+    function renderTable() {
+      const body = document.getElementById('appointmentsBody');
+      body.innerHTML = '';
+
+      if (appointments.length === 0) {
+        body.innerHTML = `
+          <tr id="emptyState">
+            <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments yet. Add one above to get started.</td>
+          </tr>`;
+        return;
+      }
+
+      for (let appt of appointments) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${String(appt.id).padStart(2, '0')}</td>
+          <td>${appt.doctor}</td>
+          <td>${appt.clinic}</td>
+          <td>${appt.date.split('-').reverse().join(' - ')}</td>
+          <td>${appt.time}</td>
+          <td>${appt.purpose}</td>
+          <td class="actions">
+            <span onclick="editAppointment(${appt.id})">⋮</span>
+          </td>
+        `;
+        body.appendChild(row);
+      }
+    }
+
+    function searchAppointments() {
+      const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+      const idFilter = document.getElementById('filterById').value;
+      const dateFilter = document.getElementById('filterByDate').value;
+
+      const body = document.getElementById('appointmentsBody');
+      body.innerHTML = '';
+      let found = false;
+
+      for (let appt of appointments) {
+        if ((keyword && !Object.values(appt).some(v => v.toString().toLowerCase().includes(keyword))) ||
+            (idFilter && appt.id != idFilter) ||
+            (dateFilter && appt.date !== dateFilter)) {
+          continue;
+        }
+        found = true;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${String(appt.id).padStart(2, '0')}</td>
+          <td>${appt.doctor}</td>
+          <td>${appt.clinic}</td>
+          <td>${appt.date.split('-').reverse().join(' - ')}</td>
+          <td>${appt.time}</td>
+          <td>${appt.purpose}</td>
+          <td class="actions">
+            <span onclick="editAppointment(${appt.id})">⋮</span>
+          </td>
+        `;
+        body.appendChild(row);
+      }
+
+      if (!found) {
+        body.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No matching appointments found.</td>
+          </tr>`;
+      }
+    }
+
+    function editAppointment(id) {
+      const appt = appointments.find(a => a.id === id);
+      doctorName.value = appt.doctor;
+      clinicName.value = appt.clinic;
+      appointmentDate.value = appt.date;
+      appointmentTime.value = appt.time;
+      purpose.value = appt.purpose;
+      reminderDate.value = appt.reminder;
+      appointments = appointments.filter(a => a.id !== id);
+      renderTable();
+    }
+
+    function closeSuccessModal() {
+  document.getElementById('successModal').style.display = 'none';
+    }
+
+  </script>
+</body>
+</html>
