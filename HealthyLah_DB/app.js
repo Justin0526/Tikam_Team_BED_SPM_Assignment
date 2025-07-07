@@ -99,31 +99,4 @@ process.on("SIGINT", async () => {
   console.log("Database connection closed");
   process.exit(0);
 });
-document.addEventListener("DOMContentLoaded", () => {
-  const savedLang = localStorage.getItem("language") || "en";
-  if (savedLang !== "en") {
-    translatePage(savedLang);
-  }
-});
-async function translatePage(targetLang) {
-  const nodes = [...document.querySelectorAll("[data-i18n]")];
-  const texts = nodes.map(node => node.textContent.trim());
-  const q = texts.join("\n@@\n");
 
-  try {
-    const res = await fetch("http://localhost:3000/translate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ q, target: targetLang }),
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    const translations = data.translatedText.split("\n@@\n");
-
-    nodes.forEach((node, i) => {
-      node.textContent = translations[i] || node.textContent;
-    });
-  } catch (err) {
-    console.error("Translation error:", err);
-  }
-}
