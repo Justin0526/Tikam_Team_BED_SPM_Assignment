@@ -2,74 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>HealthyLah Settings</title>
-  <link rel="stylesheet" href="../css/settings.css">
+  <title>HealthyLah – Settings</title>
+  <link rel="stylesheet" href="../css/settings.css" />
+  <script src="../js/libre_translate.js" defer></script>
+  <script src="../js/settings_translation.js" defer></script>
 </head>
 <body>
-  <!-- Header -->
   <header class="top-bar">
     <div class="logo-bar">
-      <div class="logo-container">
-        <img src="logo.png" alt="HealthyLah Logo" class="logo-img">
-        <span class="logo-text">HealthyLah</span>
-      </div>
-      <div class="profile">
-        <div class="profile-pic"></div>
-        <span class="profile-name" id="welcomeMsg">Welcome, Mr Tan</span>
-      </div>
+      <img src="#" alt="HealthyLah Logo" class="logo-img" />
+      <span class="logo-text" data-i18n="app_name">HealthyLah</span>
+      <span class="profile-name" data-i18n="welcome_user">Welcome, Mr Tan</span>
     </div>
 
     <nav class="nav-bar">
-      <a href="#" id="navHome">Home</a>
-      <a href="about_us.html" id="navAbout">About us</a>
-      <a href="#" id="navWeather">Weather</a>
-      <a href="#" id="navTransport">Transport & Facilities</a>
-      <a href="#" id="navHealth">Health</a>
-      <a href="post_forum.html" id="navPost">Post</a>
+      <a href="index.html" data-i18n="nav_home">Home</a>
+      <a href="about_us.html" data-i18n="nav_about">About us</a>
+      <a href="#" data-i18n="nav_weather">Weather</a>
+      <a href="#" data-i18n="nav_transport">Transport & Facilities</a>
+      <a href="#" data-i18n="nav_health">Health</a>
+      <a href="post_forum.html" data-i18n="nav_post">Post</a>
     </nav>
   </header>
 
   <main class="settings-container">
     <aside class="settings-sidebar">
       <ul>
-        <li id="accountSettings">Account Settings</li>
-        <li id="appointment">Appointment</li>
-        <li id="preferences">Preferences</li>
-        <li id="languageMenu">Language</li>
-        <li id="privacy">Privacy/Security</li>
-        <li id="notifications">Notifications</li>
-        <li id="appTheme">App Theme</li>
+        <li data-i18n="sidebar_account">Account Settings</li>
+        <li data-i18n="sidebar_appointment">Appointment</li>
+        <li data-i18n="sidebar_preferences">Preferences</li>
+        <li data-i18n="sidebar_language">Language</li>
+        <li data-i18n="sidebar_privacy">Privacy/Security</li>
+        <li data-i18n="sidebar_notifications">Notifications</li>
+        <li data-i18n="sidebar_theme">App Theme</li>
       </ul>
     </aside>
 
     <section class="settings-content">
-      <h2 id="settingsTitle">Settings</h2>
-      <label for="languageSelect" id="languageLabel">Language</label>
-      <select id="languageSelect" onchange="onLanguageSelectChange()">
-        <option value="en">English</option>
-        <option value="zh">Chinese (简体)</option>
-        <option value="ta">Tamil</option>
-        <option value="ms">Malay</option>
+      <h2 data-i18n="settings_title">Settings</h2>
+
+      <label for="languageSelect" data-i18n="language_label">Language</label>
+      <select id="languageSelect" aria-label="Select language">
+        <option value="en" data-i18n="lang_en">English</option>
+        <option value="zh" data-i18n="lang_zh">中文</option>
+        <option value="ms" data-i18n="lang_ms">Malay</option>
       </select>
-      <button id="applyButton" onclick="applyChanges()">Apply Changes</button>
+
+      <button id="applyButton" style="display:none;" data-i18n="apply_button">
+        Apply Changes
+      </button>
     </section>
   </main>
 
   <footer>
-    <p id="footerText">© 2025 HealthyLah – Designed with care for our seniors</p>
-    <div class="social-links">
-      <a href="#" id="facebookLink">Facebook</a>
-      <a href="#" id="twitterLink">Twitter</a>
-      <a href="#" id="instagramLink">Instagram</a>
-      <a href="#" id="emailLink">Email</a>
-    </div>
-    <p>
-      <a href="#" id="privacyLink">Privacy Policy</a> |
-      <a href="#" id="termsLink">Terms of Use</a> |
-      <a href="#" id="creditsLink">Credits</a>
-    </p>
+    <p data-i18n="footer_text">© 2025 HealthyLah – Designed with care for our seniors</p>
   </footer>
 
-  <script src="../js/settings_translation.js"></script>
 </body>
 </html>
