@@ -1,0 +1,27 @@
+{
+  "name": "tikam_team_bed_spm_assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Justin0526/Tikam_Team_BED_SPM_Assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Justin0526/Tikam_Team_BED_SPM_Assignment/issues"
+  },
+  "homepage": "https://github.com/Justin0526/Tikam_Team_BED_SPM_Assignment#readme",
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "mssql": "^11.0.1",
+    "node-fetch": "^2.7.0"
+  }
+}

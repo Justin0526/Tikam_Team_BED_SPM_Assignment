@@ -152,16 +152,16 @@
 .outfit-card .outfit-content {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
 .outfit-card img {
-  width: 200px;
-  height: 200px;
-  background-color: #D9D9D9;
-  border: 1px solid #AEAEAE;
+  width: auto;
+  height: 20vw;
+  border: 2px solid #AEAEAE;
   display: block;
+  border-radius: 0.5rem;
 }
 
 .outfit-text {
