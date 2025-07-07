@@ -31,6 +31,11 @@
 
   <form id="appointment-form">
     <h3 class="section-title">Create Appointment</h3>
+
+    //Temporary 
+    <label for="userID">User ID</label>
+    <input type="number" id="userID" placeholder="Enter your User ID" required>
+
     <label for="doctorName">Doctor’s Name</label>
     <input type="text" id="doctorName" placeholder="Enter your Doctor’s name here" required>
 
@@ -49,6 +54,7 @@
     <label for="reminderDate">Reminder Date ( Optional )</label>
     <input type="date" id="reminderDate">
 
+    <div id="errorBox" style="color: red; font-weight: bold; display: none;"></div>
     <button type="submit">Add Appointment</button>
   </form>
 
@@ -68,7 +74,7 @@
   </div>
 
   <div class="quick-access">
-    <h2>Your Appointments</h2>
+    <h2 class="welcome">Your Appointments</h2>
     <div class="appointments-wrapper">
       <table>
         <thead>
@@ -103,34 +109,75 @@
   </footer>
 
   <script>
-    let appointments = [];
-    let nextId = 1;
+    // let appointments = [];
+    // let nextId = 1;
+    //   e.preventDefault();
+    //   const doctor = document.getElementById('doctorName').value;
+    //   const clinic = document.getElementById('clinicName').value;
+    //   const date = document.getElementById('appointmentDate').value;
+    //   const time = document.getElementById('appointmentTime').value;
+    //   const purpose = document.getElementById('purpose').value;
 
-    document.getElementById('appointment-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const doctor = document.getElementById('doctorName').value;
-      const clinic = document.getElementById('clinicName').value;
-      const date = document.getElementById('appointmentDate').value;
-      const time = document.getElementById('appointmentTime').value;
-      const purpose = document.getElementById('purpose').value;
+    //   let reminder = reminderDate.value;
+    //   if (!reminder) {
+    //     const d = new Date(date);
+    //     d.setDate(d.getDate() - 1);
+    //     reminder = d.toISOString().split('T')[0];
+    //   }
+    //   const appointment = { id: nextId++, doctor, clinic, date, time, purpose, reminder };
+    //   appointments.push(appointment);
+    //   renderTable();
+    //   this.reset();
 
-      let reminder = reminderDate.value;
-      if (!reminder) {
-        const d = new Date(date);
-        d.setDate(d.getDate() - 1);
-        reminder = d.toISOString().split('T')[0];
-      }
-      const appointment = { id: nextId++, doctor, clinic, date, time, purpose, reminder };
-      appointments.push(appointment);
-      renderTable();
-      this.reset();
+    //   // Show success modal
+    //     document.getElementById('successModal').style.display = 'flex';
 
-      // Show success modal
+
+
+    // });
+
+  document.getElementById('appointment-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const rawReminder = document.getElementById('reminderDate').value;
+
+    const appointment = {
+      userID: parseInt(document.getElementById('userID').value),
+      doctorName: document.getElementById('doctorName').value,
+      clinicName: document.getElementById('clinicName').value,
+      appointmentDate: document.getElementById('appointmentDate').value,
+      appointmentTime: document.getElementById('appointmentTime').value,
+      purpose: document.getElementById('purpose').value,
+      reminderDate: rawReminder === "" ? undefined : rawReminder//check if user does not input reminderDate, it will send undefined.Otherwise, it will send user inputted reminderDate
+    };
+
+    console.log("📤 Submitting appointment:", appointment); // Add for debugging
+    try {
+      const response = await fetch('http://localhost:3000/appointments/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(appointment)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
         document.getElementById('successModal').style.display = 'flex';
-
-
-
-    });
+        this.reset();
+        loadAppointments(appointment.userID);
+      } else {
+        alert("❌ Error: " + result.error);
+        // document.getElementById("errorBox").style.display = "block";
+        // document.getElementById("errorBox").innerText = result.error;
+      }
+    } catch (err) {
+      console.error("❌ Network error:", err);
+      alert("❌ Failed to connect to the server.");
+      // document.getElementById("errorBox").style.display = "block";
+      // document.getElementById("errorBox").innerText = "Failed to connect to the server.";
+    }
+  });
 
     function renderTable() {
       const body = document.getElementById('appointmentsBody');
@@ -200,6 +247,49 @@
       }
     }
 
+    async function loadAppointments(userID) {
+      try {
+        const response = await fetch(`http://localhost:3000/appointments/user/${userID}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load appointments");
+        }
+
+        // Clear table body
+        const body = document.getElementById('appointmentsBody');
+        body.innerHTML = '';
+
+        if (data.length === 0) {
+          body.innerHTML = `
+            <tr id="emptyState">
+              <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments found for this user.</td>
+            </tr>`;
+          return;
+        }
+
+        data.forEach(appt => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${String(appt.appointmentID).padStart(2, '0')}</td>
+            <td>${appt.doctorName}</td>
+            <td>${appt.clinicName}</td>
+            <td>${appt.appointmentDate.split('-').reverse().join(' - ')}</td>
+            <td>${appt.appointmentTime}</td>
+            <td>${appt.purpose}</td>
+            <td class="actions">⋮</td>
+          `;
+          body.appendChild(row);
+        });
+      } 
+      catch (err) {
+        console.error("❌ Failed to load appointments:", err);
+        document.getElementById('appointmentsBody').innerHTML = `
+          <tr><td colspan="7" style="text-align:center; color: red;">Error loading appointments.</td></tr>
+        `;
+      }
+    }
+
     function editAppointment(id) {
       const appt = appointments.find(a => a.id === id);
       doctorName.value = appt.doctor;
@@ -213,8 +303,13 @@
     }
 
     function closeSuccessModal() {
-  document.getElementById('successModal').style.display = 'none';
+      document.getElementById('successModal').style.display = 'none';
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const loggedInUserID = 2; // ✅ REPLACE WITH DYNAMIC USER LATER !! after logIN feature is added
+      loadAppointments(loggedInUserID);
+    });
 
   </script>
 </body>

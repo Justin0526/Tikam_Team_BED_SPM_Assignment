@@ -5,6 +5,10 @@ const path = require("path");
 
 //Load environment variables
 const weatherController = require("./controllers/weather_controller");
+const appointmentController = require("./controllers/appointment_controller");
+
+//Middlewares
+const appointmentValidator = require("./middlewares/appointment_validation");
 
 // Create express app
 const app = express();
@@ -20,6 +24,21 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Route for weather 
 app.get("/weather", weatherController.getWeather);
+
+//Route for appointments
+app.get("/appointments", appointmentController.getAllAppointments);
+app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
+// app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
+app.post("/appointments/user", (req, res, next) => {
+  console.log("✅ POST /appointments/user was hit!");
+  next();
+}, appointmentValidator.validateAppointment, appointmentController.createAppointment);
+
+//Temporary
+// app.get("/test", (req, res) => {
+//   console.log("✅ POST /test was hit");
+//   res.json({ message: "Test route working!" });
+// });
 
 // Start server
 app.listen(port, () => {

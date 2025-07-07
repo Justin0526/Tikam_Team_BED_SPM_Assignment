@@ -223,6 +223,9 @@ padding-bottom: 5px;
   border-radius: 10px;
   cursor: pointer;
 }
+.quick-access {
+  margin-bottom: 100px; /* Push the whole block away from the footer */
+}
 
 /*table */
 table {

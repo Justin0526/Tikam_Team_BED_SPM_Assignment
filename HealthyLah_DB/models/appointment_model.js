@@ -28,88 +28,107 @@ async function getAllAppointments(){
     }
 }
 
-// //Get All Appointments by UserId
-// async function getAppointmentsByUserId(userId) {
-//     let connection;
-//     try{
-//         connection = await sql.connect(dbConfig);
-//         const query = "SELECT * FROM Appointments WHERE user_id = @userId ORDER BY appointment_date, appointment_time";
-//         const request = connection.request();
-//         request.input("userId", sql.Int, userId);
-//         const result = await request.query(query);
+//Get All Appointments by UserId
+async function getAppointmentsByUserID(userID) {
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = `
+            SELECT 
+                appointmentID,
+                userID,
+                doctorName,
+                clinicName,
+                appointmentDate,
+                CAST(appointmentTime AS VARCHAR(5)) AS appointmentTime,
+                purpose,
+                reminderDate
+            FROM Appointments
+            WHERE userID = @userID
+            ORDER BY appointmentDate, appointmentTime;
+        `;
+        const request = connection.request();
+        request.input("userID", sql.Int, userID);
+        const result = await request.query(query);
 
-//         if(result.recordset.length === 0){
-//             return null;
-//         }
+        if(result.recordset.length === 0){
+            return null;
+        }
 
-//         return result.recordset;
-//     }
-//     catch(error){
-//         console.error("Database error:", error);
-//         throw error;
-//     }
-//     finally{
-//         if(connection){
-//             try{
-//                 await connection.close();
-//             }
-//             catch(error){
-//                 console.error("Error closing connection:", error);
-//             }
-//         }
-//     }
-// }
+        //Format time and date form properly
+        return result.recordset.map(row => ({
+            ...row,
+            appointmentTime: row.appointmentTime,
+            appointmentDate: row.appointmentDate?.toISOString().split('T')[0],
+            reminderDate: row.reminderDate?.toISOString().split('T')[0]
+        }));
 
-// //Add Appointment
-// async function createAppointment(appointment){
-//     let connection;
-//     try{
-//         connection = await sql.connect(dbConfig);
-//         const query = 
-//         `INSERT INTO Appointments 
-//         (user_id, doctor_name, clinic_name, appointment_date, appointment_time, purpose, reminder_date, created_at)
-//         VALUES (@user_id, @doctor_name, @clinic_name, @appointment_date, @appointment_time, @purpose, @reminder_date, @created_at)
-//         `;
+    }
+    catch(error){
+        console.error("Database error:", error);
+        throw error;
+    }
+    finally{
+        if(connection){
+            try{
+                await connection.close();
+            }
+            catch(error){
+                console.error("Error closing connection:", error);
+            }
+        }
+    }
+}
+
+//Add Appointment
+async function createAppointment(appointment){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = 
+        `INSERT INTO Appointments 
+        (userID, doctorName, clinicName, appointmentDate, appointmentTime, purpose, reminderDate)
+        VALUES (@userID, @doctorName, @clinicName, @appointmentDate, @appointmentTime, @purpose, @reminderDate);
+        `;
         
-//         // Default reminder date = one day before the appointment date        
-//         const reminderDate = appointment.reminder_date
-//         ? appointment.reminder_date: new Date(new Date(appointment.appointment_date).getTime() - 24 * 60 * 60 * 1000);
+        // Default reminder date = one day before the appointment date        
+        const reminderDate = appointment.reminderDate
+        ? appointment.reminderDate: new Date(new Date(appointment.appointmentDate).getTime() - 24 * 60 * 60 * 1000);
 
-//         //Convert "14:00" string to Date for sql.Time
-//         const timeParts = appointment.appointment_time.split(":");
-//         const appointmentTime = new Date();
-//         appointmentTime.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
+        //Convert "14:00" string to Date for sql.Time
+        const timeParts = appointment.appointmentTime.split(":");
+        const appointmentTime = new Date();
+        appointmentTime.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
         
-//         const request = connection.request();
-//         request.input("user_id", sql.Int, appointment.user_id);
-//         request.input("doctor_name", sql.VarChar, appointment.doctor_name);
-//         request.input("clinic_name", sql.VarChar, appointment.clinic_name);
-//         request.input("appointment_date", sql.Date, appointment.appointment_date);
-//         request.input("appointment_time", sql.Time, appointmentTime);
-//         request.input("purpose", sql.VarChar, appointment.purpose);
-//         request.input("reminder_date", sql.Date, reminderDate);
-//         request.input("created_at", sql.DateTime, new Date());
+        const request = connection.request();
+        request.input("userID", sql.Int, appointment.userID);
+        request.input("doctorName", sql.VarChar, appointment.doctorName);
+        request.input("clinicName", sql.VarChar, appointment.clinicName);
+        request.input("appointmentDate", sql.Date, appointment.appointmentDate);
+        request.input("appointmentTime", sql.Time, appointmentTime);
+        request.input("purpose", sql.VarChar, appointment.purpose);
+        request.input("reminderDate", sql.Date, reminderDate);
 
-//        await request.query(query);
+       await request.query(query);
 
-//         return{message: "Appointment created successfully"};
+        return{message: "Appointment created successfully"};
 
-//     }
-//     catch(error){
-//         console.error("Database error:", error);
-//         throw error;
-//     }
-//     finally{
-//         if(connection){
-//             try{
-//                 await connection.close();
-//             }
-//             catch(error){
-//                 console.error("Error closing connection:", err);
-//             }
-//         }
-//     }
-// }
+    }
+    catch(error){
+        console.error("Database error:", error);
+        throw error;
+    }
+    finally{
+        if(connection){
+            try{
+                await connection.close();
+            }
+            catch(error){
+                console.error("Error closing connection:", err);
+            }
+        }
+    }
+}
 
 // //Delete Appointment
 // async function deleteAppointment(appointmentId) {
@@ -147,4 +166,6 @@ async function getAllAppointments(){
 
 module.exports = {
     getAllAppointments,
+    getAppointmentsByUserID,
+    createAppointment,
 };
