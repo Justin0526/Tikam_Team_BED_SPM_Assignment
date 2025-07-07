@@ -27,11 +27,7 @@ app.get("/weather", weatherController.getWeather);
 //Route for appointments
 app.get("/appointments", appointmentController.getAllAppointments);
 app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
-// app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
-app.post("/appointments/user", (req, res, next) => {
-  console.log("✅ POST /appointments/user was hit!");
-  next();
-}, appointmentValidator.validateAppointment, appointmentController.createAppointment);
+app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
 //Temporary
 // app.get("/test", (req, res) => {
