@@ -1,5 +1,5 @@
 const axios = require("axios");
-const APIKEY = "131918acf1dc4bcfb3f53822251806";
+const APIKEY = process.env.WEATHER_API_KEY;
 const location = "Singapore";
 const weatherModel = require("../models/weather_model")
 
