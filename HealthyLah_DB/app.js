@@ -2,8 +2,6 @@ const express = require("express");
 const sql = require("mssql");
 const dotenv = require("dotenv");
 const path = require("path");
-const cors = require("cors");
-const fetch = require("node-fetch");
 
 dotenv.config();
 
@@ -16,8 +14,6 @@ const appointmentValidator = require("./middlewares/appointment_validation");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Enable CORS for all origins (you can tighten this later)
-app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
