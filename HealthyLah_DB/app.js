@@ -2,9 +2,16 @@ const express = require("express");
 const sql = require("mssql");
 const dotenv = require("dotenv");
 const path = require("path");
+const cors = require("cors");
 
+dotenv.config();   // Load env first
 
-dotenv.config();
+const app = express();   // Initialize app first
+
+app.use(cors());    // Now use cors
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const weatherController = require("./controllers/weather_controller");
 const appointmentController = require("./controllers/appointment_controller");
@@ -12,7 +19,6 @@ const medicationsController = require('./controllers/medications_controller');
 
 //Middlewares
 const appointmentValidator = require("./middlewares/appointment_validation");
-const validateMedication = require('./middlewares/medication_validation');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,12 +38,6 @@ app.get("/appointments", appointmentController.getAllAppointments);
 app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
 app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
-// Routes for medications
-app.get("/medications/today", medicationsController.getTodayMeds);
-app.patch("/medications/:medicationID/mark-taken", medicationsController.markTaken);
-app.post('/medications', validateMedication, medicationsController.addMedication);
-
-
 //Temporary
 // app.get("/test", (req, res) => {
 //   console.log("✅ POST /test was hit");
@@ -45,9 +45,10 @@ app.post('/medications', validateMedication, medicationsController.addMedication
 // });
 
 const { translateText } = require("./controllers/translation_controller");
-app.use(express.json());
 
 app.post("/translate", translateText);
+
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
@@ -59,4 +60,3 @@ process.on("SIGINT", async () => {
   console.log("Database connection closed");
   process.exit(0);
 });
-

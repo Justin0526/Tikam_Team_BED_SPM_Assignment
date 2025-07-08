@@ -95,22 +95,16 @@ async function createAppointment(appointment){
         const reminderDate = appointment.reminderDate
         ? appointment.reminderDate: new Date(new Date(appointment.appointmentDate).getTime() - 24 * 60 * 60 * 1000);
 
-        //Convert "14:00" string to Date for sql.Time
-        const timeParts = appointment.appointmentTime.split(":");
-        const appointmentTime = new Date();
-        appointmentTime.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
-        
         const request = connection.request();
         request.input("userID", sql.Int, appointment.userID);
         request.input("doctorName", sql.VarChar, appointment.doctorName);
         request.input("clinicName", sql.VarChar, appointment.clinicName);
         request.input("appointmentDate", sql.Date, appointment.appointmentDate);
-        request.input("appointmentTime", sql.Time, appointmentTime);
+        request.input("appointmentTime", sql.VarChar, appointment.appointmentTime);
         request.input("purpose", sql.VarChar, appointment.purpose);
         request.input("reminderDate", sql.Date, reminderDate);
 
-       await request.query(query);
-
+        await request.query(query);
         return{message: "Appointment created successfully"};
 
     }
