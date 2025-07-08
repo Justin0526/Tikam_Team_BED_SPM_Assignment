@@ -1,17 +1,14 @@
-/* =========================================================
-   settings_translation.js
-   – auto‑translates any page on load
-   – handles <select id="languageSelect"> + Apply button
-   – falls back to translating every visible text node
-   – talks to backend /translate on http://localhost:3000
-   ========================================================= */
+console.log("settings_translation.js loaded");
+
 const sel = document.getElementById("languageSelect");
 const btn = document.getElementById("applyButton");
 
 document.addEventListener("DOMContentLoaded", () => {
-  const savedLang = localStorage.getItem("language") || "en";
+  console.log("DOM ready");
 
-  /* ─── settings page behaviour (only if dropdown exists) ─── */
+  const savedLang = localStorage.getItem("language") || "en";
+  console.log("Saved language:", savedLang);
+
   if (sel && btn) {
     sel.value = savedLang;
     btn.style.display = "none";
@@ -23,51 +20,53 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       localStorage.setItem("language", sel.value);
       btn.style.display = "none";
-      location.reload();        // so every page picks up new lang
+      location.reload(); // reload to apply new language
     });
   }
 
-  /* ─── translate current page if language ≠ "en" ─── */
-  if (savedLang !== "en") translatePage(savedLang);
+  if (savedLang !== "en") {
+    console.log("Translating page to:", savedLang);
+    translatePage(savedLang);
+  }
 });
 
-/* =========================================================
-   translatePage
-   • translates only [data‑i18n] nodes if present
-   • otherwise translates every visible text node
-   ========================================================= */
 async function translatePage(targetLang) {
-  let nodes = [...document.querySelectorAll("[data-i18n]")];
+  // Grab every visible text node (ignore data-i18n)
+  let nodes = [];
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode(node) {
+        if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        if (node.parentNode && ["SCRIPT", "STYLE"].includes(node.parentNode.tagName))
+          return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    }
+  );
+
+  while (walker.nextNode()) nodes.push(walker.currentNode);
 
   if (nodes.length === 0) {
-    // Grab every visible text node
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode(node) {
-          if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-          if (node.parentNode && ["SCRIPT", "STYLE"].includes(node.parentNode.tagName))
-            return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        },
-      }
-    );
-    while (walker.nextNode()) nodes.push(walker.currentNode);
+    console.warn("No text nodes found to translate");
+    return;
   }
-
-  if (nodes.length === 0) return; // nothing to translate
 
   const texts = nodes.map(n => n.textContent.trim());
   const q = texts.join("\n@@\n");
 
   try {
     const res = await fetch("http://localhost:3000/translate", {
-      method : "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body   : JSON.stringify({ q, target: targetLang }),
+      body: JSON.stringify({ q, target: targetLang }),
     });
-    if (!res.ok) throw new Error(await res.text());
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Server error: ${errText}`);
+    }
 
     const { translatedText } = await res.json();
     const translations = translatedText.split("\n@@\n");
@@ -75,6 +74,8 @@ async function translatePage(targetLang) {
     nodes.forEach((node, i) => {
       node.textContent = translations[i] || node.textContent;
     });
+
+    console.log("Page translated successfully");
   } catch (err) {
     console.error("Translation error:", err);
   }
