@@ -33,9 +33,9 @@ async function fetchWeatherSummary(){
         }
 
         // Parse the JSON response
-        const weather = await response.json();
-        const currentWeather = weather.current;
-        const astroToday = weather.forecast.forecastday[0].astro;
+        const weatherData = await response.json();
+        const currentWeather = weatherData.weather.current;
+        const astroToday = weatherData.weather.forecast.forecastday[0].astro;
 
         // console.log(weather);
         // console.log(currentWeather);
@@ -75,8 +75,8 @@ async function fetchHourlyForecast(){
         }
 
         // Parse the JSON response
-        const weather = await response.json();
-        const weatherForecastDay = weather.forecast.forecastday;
+        const weatherData = await response.json();
+        const weatherForecastDay = weatherData.weather.forecast.forecastday;
 
         // Get the local time
         const localTime = new Date();
@@ -129,8 +129,8 @@ async function fetchSevenDayForecast(){
         }
 
         // Parse the JSON response
-        const weather = await response.json();
-        const weatherForecastDay = weather.forecast.forecastday;
+        const weatherData = await response.json();
+        const weatherForecastDay = weatherData.weather.forecast.forecastday;
 
         // Clear loading message
         sevenDayWeatherForecastListDiv.innerHTML = "";
