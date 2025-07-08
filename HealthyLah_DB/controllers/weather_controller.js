@@ -32,6 +32,13 @@ async function getWeather(req,res){
     };
 }
 
+// async function favouriteOutfit(req, res){
+//     try{
+//         // Get userID
+//         // Get outfitID
+//     }
+// }
+
 module.exports = {
     getWeather,
 }

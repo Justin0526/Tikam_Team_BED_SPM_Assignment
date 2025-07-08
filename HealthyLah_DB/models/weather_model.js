@@ -50,7 +50,34 @@ async function getSuggestedOutfit(outfitTypeID){
             try{
                 await connection.close();
             }catch(closeError){
-                console.log("Error closng connection: ", closeError);
+                console.error("Error closng connection: ", closeError);
+            }
+        }
+    }
+}
+
+// Favourite an outfit
+async function favouriteOutfit(outfitID, userID){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = `INSERT INTO FavouriteOutfit (outfitId, userId) VALUES (@outfitID, @userID);`
+        const request = connection.request();
+        request.input("outfitID", outfitID);
+        request.input("userID", userID);
+        const result = await request.query(query);
+
+        console.log(result);
+        return result;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if (connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing connection: ", closeError);
             }
         }
     }
@@ -59,4 +86,5 @@ async function getSuggestedOutfit(outfitTypeID){
 module.exports = {
     getSuggestedOutfit,
     getOutfitTypeID,
+    favouriteOutfit,
 }
