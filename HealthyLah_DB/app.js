@@ -8,9 +8,11 @@ dotenv.config();
 
 const weatherController = require("./controllers/weather_controller");
 const appointmentController = require("./controllers/appointment_controller");
+const medicationsController = require('./controllers/medications_controller');
 
 //Middlewares
 const appointmentValidator = require("./middlewares/appointment_validation");
+const validateMedication = require('./middlewares/medication_validation');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,6 +31,12 @@ app.get("/weather", weatherController.getWeather);
 app.get("/appointments", appointmentController.getAllAppointments);
 app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
 app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
+
+// Routes for medications
+app.get("/medications/today", medicationsController.getTodayMeds);
+app.patch("/medications/:medicationID/mark-taken", medicationsController.markTaken);
+app.post('/medications', validateMedication, medicationsController.addMedication);
+
 
 //Temporary
 // app.get("/test", (req, res) => {
