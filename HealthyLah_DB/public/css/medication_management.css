@@ -77,6 +77,19 @@ body {
 
 /* ... existing header and nav styles ... */
 
+.medication-box {
+  background-color: #F1FAE5; /* soft green */
+  border: 2px solid #A4D038;
+  border-radius: 14px;
+  padding: 40px;
+  display: flex;
+  min-height: 750px;
+  flex-direction: column;
+  gap: 30px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+
 .medication-main {
   padding: 30px;
   font-size: 1.1em;
@@ -194,6 +207,11 @@ body {
   align-items: center;
   gap: 8px;
 }
+
+.medication-table tr.taken-row {
+  background-color: #e8f5e9;
+}
+
 
 .status {
   font-weight: bold;
