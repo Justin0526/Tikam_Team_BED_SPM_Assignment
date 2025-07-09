@@ -89,6 +89,12 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
+.medication-box h2 {
+  margin: 20px 0 10px;
+  font-size: 1.4em;
+  color: #2B7DA4;
+  font-weight: bold;
+}
 
 .medication-main {
   padding: 30px;
@@ -178,9 +184,21 @@ body {
   font-size: 1.05em;
 }
 
+.medication-table th:first-child, .medication-table td:first-child,
+.reminder-table th:first-child, .reminder-table td:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.medication-table th:last-child, .medication-table td:last-child,
+.reminder-table th:last-child, .reminder-table td:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
 .medication-table th, .reminder-table th {
-  background-color: #f0f8e4;
-  color: #2B7DA4;
+  background-color: #A4D038 !important;
+  color: #FFFFFF !important;
   font-weight: bold;
   text-align: left;
 }
@@ -199,6 +217,9 @@ body {
 .medication-table,
 .reminder-table {
   background-color: #f9fff4;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 20px;
 }
 
 .medication-table td:first-child,
@@ -303,13 +324,11 @@ body {
   font-size: 0.95em;
 }
 
-.form-group input, 
-.form-group select {
-  padding: 12px 15px;
-  border: 1px solid #ccc;
+.form-group input, .form-group select {
   border-radius: 8px;
+  padding: 10px 12px;
   font-size: 1em;
-  transition: border-color 0.3s;
+  border: 1px solid #aaa;
 }
 
 .form-group input:focus, 
@@ -325,9 +344,9 @@ body {
 }
 
 .form-actions {
-  margin-top: 10px;
+  margin-top: 20px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 /* Notification */
