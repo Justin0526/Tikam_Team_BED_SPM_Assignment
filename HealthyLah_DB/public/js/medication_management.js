@@ -1,9 +1,4 @@
-// Set current date
-const now = new Date();
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-document.getElementById('current-date').textContent = now.toLocaleDateString('en-SG', options);
-        
-// Mark as taken functionality
+    // Mark as taken functionality
 document.querySelectorAll('.mark-btn').forEach(button => {
     button.addEventListener('click', function() {
         const row = this.closest('tr');
@@ -48,31 +43,39 @@ document.querySelector('.medication-form').addEventListener('submit', async func
   if (response.ok) {
     showNotification('Medication saved to database!');
     this.reset();
+    loadTodayMeds(); // Reload medications after saving
   } else {
     showNotification('Failed to save medication.');
   }
 });
 
+function formatTime(timeString) {
+  return timeString ? timeString.slice(0, 5) : '';
+}
+
 async function loadTodayMeds() {
   try {
     const response = await fetch('http://localhost:3000/medications/today');
+    if (!response.ok) throw new Error('Network error');
+    
     const medications = await response.json();
-
     const tbody = document.getElementById('medication-table-body');
-    tbody.innerHTML = ''; // Clear existing rows
+    tbody.innerHTML = '';
 
+    // Use the global formatTime function
     medications.forEach(med => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td><i class="fas fa-clock"></i> ${formatTime(med.consumptionTime)}</td>
         <td>${med.medicineName}</td>
         <td>${med.dosage}</td>
-        <td class="status ${med.status === 'Taken' ? 'taken' : 'not-yet'}">${med.status}</td>
+        <td class="status ${med.status === 'Taken' ? 'taken' : 'not-yet'}">
+          ${med.status || 'Not Yet'}
+        </td>
         <td>
-          ${
-            med.status === 'Taken'
-              ? `<button class="mark-btn disabled" disabled><i class="fas fa-check"></i> Taken</button>`
-              : `<button class="mark-btn" data-id="${med.medicationID}"><i class="fas fa-check"></i> Mark Taken</button>`
+          ${med.status === 'Taken' 
+            ? `<button class="mark-btn disabled" disabled><i class="fas fa-check"></i> Taken</button>` 
+            : `<button class="mark-btn" data-id="${med.medicationID}"><i class="fas fa-check"></i> Mark Taken</button>`
           }
         </td>
       `;
@@ -81,7 +84,8 @@ async function loadTodayMeds() {
 
     attachMarkButtons();
   } catch (error) {
-    console.error('Error fetching medications:', error);
+    console.error('Error loading medications:', error);
+    showNotification('Failed to load medications');
   }
 }
 
@@ -110,10 +114,6 @@ function attachMarkButtons() {
   });
 }
 
-function showNotification(message) {
-  alert(message); // You can replace this with your own notification system
-}
-
 window.addEventListener('DOMContentLoaded', loadTodayMeds);
             
 // Set default start date to today
@@ -137,8 +137,6 @@ function showNotification(message) {
         }, 300);
     }, 3000);
 }
-
-row.classList.add('taken-row');
 
 // Set default start date to today
 document.getElementById('start-date').valueAsDate = new Date();
