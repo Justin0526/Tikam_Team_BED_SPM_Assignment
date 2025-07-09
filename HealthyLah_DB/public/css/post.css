@@ -155,3 +155,47 @@ footer a {
   text-decoration: underline;
   margin: 0 10px;
 }
+/* post.css */
+
+.post-item {
+  border: 2px solid #9ccb41;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background: #fff;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.post-header .avatar {
+  width: 40px;
+  height: 40px;
+  background: #ccc;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+.post-header .meta .author {
+  font-weight: bold;
+  margin-right: 8px;
+}
+.post-header .meta .date {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.post-body {
+  font-size: 1.1em;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.post-image-wrap {
+  text-align: right;
+}
+.post-image {
+  max-width: 150px;
+  border-radius: 8px;
+}

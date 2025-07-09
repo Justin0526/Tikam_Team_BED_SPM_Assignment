@@ -1,51 +1,89 @@
 const express = require("express");
-const sql = require("mssql");
-const dotenv = require("dotenv");
-const path = require("path");
-const cors = require("cors");
+const sql     = require("mssql");
+const dotenv  = require("dotenv");
+const path    = require("path");
+const cors    = require("cors");
 
 dotenv.config();
 
-const app = express();
+const dbConfig = require("./dbConfig"); // must point at your dbConfig.js
+
+const app  = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
+// ─── GLOBAL MIDDLEWARE ──────────────────────────────────────────────────────────
 app.use(cors());
+
+// body‐parsing (JSON + URL‐encoded) for all routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ─── CONTROLLERS & VALIDATORS ──────────────────────────────────────────────────
+const weatherController     = require("./controllers/weather_controller");
+const appointmentController = require("./controllers/appointment_controller");
+const medicationsController = require("./controllers/medications_controller");
+const { translateText }     = require("./controllers/translation_controller");
+const postsController       = require("./controllers/posts_controller");
+
+const appointmentValidator = require("./middlewares/appointment_validation");
+const medicationValidator  = require("./middlewares/medication_validation");
+const postValidator        = require("./middlewares/posts_validation");
+
+// ─── ROUTES ─────────────────────────────────────────────────────────────────────
+// Weather & translation
+app.get( "/weather", weatherController.getWeather );
+app.post("/translate", translateText );
+
+// Appointments
+app.get( "/appointments",                     appointmentController.getAllAppointments );
+app.get( "/appointments/user/:userID",
+  appointmentValidator.validateAppointmentId,
+  appointmentController.getAppointmentsByUserID
+);
+app.post("/appointments/user",
+  appointmentValidator.validateAppointment,
+  appointmentController.createAppointment
+);
+
+// Medications
+app.get(   "/medications/today",                         medicationsController.getTodayMeds );
+app.post(  "/medications",            medicationValidator, medicationsController.addMedication );
+app.patch( "/medications/:medicationID/mark-taken",      medicationsController.markTaken );
+
+// Posts (CRUD)
+app.get(  "/posts",           postsController.getAllPosts );
+app.get(  "/posts/:id",
+  postValidator.validatePostId,
+  postsController.getPostById
+);
+app.post( "/posts",
+  postValidator.validatePost,
+  postsController.createPost
+);
+
+// ─── STATIC ASSETS ───────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, "public")));
 
-// Controllers
-const weatherController = require("./controllers/weather_controller");
-const appointmentController = require("./controllers/appointment_controller");
-const medicationsController = require('./controllers/medications_controller');
-const { translateText } = require("./controllers/translation_controller");
+// ─── STARTUP: CONNECT DB & LISTEN ───────────────────────────────────────────────
+async function startServer() {
+  try {
+    await sql.connect(dbConfig);
+    console.log("Database connected");
+  } catch (err) {
+    console.error("DB connection failed:", err.message);
+    return process.exit(1);
+  }
 
-// Middlewares
-const appointmentValidator = require("./middlewares/appointment_validation");
-const medicationValidator = require("./middlewares/medication_validation");
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
 
-// Routes
-app.get("/weather", weatherController.getWeather);
+startServer();
 
-app.get("/appointments", appointmentController.getAllAppointments);
-app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
-app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
-
-app.get("/medications/today", medicationsController.getTodayMeds);
-app.post("/medications", medicationValidator, medicationsController.addMedication);
-app.patch("/medications/:medicationID/mark-taken", medicationsController.markTaken);
-
-app.post("/translate", translateText);
-
-// Start server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-// Graceful shutdown
+// ─── GRACEFUL SHUTDOWN ───────────────────────────────────────────────────────────
 process.on("SIGINT", async () => {
-  console.log("Server is gracefully shutting down");
+  console.log("Server shutting down");
   await sql.close();
   console.log("Database connection closed");
   process.exit(0);
