@@ -71,25 +71,14 @@ app.post( "/posts",
   postsController.createPost
 );
 
-// ─── Start Server (after DB connect) ─────────────────────────────────────────────
-;(async () => {
-  try {
-    await sql.connect(dbConfig);
-    console.log("Database connected");
-  } catch (err) {
-    console.error("DB connection failed:", err.message);
-    return process.exit(1);
-  }
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
-  app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-  });
-})();
-
-// ─── Graceful shutdown ───────────────────────────────────────────────────────────
 process.on("SIGINT", async () => {
-  console.log("Server shutting down");
+  console.log("Server is gracefully shutting down");
   await sql.close();
   console.log("Database connection closed");
   process.exit(0);
 });
+
