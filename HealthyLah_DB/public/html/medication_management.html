@@ -30,135 +30,115 @@
         </nav>
     </header>
 
-    <main class="medication-main">
-        <section class="page-title">
-            <h1>Manage My Medications</h1>
-            <p>Take care of your health, Mr Tan.</p>
-        </section>
+  <main class="medication-main">
+  <section class="page-title">
+    <h1>Manage My Medications</h1>
+    <p>Take care of your health, Mr Tan.</p>
+  </section>
 
-        <!-- Stacked sections as per wireframe -->
-        <!-- Today's Medications Section -->
-        <section class="today-medications card">
-            <div class="section-header">
-                <h2><i class="fas fa-pills"></i> Today's Medications</h2>
-                <div class="header-actions">
-                    <div class="date-display" id="current-date"></div>
-                    <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-                </div>
-            </div>
-            <table class="medication-table">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Medication</th>
-                        <th>Dosage</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><i class="fas fa-clock"></i> 8:00 AM</td>
-                        <td>Panadol</td>
-                        <td>2 Tablets</td>
-                        <td class="status not-yet">Not Yet</td>
-                        <td><button class="mark-btn"><i class="fas fa-check"></i> Mark Taken</button></td>
-                    </tr>
-                    <tr>
-                        <td><i class="fas fa-clock"></i> 2:00 PM</td>
-                        <td>Vitamin D</td>
-                        <td>1 Capsule</td>
-                        <td class="status taken">Taken</td>
-                        <td><button class="mark-btn"><i class="fas fa-check"></i> Mark Taken</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="sync-container">
-                <button class="sync-btn"><i class="fas fa-calendar-alt"></i> Sync to Calendar</button>
-            </div>
-        </section>
+  <!-- Green box container begins -->
+  <section class="medication-box">
 
-        <!-- Upcoming Reminders Section -->
-        <section class="upcoming-reminders card">
-            <div class="section-header">
-                <h2><i class="fas fa-bell"></i> Upcoming Reminders</h2>
-            </div>
-            <table class="reminder-table">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Medication</th>
-                        <th>Dosage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><i class="fas fa-clock"></i> 2:00 PM</td>
-                        <td>Panadol</td>
-                        <td>2 Tablets</td>
-                    </tr>
-                    <tr>
-                        <td><i class="fas fa-clock"></i> 6:00 PM</td>
-                        <td>Omega 3</td>
-                        <td>1 Softgel</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+    <!-- Today's Medications Section -->
+    <!-- Inside the "Today's Medications" table -->
+    <table class="medication-table">
+    <thead>
+        <tr>
+        <th>Time</th>
+        <th>Medication</th>
+        <th>Dosage</th>
+        <th>Status</th>
+        <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="medication-table-body">
+        <!-- Medications will be loaded dynamically here -->
+    </tbody>
+    </table>
+      <div class="sync-container">
+        <button class="sync-btn"><i class="fas fa-calendar-alt"></i> Sync to Calendar</button>
+      </div>
 
-        <!-- Add Medication Section -->
-        <section class="add-medication card">
-            <div class="section-header">
-                <h2><i class="fas fa-plus-circle"></i> Add New Medication</h2>
-            </div>
-            <form class="medication-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="med-name">Medication Name</label>
-                        <input type="text" id="med-name" placeholder="e.g., Panadol" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="dosage">Dosage</label>
-                        <input type="text" id="dosage" placeholder="e.g., 2 tablets" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="frequency">Frequency</label>
-                        <select id="frequency" required>
-                            <option value="">Select frequency</option>
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="as_needed">As Needed</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="time">Time</label>
-                        <input type="time" id="time" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="start-date">Start Date</label>
-                        <input type="date" id="start-date" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="end-date">End Date (Optional)</label>
-                        <input type="date" id="end-date">
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="add-btn"><i class="fas fa-plus"></i> Add Medication</button>
-                </div>
-            </form>
-        </section>
+    <!-- Upcoming Reminders Section -->
+    <section class="upcoming-reminders card">
+      <div class="section-header">
+        <h2><i class="fas fa-bell"></i> Upcoming Reminders</h2>
+      </div>
+      <table class="reminder-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Medication</th>
+            <th>Dosage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><i class="fas fa-clock"></i> 2:00 PM</td>
+            <td>Panadol</td>
+            <td>2 Tablets</td>
+          </tr>
+          <tr>
+            <td><i class="fas fa-clock"></i> 6:00 PM</td>
+            <td>Omega 3</td>
+            <td>1 Softgel</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Add Medication Section -->
+    <section class="add-medication card">
+      <div class="section-header">
+        <h2><i class="fas fa-plus-circle"></i> Add New Medication</h2>
+      </div>
+      <form class="medication-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="med-name">Medication Name</label>
+            <input type="text" id="med-name" placeholder="e.g., Panadol" required>
+          </div>
+          <div class="form-group">
+            <label for="dosage">Dosage</label>
+            <input type="text" id="dosage" placeholder="e.g., 2 tablets" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="frequency">Frequency</label>
+            <select id="frequency" required>
+              <option value="">Select frequency</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="as_needed">As Needed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input type="time" id="time" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="start-date">Start Date</label>
+            <input type="date" id="start-date" required>
+          </div>
+          <div class="form-group">
+            <label for="end-date">End Date (Optional)</label>
+            <input type="date" id="end-date">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="add-btn"><i class="fas fa-plus"></i> Add Medication</button>
+        </div>
+      </form>
+    </section>
+  </section>
     </main>
+
 
     <!-- Footer remains unchanged -->
     <footer>
@@ -171,5 +151,6 @@
         </div>
         <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
     </footer>
+<script src="../js/medication_management.js" defer></script>
 </body>
 </html>
