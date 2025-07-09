@@ -1,61 +1,78 @@
+// app.js
+require("dotenv").config();
+
 const express = require("express");
-const sql     = require("mssql");
-const dotenv  = require("dotenv");
-const path    = require("path");
-const cors    = require("cors");
+const sql = require("mssql");
+const cors = require("cors");
+const path = require("path");
 
-dotenv.config();
+// ─── Load your DB config ────────────────────────────────────────────────────────
+const dbConfig = require("./dbConfig");
 
-// Controllers
+// ─── Controllers ────────────────────────────────────────────────────────────────
 const userController = require("./controllers/user_controller");
 const weatherController = require("./controllers/weather_controller");
 const appointmentController = require("./controllers/appointment_controller");
-const medicationsController = require('./controllers/medications_controller');
+const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
+const postsController = require("./controllers/posts_controller");
 
-// Middlewares
+// ─── Validation Middleware ──────────────────────────────────────────────────────
+const appointmentValidator = require("./middlewares/appointment_validation");
+const medicationValidator  = require("./middlewares/medication_validation");
+const { validatePost, validatePostId } = require("./middlewares/posts_validation");
+
+// ─── Create Express App ─────────────────────────────────────────────────────────
+const app  = express();
+const port = process.env.PORT || 3000;
+
+// ─── Global Middleware ───────────────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ─── Static Files ────────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, "public")));
-const appointmentValidator = require("./middlewares/appointment_validation");
-const medicationValidator = require("./middlewares/medication_validation");
 
-// Routes
-// User Route
-app.get("/users", userController.getAllUsers);
-app.post("/users", userController.registerUser);
-app.post("/users/login", userController.loginUser);
+// ─── Routes ─────────────────────────────────────────────────────────────────────
+// User routes
+app.get( "/users", userController.getAllUsers );
+app.post("/users", userController.registerUser );
+app.post("/users/login", userController.loginUser );
 
-// Weather Route
-app.get("/weather", weatherController.getWeather);
+// Weather & translation
+app.get( "/weather",  weatherController.getWeather );
+app.post("/translate", translateText );
 
-// Appointment route
-app.get("/appointments", appointmentController.getAllAppointments);
-app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
-app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
+// Appointment routes
+app.get( "/appointments", appointmentController.getAllAppointments );
+app.get( "/appointments/user/:userID",
+  appointmentValidator.validateAppointmentId,
+  appointmentController.getAppointmentsByUserID
+);
+app.post( "/appointments/user",
+  appointmentValidator.validateAppointment,
+  appointmentController.createAppointment
+);
 
-// Medication Route
-app.get("/medications/today", medicationsController.getTodayMeds);
-app.post("/medications", medicationValidator, medicationsController.addMedication);
-app.patch("/medications/:medicationID/mark-taken", medicationsController.markTaken);
+// Medication routes
+app.get(   "/medications/today", medicationsController.getTodayMeds );
+app.post(  "/medications", medicationValidator, medicationsController.addMedication );
+app.patch( "/medications/:medicationID/mark-taken", medicationsController.markTaken );
 
-// Posts (CRUD)
+// Posts CRUD
 app.get("/posts", postsController.getAllPosts );
 app.get("/posts/:id",
-  postValidator.validatePostId,
+  validatePostId,
   postsController.getPostById
 );
 app.post( "/posts",
-  postValidator.validatePost,
+  validatePost,
   postsController.createPost
 );
 
-// ─── STATIC ASSETS ───────────────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, "public")));
-
-// ─── STARTUP: CONNECT DB & LISTEN ───────────────────────────────────────────────
-async function startServer() {
+// ─── Start Server (after DB connect) ─────────────────────────────────────────────
+;(async () => {
   try {
     await sql.connect(dbConfig);
     console.log("Database connected");
@@ -67,11 +84,9 @@ async function startServer() {
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
-}
+})();
 
-startServer();
-
-// ─── GRACEFUL SHUTDOWN ───────────────────────────────────────────────────────────
+// ─── Graceful shutdown ───────────────────────────────────────────────────────────
 process.on("SIGINT", async () => {
   console.log("Server shutting down");
   await sql.close();
