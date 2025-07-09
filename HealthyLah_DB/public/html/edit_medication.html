@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../css/edit_medication.css">
+  <meta charset="UTF-8">
+  <title>Edit Medication</title>
+  <!-- your CSS/JS includes here -->
+</head>
+<body>
+  <header class="top-bar">
+    <div class="logo-bar">
+      <div class="logo-container">
+        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+      </div>
+      <div class="profile">
+        <div class="profile-pic"></div>
+        <span class="profile-name">Welcome, Mr Tan</span>
+      </div>
+    </div>
+    <nav class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="about_us.html">About Us</a>
+      <a href="weather.html">Weather</a>
+      <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+      <a href="#">Health</a>
+      <a href="post_forum.html">Post</a>
+    </nav>
+  </header>
+
+  <h1>Edit Medication</h1>
+  <form id="edit-form">
+    <!-- same fields as add form -->
+    <input type="hidden" id="med-id">
+    <label>Name <input id="med-name" required></label><br>
+    <label>Dosage <input id="dosage" required></label><br>
+    <label>Frequency 
+      <select id="frequency">
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="As Needed">As Needed</option>
+      </select>
+    </label><br>
+    <label>Time <input type="time" id="time" required></label><br>
+    <label>Start Date <input type="date" id="start-date" required></label><br>
+    <label>End Date <input type="date" id="end-date"></label><br>
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links">
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="#">Email</a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+  </footer>
+  
+  <script src="../js/edit_medication.js" defer></script>
+</body>
+</html>
