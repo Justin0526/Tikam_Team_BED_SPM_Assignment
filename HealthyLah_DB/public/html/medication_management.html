@@ -1,74 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <title>Medication Management</title>
-    <link rel="stylesheet" href="../css/medication_management.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="../js/settings_translation.js" defer></script>
-
+  <meta charset="UTF-8" />
+  <title>Medication Management</title>
+  <link rel="stylesheet" href="../css/medication_management.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="../js/settings_translation.js" defer></script>
+  <style>
+    /* Override header cell styling to match wireframe */
+    .medication-box h2 {
+      margin: 20px 0 10px;
+      font-size: 1.4em;
+      color: #2B7DA4;
+      font-weight: bold;
+    }
+    .medication-table th, .reminder-table th {
+      background-color: #A4D038 !important;
+      color: #FFFFFF !important;
+    }
+    /* Round the first and last cells in each row */
+    .medication-table th:first-child, .medication-table td:first-child,
+    .reminder-table th:first-child, .reminder-table td:first-child {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+    .medication-table th:last-child, .medication-table td:last-child,
+    .reminder-table th:last-child, .reminder-table td:last-child {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+    /* Table spacing to show rounded corners */
+    .medication-table, .reminder-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 20px;
+    }
+    /* Form inputs styling deeper match wireframe */
+    .form-group input, .form-group select {
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 1em;
+      border: 1px solid #aaa;
+    }
+    .form-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-start;
+    }
+  </style>
 </head>
 <body>
-    <!-- Header remains unchanged -->
-    <header class="top-bar">
-        <div class="logo-bar">
-            <div class="logo-container">
-                <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
-            </div>
-            <div class="profile">
-                <div class="profile-pic"></div>
-                <span class="profile-name">Welcome, Mr Tan</span>
-            </div>
-        </div>
-        <nav class="nav-bar">
-            <a href="index.html">Home</a>
-            <a href="about_us.html">About Us</a>
-            <a href="weather.html">Weather</a>
-            <a href="Transport_and_Facilities.html">Transport & Facilities</a>
-            <a href="#">Health</a>
-            <a href="post_forum.html">Post</a>
-        </nav>
-    </header>
+  <header class="top-bar">
+    <div class="logo-bar">
+      <div class="logo-container">
+        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+      </div>
+      <div class="profile">
+        <div class="profile-pic"></div>
+        <span class="profile-name">Welcome, Mr Tan</span>
+      </div>
+    </div>
+    <nav class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="about_us.html">About Us</a>
+      <a href="weather.html">Weather</a>
+      <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+      <a href="#">Health</a>
+      <a href="post_forum.html">Post</a>
+    </nav>
+  </header>
 
   <main class="medication-main">
-  <section class="page-title">
-    <h1>Manage My Medications</h1>
-    <p>Take care of your health, Mr Tan.</p>
-  </section>
+    <section class="page-title">
+      <h1>Manage My Medications</h1>
+      <p>Take care of your health, Mr Tan.</p>
+    </section>
 
-  <!-- Green box container begins -->
-  <section class="medication-box">
+    <!-- Green container holds all medication sections -->
+    <section class="medication-box">
 
-    <!-- Today's Medications Section -->
-    <!-- Inside the "Today's Medications" table -->
-    <table class="medication-table">
-    <thead>
-        <tr>
-        <th>Time</th>
-        <th>Medication</th>
-        <th>Dosage</th>
-        <th>Status</th>
-        <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody id="medication-table-body">
-        <!-- Medications will be loaded dynamically here -->
-    </tbody>
-    </table>
+      <!-- Today's Medications -->
+      <h2>Today's Medication</h2>
+      <table class="medication-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Medication Name</th>
+            <th>Dosage</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="medication-table-body">
+          <!-- Rows loaded dynamically -->
+        </tbody>
+      </table>
       <div class="sync-container">
         <button class="sync-btn"><i class="fas fa-calendar-alt"></i> Sync to Calendar</button>
       </div>
 
-    <!-- Upcoming Reminders Section -->
-    <section class="upcoming-reminders card">
-      <div class="section-header">
-        <h2><i class="fas fa-bell"></i> Upcoming Reminders</h2>
-      </div>
+      <!-- Upcoming Reminders -->
+      <h2>Upcoming Reminders</h2>
       <table class="reminder-table">
         <thead>
           <tr>
             <th>Time</th>
-            <th>Medication</th>
+            <th>Medication Name</th>
             <th>Dosage</th>
           </tr>
         </thead>
@@ -76,22 +113,13 @@
           <tr>
             <td><i class="fas fa-clock"></i> 2:00 PM</td>
             <td>Panadol</td>
-            <td>2 Tablets</td>
-          </tr>
-          <tr>
-            <td><i class="fas fa-clock"></i> 6:00 PM</td>
-            <td>Omega 3</td>
-            <td>1 Softgel</td>
+            <td>2 tablets</td>
           </tr>
         </tbody>
       </table>
-    </section>
 
-    <!-- Add Medication Section -->
-    <section class="add-medication card">
-      <div class="section-header">
-        <h2><i class="fas fa-plus-circle"></i> Add New Medication</h2>
-      </div>
+      <!-- Add New Medication -->
+      <h2>Add New Medication</h2>
       <form class="medication-form">
         <div class="form-row">
           <div class="form-group">
@@ -103,54 +131,50 @@
             <input type="text" id="dosage" placeholder="e.g., 2 tablets" required>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label for="frequency">Frequency</label>
             <select id="frequency" required>
               <option value="">Select frequency</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="as_needed">As Needed</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="As Needed">As Needed</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="time">Time</label>
+            <label for="time">Time(s)</label>
             <input type="time" id="time" required>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label for="start-date">Start Date</label>
             <input type="date" id="start-date" required>
           </div>
           <div class="form-group">
-            <label for="end-date">End Date (Optional)</label>
+            <label for="end-date">End Date</label>
             <input type="date" id="end-date">
           </div>
         </div>
-
         <div class="form-actions">
           <button type="submit" class="add-btn"><i class="fas fa-plus"></i> Add Medication</button>
         </div>
       </form>
+
     </section>
-  </section>
-    </main>
+  </main>
 
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links">
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="#">Email</a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+  </footer>
 
-    <!-- Footer remains unchanged -->
-    <footer>
-        <p>© 2025 HealthyLah – Designed with care for our seniors</p>
-        <div class="social-links">
-            <a href="#">Facebook</a>
-            <a href="#">Twitter</a>
-            <a href="#">Instagram</a>
-            <a href="#">Email</a>
-        </div>
-        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
-    </footer>
-<script src="../js/medication_management.js" defer></script>
+  <script src="../js/medication_management.js" defer></script>
 </body>
 </html>

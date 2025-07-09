@@ -28,7 +28,7 @@ async function insertMedication(userID, data) {
     .input('medicineName', sql.NVarChar, data.medicineName)
     .input('dosage', sql.NVarChar, data.dosage)
     .input('frequency', sql.NVarChar, data.frequency)
-    .input('consumptionTime', sql.Time, data.consumptionTime)
+    .input('consumptionTime', sql.VarChar(8), data.consumptionTime)
     .input('startDate', sql.DateTime, data.startDate)
     .input('endDate', sql.DateTime, data.endDate || null)
     .input('notes', sql.NVarChar, data.notes || '')

@@ -196,8 +196,8 @@ body {
   border-bottom: none;
 }
 
-.medication-table tr:hover,
-.reminder-table tr:hover {
+.medication-table,
+.reminder-table {
   background-color: #f9fff4;
 }
 
