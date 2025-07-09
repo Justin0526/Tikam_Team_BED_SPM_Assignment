@@ -63,7 +63,7 @@ async function createUser(userData){
         const query = 
            `INSERT INTO Users (fullName, username, email, passwordHash) VALUES (@fullName, @username, @email, @passwordHash); 
             DECLARE @newUserID INT = SCOPE_IDENTITY();
-            INSERT INTO UserProfile(userID) VALUES (@newUserID)
+            INSERT INTO UserProfile(userID, fullname) VALUES (@newUserID, @fullName);
             SELECT * FROM Users WHERE userID = @newUserID;`;
             // Declares get the new userID as a variable
         const request = connection.request();
