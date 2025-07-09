@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Appointment Management Page</title>
   <link rel="stylesheet" href="../css/appointment_management.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="../js/settings_translation.js" defer></script>
-
+  <script src="../js/appointment_management.js" defer></script>
 </head>
 <body>
   <header class="top-bar">
@@ -31,8 +32,8 @@
 
   <div class="welcome">Appointment Management</div>
 
-  <form id="appointment-form">
-    <h3 class="section-title">Create Appointment</h3>
+  <!-- <form id="appointment-form">
+    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Add New Appointment</h3>
 
     //Temporary 
     <label for="userID">User ID</label>
@@ -58,7 +59,46 @@
 
     <div id="errorBox" style="color: red; font-weight: bold; display: none;"></div>
     <button type="submit">Add Appointment</button>
+  </form> -->
+
+  <form id="appointment-form">
+    <h3 class="section-title" id="form-title"><i class="fas fa-plus-circle"></i> Add New Appointment</h3>
+
+    <input type="hidden" id="appointmentID" /> <!-- Hidden ID -->
+
+    <label for="userID">User ID</label>
+    <input type="number" id="userID" placeholder="Enter your User ID" required>
+
+    <label for="doctorName">Doctor’s Name</label>
+    <input type="text" id="doctorName" placeholder="Enter your Doctor’s name here" required>
+
+    <label for="clinicName">Clinic Name</label>
+    <input type="text" id="clinicName" placeholder="Enter your clinic name here" required>
+
+    <label for="appointmentDate">Appointment Date</label>
+    <input type="date" id="appointmentDate" required>
+
+    <label for="appointmentTime">Appointment Time</label>
+    <input type="time" id="appointmentTime" required>
+
+    <label for="purpose">Purpose</label>
+    <input type="text" id="purpose" placeholder="Purpose of Appointment" required>
+
+    <label for="reminderDate">Reminder Date ( Optional )</label>
+    <input type="date" id="reminderDate">
+
+    <div id="errorBox" style="color: red; font-weight: bold; display: none;"></div>
+    <div class="form-buttons" id="editButtons" style="display: none;">
+      <button type="submit" id="submitButton">Save</button>
+      <button type="button" id="cancelEditButton">Cancel</button>
+    </div>
+
+    <div class="form-button-center" id="addButton">
+      <button type="submit">Add Appointment</button>
+    </div>
+
   </form>
+
 
   <div id="successModal" class="modal" style="display: none;">
      <div class="modal-content">
@@ -87,6 +127,7 @@
             <th>Apt Date</th>
             <th>Apt Time</th>
             <th>Purpose</th>
+            <th>Reminder Date</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -117,210 +158,5 @@
     </div>
     <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
-
-  <script>
-    // let appointments = [];
-    // let nextId = 1;
-    //   e.preventDefault();
-    //   const doctor = document.getElementById('doctorName').value;
-    //   const clinic = document.getElementById('clinicName').value;
-    //   const date = document.getElementById('appointmentDate').value;
-    //   const time = document.getElementById('appointmentTime').value;
-    //   const purpose = document.getElementById('purpose').value;
-
-    //   let reminder = reminderDate.value;
-    //   if (!reminder) {
-    //     const d = new Date(date);
-    //     d.setDate(d.getDate() - 1);
-    //     reminder = d.toISOString().split('T')[0];
-    //   }
-    //   const appointment = { id: nextId++, doctor, clinic, date, time, purpose, reminder };
-    //   appointments.push(appointment);
-    //   renderTable();
-    //   this.reset();
-
-    //   // Show success modal
-    //     document.getElementById('successModal').style.display = 'flex';
-
-
-
-    // });
-
-  document.getElementById('appointment-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const rawReminder = document.getElementById('reminderDate').value;
-
-    const appointment = {
-      userID: parseInt(document.getElementById('userID').value),
-      doctorName: document.getElementById('doctorName').value,
-      clinicName: document.getElementById('clinicName').value,
-      appointmentDate: document.getElementById('appointmentDate').value,
-      appointmentTime: document.getElementById('appointmentTime').value,
-      purpose: document.getElementById('purpose').value,
-      reminderDate: rawReminder === "" ? undefined : rawReminder//check if user does not input reminderDate, it will send undefined.Otherwise, it will send user inputted reminderDate
-    };
-
-    console.log("📤 Submitting appointment:", appointment); // Add for debugging
-    try {
-      const response = await fetch('http://localhost:3000/appointments/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(appointment)
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        document.getElementById('successModal').style.display = 'flex';
-        this.reset();
-        loadAppointments(appointment.userID);
-      } else {
-        alert("❌ Error: " + result.error);
-        // document.getElementById("errorBox").style.display = "block";
-        // document.getElementById("errorBox").innerText = result.error;
-      }
-    } catch (err) {
-      console.error("❌ Network error:", err);
-      alert("❌ Failed to connect to the server.");
-      // document.getElementById("errorBox").style.display = "block";
-      // document.getElementById("errorBox").innerText = "Failed to connect to the server.";
-    }
-  });
-
-    function renderTable() {
-      const body = document.getElementById('appointmentsBody');
-      body.innerHTML = '';
-
-      if (appointments.length === 0) {
-        body.innerHTML = `
-          <tr id="emptyState">
-            <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments yet. Add one above to get started.</td>
-          </tr>`;
-        return;
-      }
-
-      for (let appt of appointments) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${String(appt.id).padStart(2, '0')}</td>
-          <td>${appt.doctor}</td>
-          <td>${appt.clinic}</td>
-          <td>${appt.date.split('-').reverse().join(' - ')}</td>
-          <td>${appt.time}</td>
-          <td>${appt.purpose}</td>
-          <td class="actions">
-            <span onclick="editAppointment(${appt.id})">⋮</span>
-          </td>
-        `;
-        body.appendChild(row);
-      }
-    }
-
-    function searchAppointments() {
-      const keyword = document.getElementById('searchKeyword').value.toLowerCase();
-      const idFilter = document.getElementById('filterById').value;
-      const dateFilter = document.getElementById('filterByDate').value;
-
-      const body = document.getElementById('appointmentsBody');
-      body.innerHTML = '';
-      let found = false;
-
-      for (let appt of appointments) {
-        if ((keyword && !Object.values(appt).some(v => v.toString().toLowerCase().includes(keyword))) ||
-            (idFilter && appt.id != idFilter) ||
-            (dateFilter && appt.date !== dateFilter)) {
-          continue;
-        }
-        found = true;
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${String(appt.id).padStart(2, '0')}</td>
-          <td>${appt.doctor}</td>
-          <td>${appt.clinic}</td>
-          <td>${appt.date.split('-').reverse().join(' - ')}</td>
-          <td>${appt.time}</td>
-          <td>${appt.purpose}</td>
-          <td class="actions">
-            <span onclick="editAppointment(${appt.id})">⋮</span>
-          </td>
-        `;
-        body.appendChild(row);
-      }
-
-      if (!found) {
-        body.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No matching appointments found.</td>
-          </tr>`;
-      }
-    }
-
-    async function loadAppointments(userID) {
-      try {
-        const response = await fetch(`http://localhost:3000/appointments/user/${userID}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to load appointments");
-        }
-
-        // Clear table body
-        const body = document.getElementById('appointmentsBody');
-        body.innerHTML = '';
-
-        if (data.length === 0) {
-          body.innerHTML = `
-            <tr id="emptyState">
-              <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments found for this user.</td>
-            </tr>`;
-          return;
-        }
-
-        data.forEach(appt => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${String(appt.appointmentID).padStart(2, '0')}</td>
-            <td>${appt.doctorName}</td>
-            <td>${appt.clinicName}</td>
-            <td>${appt.appointmentDate.split('-').reverse().join(' - ')}</td>
-            <td>${appt.appointmentTime}</td>
-            <td>${appt.purpose}</td>
-            <td class="actions">⋮</td>
-          `;
-          body.appendChild(row);
-        });
-      } 
-      catch (err) {
-        console.error("❌ Failed to load appointments:", err);
-        document.getElementById('appointmentsBody').innerHTML = `
-          <tr><td colspan="7" style="text-align:center; color: red;">Error loading appointments.</td></tr>
-        `;
-      }
-    }
-
-    function editAppointment(id) {
-      const appt = appointments.find(a => a.id === id);
-      doctorName.value = appt.doctor;
-      clinicName.value = appt.clinic;
-      appointmentDate.value = appt.date;
-      appointmentTime.value = appt.time;
-      purpose.value = appt.purpose;
-      reminderDate.value = appt.reminder;
-      appointments = appointments.filter(a => a.id !== id);
-      renderTable();
-    }
-
-    function closeSuccessModal() {
-      document.getElementById('successModal').style.display = 'none';
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const loggedInUserID = 2; // ✅ REPLACE WITH DYNAMIC USER LATER !! after logIN feature is added
-      loadAppointments(loggedInUserID);
-    });
-
-  </script>
 </body>
 </html>
