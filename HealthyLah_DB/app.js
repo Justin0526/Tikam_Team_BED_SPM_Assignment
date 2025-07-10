@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // ─── Routes ─────────────────────────────────────────────────────────────────────
 // User routes
 app.get( "/users", userController.getAllUsers );
-app.post("/users", userController.registerUser );
+app.post("/register", userController.registerUser );
 app.post("/users/login", userController.loginUser );
 
 // Weather & translation
