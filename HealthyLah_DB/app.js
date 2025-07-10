@@ -47,7 +47,6 @@ app.get( "/weather",  weatherController.getWeather );
 app.post("/translate", translateText );
 
 // Appointment route
-app.get("/appointments", appointmentController.getAllAppointments);
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
