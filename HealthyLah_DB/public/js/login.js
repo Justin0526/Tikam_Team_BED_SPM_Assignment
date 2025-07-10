@@ -1,33 +1,61 @@
+const loginForm = document.getElementById("login-form");
+const message = document.getElementById("message");
+const apiBaseUrl = "http://localhost:3000";
 
-document.getElementById('loginForm').addEventListener('submit', async function(event) {
+loginForm.addEventListener('submit', async(event) => {
     event.preventDefault();
+    message.textContent = "";
+    
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
 
-    const identifier = document.getElementById('identifier').value.trim();
-    const password = document.getElementById('password').value;
-
-    const loginMessage = document.getElementById('loginMessage');
-
-    try {
-    const response = await fetch('http://localhost:3000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password })
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-        loginMessage.style.color = 'green';
-        loginMessage.textContent = result.message;
-        setTimeout(() => {
-        window.location.href = 'dashboard.html'; // redirect after 2s
-        }, 2000);
-    } else {
-        loginMessage.style.color = 'red';
-        loginMessage.textContent = result.error || 'Login failed.';
+    const loginUser = {
+        username: username.value.trim(),
+        password: password.value
     }
-    } catch (error) {
-    console.error(error);
-    loginMessage.style.color = 'red';
-    loginMessage.textContent = 'Network error or server not responding.';
+
+    try{
+        const response = await fetch(`${apiBaseUrl}/login`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json", // Tell API we are sending JSON
+            },
+            body: JSON.stringify(loginUser), // Send the data as JSON string in the request body
+        });
+
+        // Check for API response status (201, 400, 500)
+        const responseBody = response.headers
+          .get("content-type")
+          ?. includes("application/json")
+          ? await response.json()
+          :{message: response.statusText};
+        
+        if (response.status === 200){
+            message.textContent = "Login successful! Redirecting to home page";
+            message.style.color = "green";
+            loginForm.reset(); // Clear the form after success
+            console.log("Created user: ", responseBody);
+            setTimeout(() => {
+                window.location.href = 'index.html'; // redirect after 2s
+            }, 2000);
+        }
+        else if (response.status === 400){
+            // Handle validation errors from API 
+            message.textContent = `Validation Error: ${responseBody.message}`;
+            message.style.color = 'red';
+            console.error("Validation error: ", responseBody);
+        }
+        else{
+            // Handle other potential API errors (e.g. 500 from error handling middleware)
+            throw new Error (
+                `API error! status: ${response.status}, message: ${responseBody.message}`
+            )
+        }
+    }catch(error){
+        console.error("Error logging in: ", error);
+        message.textContent = `Failed to login ${error.message}`;
+        message.style.color = 'red';
     }
-});
+
+})
+

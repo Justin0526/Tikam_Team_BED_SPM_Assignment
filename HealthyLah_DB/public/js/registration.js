@@ -1,43 +1,67 @@
+const registerForm = document.getElementById("register-form");  
+const message = document.getElementById("message");
+const apiBaseUrl = "http://localhost:3000";
 
-document.getElementById('registerForm').addEventListener('submit', async function(event) {
+registerForm.addEventListener("submit", async(event) => {
     event.preventDefault();
 
-    const fullname = document.getElementById('fullname').value.trim();
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
+    message.textContent = "";
 
-    const resultMessage = document.getElementById('resultMessage');
+    const fullNameInput = document.getElementById('fullname');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
 
-    try {
-    const response = await fetch('http://localhost:3000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-        fullname,
-        username,
-        email,
-        password,
-        confirmPassword
-        })
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-        resultMessage.style.color = 'green';
-        resultMessage.textContent = result.message;
-        document.getElementById('registerForm').reset();
-        setTimeout(() => {
-        window.location.href = 'login.html'; // redirect after 2s
-        }, 2000);
-    } else {
-        resultMessage.style.color = 'red';
-        resultMessage.textContent = result.error || 'Something went wrong.';
+    const newUser = {
+        fullName: fullNameInput.value.trim(),
+        username: usernameInput.value.trim(),
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+        confirmPassword: confirmPasswordInput.value 
     }
-    } catch (error) {
-    console.error(error);
-    resultMessage.style.color = 'red';
-    resultMessage.textContent = 'Network error or server not responding.';
+
+    try{
+        // Make a POST request to the API endpoint
+        const response = await fetch(`${apiBaseUrl}/register`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json", // Tell the API we are sending JSON
+            },
+            body: JSON.stringify(newUser), // Send the data as Json string in the request body
+        });
+
+        // Check for API response status (201, 400, 500)
+        const responseBody = response.headers
+          .get("content-type")
+          ?. includes("application/json")
+          ? await response.json()
+          :{message: response.statusText};
+        
+        if (response.status === 201){
+            message.textContent = "Account created successfully! Redirecting to login";
+            message.style.color = "green";
+            registerForm.reset(); // Clear the form after success
+            console.log("Created user: ", responseBody);
+            setTimeout(() => {
+                window.location.href = 'login.html'; // redirect after 2s
+            }, 2000);
+        }
+        else if (response.status === 400){
+            // Handle validation errors from API 
+            message.textContent = `Validation Error: ${responseBody.message}`;
+            message.style.color = 'red';
+            console.error("Validation error: ", responseBody);
+        }
+        else{
+            // Handle other potential API errors (e.g. 500 from error handling middleware)
+            throw new Error(
+                `API error! status: ${response.status}, message: ${responseBody.message}`
+            )
+        }
+    }catch(error){
+        console.error("Error creating user: ", error);
+        message.textContent = `Failed to create user ${error.message}`;
+        message.style.color = 'red';
     }
-});
+})

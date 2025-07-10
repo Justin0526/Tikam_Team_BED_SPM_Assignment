@@ -35,11 +35,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── Static Files ────────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, "public")));
-// Routes
-// User Route
-app.get("/users", userController.getAllUsers);
-app.post("/register", userController.registerUser);
-app.post("/users/login", userController.loginUser);
+
+// ─── Routes ─────────────────────────────────────────────────────────────────────
+// User routes
+app.get( "/users", userController.getAllUsers );
+app.post("/register", userController.registerUser );
+app.post("/users/login", userController.loginUser );
 
 // Weather & translation
 app.get( "/weather",  weatherController.getWeather );
