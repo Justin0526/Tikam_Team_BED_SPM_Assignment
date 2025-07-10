@@ -22,6 +22,7 @@ const appointmentValidator = require("./middlewares/appointment_validation");
 const medicationValidator  = require("./middlewares/medication_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
 const { verify } = require("crypto");
+const {verifyJWT} = require("./middlewares/authMiddleware");
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -47,8 +48,8 @@ app.post("/translate", translateText );
 
 // Appointment route
 app.get("/appointments", appointmentController.getAllAppointments);
-app.get("/appointments/me", verify, appointmentController.getAppointmentsByUserID);
-app.post("/appointments", verify, appointmentValidator.validateAppointment, appointmentController.createAppointment);
+app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
+app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
 // Medication routes
 app.get("/medications/today", medicationsController.getTodayMeds );
