@@ -67,9 +67,12 @@ app.post( "/posts",
   postsController.createPost
 );
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+}).on('error', (err) => {
+  console.error('Server failed to start:', err.message);
 });
+
 
 process.on("SIGINT", async () => {
   console.log("Server is gracefully shutting down");
