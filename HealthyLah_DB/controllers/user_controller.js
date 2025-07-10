@@ -79,7 +79,6 @@ async function loginUser(req, res){
         // Generate JWT token
         const payload = {
             userID : user.userID,
-            gender: user.gender
         };
 
         console.log(user);

@@ -33,6 +33,9 @@ loginForm.addEventListener('submit', async(event) => {
         if (response.status === 200){
             message.textContent = "Login successful! Redirecting to home page";
             message.style.color = "green";
+            const token = responseBody.token
+            localStorage.setItem("authToken", token); // Save the token to local storage
+            
             loginForm.reset(); // Clear the form after success
             console.log("Created user: ", responseBody);
             setTimeout(() => {
