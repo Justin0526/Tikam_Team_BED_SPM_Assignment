@@ -29,7 +29,7 @@ async function getAllAppointments(req, res){
 // }
 
 async function getAppointmentsByUserID(req, res){
-    const userID = parseInt(req.params.userID);//have to change this line if you want to put authorization
+    const userID = req.user.userID;
     try{
         const appointment = await appointmentModel.getAppointmentsByUserID(userID);
 
@@ -50,7 +50,11 @@ async function createAppointment(req, res){
     console.log("Incoming appointment:");
     
     try{
-        const newAppointment = await appointmentModel.createAppointment(req.body);
+        const appointment = {
+            ... req.body,
+            userID: req.user.userID
+        }
+        const newAppointment = await appointmentModel.createAppointment(appointment);
 
         //Optional: validate required fields ( not implemented here yet)
         

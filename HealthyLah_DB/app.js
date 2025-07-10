@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 const appointmentValidator = require("./middlewares/appointment_validation");
 const medicationValidator = require("./middlewares/medication_validation");
+const { verifyJWT } = require("./middlewares/authMiddleware");
 
 // Routes
 // User Route
@@ -36,8 +37,10 @@ app.get("/weather", weatherController.getWeather);
 
 // Appointment route
 app.get("/appointments", appointmentController.getAllAppointments);
-app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
-app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
+// app.get("/appointments/user/:userID", appointmentValidator.validateAppointmentId, appointmentController.getAppointmentsByUserID);
+// app.post("/appointments/user", appointmentValidator.validateAppointment, appointmentController.createAppointment);
+app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
+app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
 // Medication Route
 app.get("/medications/today", medicationsController.getTodayMeds);

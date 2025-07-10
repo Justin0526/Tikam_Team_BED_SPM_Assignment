@@ -1,11 +1,6 @@
 const Joi = require("joi");
 
 const appointmentSchema = Joi.object({
-    userID: Joi.number().integer().positive().required().messages({
-        "number.base": "User ID must be a number",
-        "number.positive": "User ID must be a positive number",
-        "any.required": "User ID is required"
-    }),
     doctorName: Joi.string().min(1).max(100).required().messages({
         "string.base": "Doctor name must be a string",
         "string.empty": "Doctor name cannot be empty",
@@ -45,17 +40,16 @@ function validateAppointment(req, res, next) {
     next();
 }
 
-//After verifyJWT(authorization) and token includes appointmentID, validation for req.params might not be needed anymore!!
-// Middleware to validate appointmentID (or userID) in req.params
-function validateAppointmentId(req, res, next) {
-    const userID = parseInt(req.params.userID);
-    if (isNaN(userID) || userID <= 0) {
-        return res.status(400).json({ error: "Invalid ID. Must be a positive number." });
-    }
-    next();
-}
+// //After verifyJWT(authorization) and token includes appointmentID, validation for req.params might not be needed anymore!!
+// // Middleware to validate appointmentID (or userID) in req.params
+// function validateAppointmentId(req, res, next) {
+//     const userID = parseInt(req.params.userID);
+//     if (isNaN(userID) || userID <= 0) {
+//         return res.status(400).json({ error: "Invalid ID. Must be a positive number." });
+//     }
+//     next();
+// }
 
 module.exports = {
-    validateAppointment,
-    validateAppointmentId
+    validateAppointment
 };
