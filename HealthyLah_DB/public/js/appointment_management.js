@@ -118,9 +118,9 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
     reminderDate: rawReminder === "" ? undefined : rawReminder
   };
 
-  if(!isEditing){
-    appointment.userID = loggedInUserID;
-  }
+  // if(!isEditing){
+  //   appointment.userID = loggedInUserID;
+  // }
 
   try {
     let response;
@@ -241,7 +241,7 @@ function searchAppointments() {
 async function loadAppointments() {
     try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:3000/appointments`,{
+    const response = await fetch(`http://localhost:3000/appointments/me`,{
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -307,7 +307,6 @@ function editAppointment(id) {
 
   // Fill form fields
   document.getElementById('appointmentID').value = appt.appointmentID;
-  document.getElementById('userID').value = appt.userID;
   document.getElementById('doctorName').value = appt.doctorName;
   document.getElementById('clinicName').value = appt.clinicName;
   document.getElementById('appointmentDate').value = appt.appointmentDate;
@@ -332,6 +331,11 @@ function closeSuccessModal() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    if(!token | !loggedInUserID){
+      alert("Please log in first.");
+      window.location.href = "login.html";
+      return;
+    }
     loadAppointments();
 
     document.getElementById('cancelEditButton').addEventListener('click', function () {
