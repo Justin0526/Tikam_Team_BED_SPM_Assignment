@@ -96,8 +96,7 @@ function attachMenuButtons() {
         document.getElementById('time').value = 
           `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 
-        // scroll the form into view
-        document.querySelector('.add-medication').scrollIntoView({ behavior: 'smooth' });
+        window.location.href = "/HealthyLah_DB/public/html/edit_medication.html?id=${id}";
       }
     });
   });
