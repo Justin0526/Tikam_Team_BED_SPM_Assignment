@@ -1,3 +1,20 @@
+// TEMP until login is connected
+const token = localStorage.getItem("token");
+
+function getUserIdFromToken(token) {
+  if (!token) return null;
+  const payload = token.split('.')[1];
+  try {
+    const decoded = JSON.parse(atob(payload));
+    return decoded.userID;
+  } catch (e) {
+    console.error("Invalid token:", e);
+    return null;
+  }
+}
+
+const loggedInUserID = getUserIdFromToken(token);
+
 let appointments = [];
 // let nextId = 1;
 //   e.preventDefault();
@@ -84,11 +101,15 @@ function resetFormMode() {
 document.getElementById('appointment-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
+  const token = localStorage.getItem("token");
+  if(!token){
+    alert("You must be logged in to create or update appointments.");
+    return;
+  }
   const rawReminder = document.getElementById('reminderDate').value;
   const appointmentID = document.getElementById('appointmentID').value;
 
   const appointment = {
-    userID: parseInt(document.getElementById('userID').value),
     doctorName: document.getElementById('doctorName').value,
     clinicName: document.getElementById('clinicName').value,
     appointmentDate: document.getElementById('appointmentDate').value,
@@ -97,20 +118,28 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
     reminderDate: rawReminder === "" ? undefined : rawReminder
   };
 
+  if(!isEditing){
+    appointment.userID = loggedInUserID;
+  }
+
   try {
     let response;
     if (isEditing) {
       // PUT: update appointment
       response = await fetch(`http://localhost:3000/appointments/${appointmentID}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(appointment)
       });
     } else {
       // POST: create new appointment
-      response = await fetch('http://localhost:3000/appointments/user', {
+      response = await fetch('http://localhost:3000/appointments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+         },
         body: JSON.stringify(appointment)
       });
     }
@@ -121,7 +150,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
       document.getElementById('successModal').style.display = 'flex';
       this.reset();
       resetFormMode();
-      loadAppointments(appointment.userID);
+      loadAppointments();
     } else {
       alert("❌ Error: " + result.error);
     }
@@ -209,9 +238,14 @@ function searchAppointments() {
     }
 }
 
-async function loadAppointments(userID) {
+async function loadAppointments() {
     try {
-    const response = await fetch(`http://localhost:3000/appointments/user/${userID}`);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:3000/appointments`,{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     const data = await response.json();
 
     if (!response.ok) {
@@ -298,8 +332,7 @@ function closeSuccessModal() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const loggedInUserID = 2; // ✅ REPLACE WITH DYNAMIC USER LATER !! after logIN feature is added
-    loadAppointments(loggedInUserID);
+    loadAppointments();
 
     document.getElementById('cancelEditButton').addEventListener('click', function () {
     document.getElementById('appointment-form').reset();

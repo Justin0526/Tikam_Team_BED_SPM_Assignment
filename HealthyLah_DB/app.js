@@ -21,6 +21,7 @@ const postsController = require("./controllers/posts_controller");
 const appointmentValidator = require("./middlewares/appointment_validation");
 const medicationValidator  = require("./middlewares/medication_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
+const { verify } = require("crypto");
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -38,22 +39,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // User routes
 app.get( "/users", userController.getAllUsers );
 app.post("/register", userController.registerUser );
-app.post("/login", userController.loginUser );
+app.post("/users/login", userController.loginUser );
 
 // Weather & translation
 app.get( "/weather",  weatherController.getWeather );
 app.post("/translate", translateText );
 
-// Appointment routes
-app.get( "/appointments", appointmentController.getAllAppointments );
-app.get( "/appointments/user/:userID",
-  appointmentValidator.validateAppointmentId,
-  appointmentController.getAppointmentsByUserID
-);
-app.post( "/appointments/user",
-  appointmentValidator.validateAppointment,
-  appointmentController.createAppointment
-);
+// Appointment route
+app.get("/appointments", appointmentController.getAllAppointments);
+app.get("/appointments/me", verify, appointmentController.getAppointmentsByUserID);
+app.post("/appointments", verify, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
 // Medication routes
 app.get("/medications/today", medicationsController.getTodayMeds );
