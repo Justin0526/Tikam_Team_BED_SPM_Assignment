@@ -28,7 +28,7 @@ async function getUserByUsername(username){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT u.userID, fullName, username, email, passwordHash, gender 
+        const query = `SELECT u.userID, u.fullName, username, email, passwordHash, gender 
                        FROM Users u INNER JOIN UserProfile up 
                        ON u.userID = up.userID 
                        WHERE username = @username`;
@@ -63,7 +63,7 @@ async function createUser(userData){
         const query = 
            `INSERT INTO Users (fullName, username, email, passwordHash) VALUES (@fullName, @username, @email, @passwordHash); 
             DECLARE @newUserID INT = SCOPE_IDENTITY();
-            INSERT INTO UserProfile(userID) VALUES (@newUserID)
+            INSERT INTO UserProfile(userID, fullName) VALUES (@newUserID, @fullName);
             SELECT * FROM Users WHERE userID = @newUserID;`;
             // Declares get the new userID as a variable
         const request = connection.request();

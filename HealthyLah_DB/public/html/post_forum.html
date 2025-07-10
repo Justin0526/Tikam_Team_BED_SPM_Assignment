@@ -5,7 +5,8 @@
   <title>HealthyLah Post Forum</title>
   <link rel="stylesheet" href="../css/post.css">
   <script src="../js/settings_translation.js" defer></script>
-
+  <!-- Make sure post.js runs after the DOM is ready -->
+  <script src="../js/post.js" defer></script>
 </head>
 <body>
   <header class="top-bar">
@@ -19,12 +20,11 @@
         <span class="profile-name">Welcome, Mr Tan</span>
       </div>
     </div>
-
     <nav class="nav-bar">
-      <a href="index.html">Home</a>
-      <a href="about_us.html">About us</a>
-      <a href="#">Weather</a>
-      <a href="#">Transport & Facilities</a>
+      <a href="../index.html">Home</a>
+      <a href="../about_us.html">About us</a>
+      <a href="../weather.html">Weather</a>
+      <a href="../Transport_and_Facilities.html">Transport &amp; Facilities</a>
       <a href="#">Health</a>
       <a href="post_forum.html">Post</a>
     </nav>
@@ -33,18 +33,29 @@
   <main>
     <section class="post-section">
       <h2>Post</h2>
-      <textarea placeholder="What would you like to post about today?"></textarea>
+      <!-- Give it an ID for future wiring -->
+      <textarea id="postContent"
+                placeholder="What would you like to post about today?"
+                rows="4"></textarea>
       
       <div class="share-container">
         <div class="left-upload">
-          <label class="upload-btn" for="postImage">📁 Drag or click to upload image</label>
-          <input type="file" id="postImage" accept="image/*" style="display:none;">
+          <label class="upload-btn" for="postImage">
+            📁 Drag or click to upload image
+          </label>
+          <input type="file"
+                 id="postImage"
+                 accept="image/*"
+                 style="display:none;">
         </div>
         <button class="share-btn">Share Post</button>
       </div>
 
-      <img id="imagePreview" alt="Image preview" style="display:none; max-width:100%; margin-top:15px; border-radius:10px;">
-      <button id="removeImageBtn" style="display:none; margin-top:10px; background:#ff4d4d; color:white; border:none; border-radius:8px; padding:8px 15px; cursor:pointer;">
+      <img id="imagePreview"
+           alt="Image preview"
+           style="display:none; max-width:100%; margin-top:15px; border-radius:10px;">
+      <button id="removeImageBtn"
+              style="display:none; margin-top:10px; background:#ff4d4d; color:white; border:none; border-radius:8px; padding:8px 15px; cursor:pointer;">
         Remove Image
       </button>
     </section>
@@ -52,7 +63,7 @@
     <section class="today-posts">
       <h3>Today's Posts</h3>
       <div class="posts-list">
-        <!-- Future dynamic posts will load here -->
+        <!-- post.js will inject .post-item cards here -->
       </div>
     </section>
   </main>
@@ -65,9 +76,11 @@
       <a href="#">Instagram</a>
       <a href="#">Email</a>
     </div>
-    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a></p>
+    <p>
+      <a href="#">Privacy Policy</a> |
+      <a href="#">Terms of Use</a> |
+      <a href="#">Credits</a>
+    </p>
   </footer>
-
-  <script src="../js/post.js"></script>
 </body>
 </html>
