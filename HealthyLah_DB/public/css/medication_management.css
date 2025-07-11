@@ -1,8 +1,8 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #F9FFF4;
-  color: #000000;
+  color: #333;
 }
 
 .logo-bar {
@@ -78,22 +78,22 @@ body {
 /* ... existing header and nav styles ... */
 
 .medication-box {
-  background-color: #F1FAE5; /* soft green */
-  border: 2px solid #A4D038;
-  border-radius: 14px;
-  padding: 40px;
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  padding: 30px;
   display: flex;
-  min-height: 750px;
   flex-direction: column;
   gap: 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .medication-box h2 {
-  margin: 20px 0 10px;
-  font-size: 1.4em;
+  margin: 0;
+  padding-bottom: 8px;
+  font-size: 1.6em;
   color: #2B7DA4;
-  font-weight: bold;
+  border-bottom: 2px solid #A4D038;
 }
 
 .medication-main {
@@ -179,9 +179,10 @@ body {
 /* Table styles */
 .medication-table, .reminder-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-  font-size: 1.05em;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .medication-table th:first-child, .medication-table td:first-child,
@@ -197,9 +198,10 @@ body {
 }
 
 .medication-table th, .reminder-table th {
-  background-color: #A4D038 !important;
-  color: #FFFFFF !important;
-  font-weight: bold;
+  background-color: #A4D038;
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 12px 16px;
   text-align: left;
 }
 
@@ -233,23 +235,21 @@ body {
   background-color: #e8f5e9;
 }
 
-
 .status {
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 20px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 12px;
   font-size: 0.9em;
-  display: inline-block;
 }
 
 .status.taken {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: #E8F5E9;
+  color: #2E7D32;
 }
 
 .status.not-yet {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: #FFEBEE;
+  color: #C62828;
 }
 
 /* Buttons */
@@ -371,6 +371,21 @@ body {
 .notification.show {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
+}
+
+/* Ellipsis menu button styling */
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.4em;
+  color: #000000;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px;
+}
+
+.menu-btn:hover {
+  color: #555;
 }
 
 /* Responsive design */
