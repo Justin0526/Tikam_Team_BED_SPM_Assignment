@@ -1,5 +1,5 @@
 // controllers/userProfile_controller.js
-const profileModel = require('../models/profileModels');
+const profileModel = require('../models/userProfile_model');
 
 exports.updateProfile = async (req, res) => {
   try {

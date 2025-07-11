@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile – HealthyLah!</title>
+  <link rel="stylesheet" href="profile.css" />
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="logo-bar">
+            <div class="logo-container">
+                <img src="../images/logo_horizontal.png" alt="HealthyLah Logo" class="logo-img"> <!-- Replace with actual logo path -->
+                
+            </div>
+            <div class="profile">
+                <div class="profile-pic"></div>
+                <img id="headerProfilePic" src="" alt="Profile Picture" width="200" />
+                <span class="profile-name">Welcome, Mr Tan</span>
+            </div>
+        </div>
+        <nav class="nav-bar">
+        <a href="index.html">Home</a>
+        <a href="about_us.html">About us</a>
+        <a href="weather.html">Weather</a>
+        <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+        <a href="health.html">Health</a>
+        <a href="post_forum.html">Post</a>
+        </nav>
+    </header>
+
+  <!-- Main Profile Form -->
+  <main class="profile-container">
+    <h2>My Profile Page</h2>
+    <p>Manage your profile and medical details here</p>
+
+    <div class="avatar-section">
+        <img id="avatarPic" src="../images/default_avatar.png" alt="Profile Picture" />
+        <div class="avatar-buttons">
+            <button id="uploadBtn" type="button">Upload Picture</button>
+            <button class="remove-btn">Remove</button>
+        </div>
+    </div>
+
+    <form class="profile-form">
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname">
+
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" name="dob">
+
+      <label for="gender">Gender</label>
+      <select id="gender" name="gender">
+        <option value="">-- Select --</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Prefer not to say">Prefer not to say</option>
+      </select>
+
+      <label for="allergies">Allergies</label>
+      <select id="allergies" name="allergies">
+        <option value="">-- Select --</option>
+        <option value="Peanuts">Peanuts</option>
+        <option value="Seafood">Seafood</option>
+        <option value="Lactose">Lactose</option>
+        <option value="Others">Others</option>
+      </select>
+      <input type="text" id="other-allergy" name="other-allergy" placeholder="Please specify" style="display: none;">
+
+      <label for="conditions">Chronic Medical Conditions</label>
+      <select id="conditions" name="conditions">
+        <option value="">-- Select --</option>
+        <option value="Diabetes">Diabetes</option>
+        <option value="Hypertension">Hypertension</option>
+        <option value="Asthma">Asthma</option>
+        <option value="Others">Others</option>
+      </select>
+      <input type="text" id="other-conditions" name="other-conditions" placeholder="Please specify" style="display: none;">
+
+      <label for="emergencyName">Emergency Contact Name</label>
+      <input type="text" id="emergencyName" name="emergencyName">
+
+      <label for="emergencyNumber">Emergency Contact Number</label>
+      <input type="text" id="emergencyNumber" name="emergencyNumber">
+
+      <label for="address">Residential Address (optional)</label>
+      <input type="text" id="address" name="address">
+
+      <label for="bio">Short Bio</label>
+      <textarea id="bio" name="bio" rows="3"></textarea>
+
+      <button type="submit" class="update-btn">Update Profile</button>
+      <button type="reset" class="clear-btn">Clear fields</button>
+    </form>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    © 2025 HealthyLah • Designed with care for our seniors<br>
+    <div class="socials">
+      <strong>◼︎</strong> Facebook &nbsp;&nbsp;
+      <strong>◼︎</strong> Twitter &nbsp;&nbsp;
+      <strong>◼︎</strong> Instagram &nbsp;&nbsp;
+      <strong>◼︎</strong> Email
+    </div><br>
+    <a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a>
+  </footer>
+
+  <script>
+  const userID = 1; // 🔁 Replace with actual logged-in user ID
+
+  fetch(`http://localhost:3000/api/profile/${userID}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data) {
+        document.getElementById("fullname").value = data.fullName || "";
+        document.getElementById("dob").value = data.dob ? data.dob.split('T')[0] : "";
+        document.getElementById("gender").value = data.gender || "";
+        document.getElementById("emergencyName").value = data.emergencyName || "";
+        document.getElementById("emergencyNumber").value = data.emergencyNumber || "";
+        document.getElementById("address").value = data.address || "";
+        document.getElementById("bio").value = data.bio || "";
+
+        // Handle allergies
+        const allergiesSelect = document.getElementById("allergies");
+        const otherAllergyInput = document.getElementById("other-allergy");
+
+        if (["Peanuts", "Seafood", "Lactose"].includes(data.allergies)) {
+          allergiesSelect.value = data.allergies;
+          otherAllergyInput.style.display = "none";
+        } else if (data.allergies) {
+          allergiesSelect.value = "Others";
+          otherAllergyInput.style.display = "block";
+          otherAllergyInput.value = data.allergies;
+        }
+
+        // Handle chronic conditions
+        const conditionsSelect = document.getElementById("conditions");
+        const otherConditionInput = document.getElementById("other-conditions");
+
+        if (["Diabetes", "Hypertension", "Asthma"].includes(data.chronicConditions)) {
+          conditionsSelect.value = data.chronicConditions;
+          otherConditionInput.style.display = "none";
+        } else if (data.chronicConditions) {
+          conditionsSelect.value = "Others";
+          otherConditionInput.style.display = "block";
+          otherConditionInput.value = data.chronicConditions;
+        }
+
+        // Load image if saved
+        const savedImage = localStorage.getItem('profileImage');
+        if (savedImage) {
+          document.getElementById("avatarPic").src = savedImage;
+          document.getElementById("headerProfilePic").src = savedImage;
+        }
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load profile:", err);
+      alert("❌ Failed to load profile data.");
+    });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const allergyDropdown = document.getElementById("allergies");
+    const otherAllergyInput = document.getElementById("other-allergy");
+
+    allergyDropdown.addEventListener("change", () => {
+      otherAllergyInput.style.display = allergyDropdown.value === "Others" ? "block" : "none";
+    });
+
+    const conditionsDropdown = document.getElementById("conditions");
+    const otherConditionsInput = document.getElementById("other-conditions");
+
+    conditionsDropdown.addEventListener("change", () => {
+      otherConditionsInput.style.display = conditionsDropdown.value === "Others" ? "block" : "none";
+    });
+
+    const uploadBtn = document.getElementById("uploadBtn");
+    const avatarPic = document.getElementById("avatarPic");
+    const headerProfilePic = document.getElementById("headerProfilePic");
+
+    const savedImage = localStorage.getItem('profileImage');
+    if (savedImage) {
+      avatarPic.src = savedImage;
+      headerProfilePic.src = savedImage;
+    }
+
+    uploadBtn.addEventListener("click", function () {
+      cloudinary.openUploadWidget({
+        cloudName: 'dvgx5dw12',
+        uploadPreset: 'hp9lpsha',
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        cropping: true,
+        folder: 'profile_pictures',
+        maxFileSize: 1000000
+      }, function (error, result) {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          return;
+        }
+
+        if (result && result.event === "success") {
+          const imageUrl = result.info.secure_url;
+          avatarPic.src = imageUrl;
+          headerProfilePic.src = imageUrl;
+          localStorage.setItem('profileImage', imageUrl);
+        }
+      });
+    });
+  });
+
+  document.querySelector(".remove-btn").addEventListener("click", () => {
+    const defaultImg = "../images/default_avatar.png";
+    document.getElementById("avatarPic").src = defaultImg;
+    document.getElementById("headerProfilePic").src = defaultImg;
+    localStorage.removeItem('profileImage');
+  });
+
+  document.querySelector('.profile-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = {
+      userID: 1, // Replace with actual ID later
+      fullName: document.getElementById("fullname").value,
+      dob: document.getElementById("dob").value,
+      gender: document.getElementById("gender").value,
+      allergies: document.getElementById("allergies").value === "Others" ? document.getElementById("other-allergy").value : document.getElementById("allergies").value,
+      conditions: document.getElementById("conditions").value === "Others" ? document.getElementById("other-conditions").value : document.getElementById("conditions").value,
+      emergencyName: document.getElementById("emergencyName").value,
+      emergencyNumber: document.getElementById("emergencyNumber").value,
+      address: document.getElementById("address").value,
+      bio: document.getElementById("bio").value
+    };
+
+    fetch('http://localhost:3000/api/profile/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert('✅ Profile updated successfully!');
+    })
+    .catch(err => {
+      console.error('Profile update failed:', err);
+      alert('❌ Failed to update profile. Please try again later.');
+    });
+  });
+</script>
+
+
+</body>
+</html>
