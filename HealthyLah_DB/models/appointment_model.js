@@ -124,6 +124,50 @@ async function createAppointment(appointment){
     }
 }
 
+//Update Appointment By AppointmentID
+async function updateAppointmentByAppointmentID(appointmentID, userID, appointment) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query =
+      `UPDATE Appointments 
+      SET doctorName = @doctorName,
+      clinicName = @clinicName,
+      appointmentDate = @appointmentDate,
+      appointmentTime = @appointmentTime,
+      purpose = @purpose,
+      reminderDate = @reminderDate
+      WHERE appointmentID = @appointmentID AND userID = @userID 
+      `;
+       const reminderDate = appointment.reminderDate
+        ? appointment.reminderDate: new Date(new Date(appointment.appointmentDate).getTime() - 24 * 60 * 60 * 1000);
+      const request = connection.request();
+      request.input("appointmentID", sql.Int, appointmentID);
+      request.input("userID", sql.Int, userID);
+      request.input("doctorName", sql.VarChar, appointment.doctorName);
+      request.input("clinicName", sql.VarChar, appointment.clinicName);
+      request.input("appointmentDate", sql.Date, appointment.appointmentDate);
+      request.input("appointmentTime", sql.Time, appointment.appointmentTime); 
+      request.input("purpose", sql.VarChar, appointment.purpose);
+      request.input("reminderDate", sql.Date, reminderDate);
+    
+      const result = await request.query(query);
+      return result.rowsAffected[0] > 0;
+  }
+  catch(error){
+    console.error("Database error:", error);
+    throw error;
+  }finally{
+    if(connection){
+      try{
+        await connection.close();
+      }catch(err){
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
 // //Delete Appointment
 // async function deleteAppointment(appointmentId) {
 //     let connection;
@@ -162,4 +206,5 @@ module.exports = {
     getAllAppointments,
     getAppointmentsByUserID,
     createAppointment,
+    updateAppointmentByAppointmentID,
 };

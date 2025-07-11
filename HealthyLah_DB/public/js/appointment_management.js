@@ -1,5 +1,5 @@
-// TEMP until login is connected
-const token = localStorage.getItem("token");
+
+const token = localStorage.getItem("authToken");
 
 function getUserIdFromToken(token) {
   if (!token) return null;
@@ -101,7 +101,7 @@ function resetFormMode() {
 document.getElementById('appointment-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
   if(!token){
     alert("You must be logged in to create or update appointments.");
     return;
@@ -240,13 +240,26 @@ function searchAppointments() {
 
 async function loadAppointments() {
     try {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
     const response = await fetch(`http://localhost:3000/appointments/me`,{
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    //Handle 401 Unauthorized separately
+    if(response.status === 401) {
+      document.getElementById('appointmentsBody').innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; color: red;">
+            Session expired. Please <a href="login.html">log in again</a>.
+          </td>
+        </tr>
+      `;
+      return;
+    }
     const data = await response.json();
+
 
     if (!response.ok) {
         throw new Error(data.error || "Failed to load appointments");
@@ -261,7 +274,7 @@ async function loadAppointments() {
     if (data.length === 0) {
         body.innerHTML = `
         <tr id="emptyState">
-            <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments found for this user.</td>
+            <td colspan="8" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments added yet.</td>
         </tr>`;
         return;
     }
@@ -291,9 +304,15 @@ async function loadAppointments() {
     } 
     catch (err) {
     console.error("❌ Failed to load appointments:", err);
+    // document.getElementById('appointmentsBody').innerHTML = `
+    //     <tr><td colspan="7" style="text-align:center; color: red;">Error loading appointments.</td></tr>
+    // `;
     document.getElementById('appointmentsBody').innerHTML = `
-        <tr><td colspan="7" style="text-align:center; color: red;">Error loading appointments.</td></tr>
+    <tr><td colspan="8" style="text-align:center; color: red; font-weight: bold;">
+        ⚠️ Failed to connect to the server. Please try again later.
+    </td></tr>
     `;
+
     }
 }
 
@@ -331,7 +350,7 @@ function closeSuccessModal() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    if(!token | !loggedInUserID){
+    if(!token || !loggedInUserID){
       alert("Please log in first.");
       window.location.href = "login.html";
       return;
