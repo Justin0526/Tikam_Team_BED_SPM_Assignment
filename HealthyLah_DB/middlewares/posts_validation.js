@@ -1,4 +1,10 @@
 const Joi = require("joi");
+const express = require("express");
+
+module.exports = function(app) {
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+};
 
 const postSchema = Joi.object({
   UserID: Joi.number().integer().positive().required()
