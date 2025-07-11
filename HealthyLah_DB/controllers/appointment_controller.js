@@ -66,6 +66,28 @@ async function createAppointment(req, res){
     }
 }
 
+// update appointment by appointmentID
+async function updateAppointmentByAppointmentID(req, res){
+  try {
+    const appointmentID = parseInt(req.params.appointmentID);
+    const userID = req.user.userID; //Extract from decoded JWT
+
+    const success = await appointmentModel.updateAppointmentByAppointmentID(appointmentID, userID, req.body);
+    if (!success) {
+      return res.status(404).json({error: "Appointment not found"});
+
+    }
+    const updatedAppointment = await appointmentModel.getAppointmentsByUserID(userID);
+    res.json({
+      message: `Appointment with ID ${appointmentID} updated successfully`,
+      appointment: updatedAppointment,
+    });
+  }catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error updating appointment" });
+  }
+};
+
 // //delete appointment
 // async function deleteAppointment(req, res) {
 //     try{
@@ -88,4 +110,5 @@ module.exports = {
     getAllAppointments,
     getAppointmentsByUserID,
     createAppointment,
+    updateAppointmentByAppointmentID,
 };

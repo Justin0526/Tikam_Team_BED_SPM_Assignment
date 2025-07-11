@@ -49,6 +49,7 @@ app.post("/translate", translateText );
 // Appointment route
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
+app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentController.updateAppointmentByAppointmentID);
 
 // Medication routes
 app.get("/medications/today", medicationsController.getTodayMeds );
