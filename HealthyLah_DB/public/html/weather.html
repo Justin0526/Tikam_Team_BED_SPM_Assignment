@@ -5,6 +5,7 @@
     <title>HealthyLah - Weather & Outfit</title>
     <link rel="stylesheet" href="../css/weather.css">
     <script src="../js/settings_translation.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
   </head>
   <body>
@@ -13,9 +14,8 @@
         <div class="logo-container">
           <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
         </div>
-        <div class="profile">
-          <div class="profile-pic"></div>
-          <span class="profile-name">Welcome, Mr Tan</span>
+        <div class="profile" id="user-profile">
+          <!-- Dynamic profile -->
         </div>
       </div>
       <nav class="nav-bar">
@@ -75,20 +75,13 @@
     <div class="outfit-card">
       <div class="card-title">🧑 Suggested Outfit</div>
       <div class="outfit-content">
-        <img src="https://ik.imagekit.io/JustinImageKit/Hot%20Day,%20High%20UV.png?updatedAt=1751687064629" alt="Hot-Day-High-UV">
+        <img id="outfit-image" alt="Outfit Picture">
         <div class="outfit-text">
-          <p>Wear a lightweight long-sleeve shirt, wide-brim hat, sunglasses, and apply sunscreen. Avoid black clothing.</p>
-
-          <div class="outfit-tags">
-            <div class="tag">❄️ Hot Day</div>
-            <div class="tag">🌞 High UV</div>
-            <div class="tag">😷 Moderate AQI</div>
-          </div>
-
+          <p id="outfit-description"></p>
+          <p id="outfit-message"></p>
           <div class="button-group">
-            <a href="#" class="button btn-blue">🎙️ Read Aloud</a>
-            <a href="#" class="button btn-yellow">💖 Like this Outfit</a>
-            <a href="#" class="button btn-yellow">💖 View My Favourite Outfits</a>
+            <a href="#" class="button btn-yellow" id="fav-outfit-btn">💖 Like this Outfit</a>
+            <a href="favourite_outfit.html" class="button btn-yellow" id="view-outfit-btn">💖 View My Favourite Outfits</a>
           </div>
         </div>
       </div>
@@ -128,6 +121,7 @@
       </div>
       <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Credits</a></p>
     </footer>
+    <script src="../js/auth.js"></script>
     <script src="../js/weather.js"></script>
   </body>
 </html>

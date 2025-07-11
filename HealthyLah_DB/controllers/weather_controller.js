@@ -13,8 +13,7 @@ async function getWeather(req,res){
             }
         });
         const condition = response.data.current.condition.text;
-        const outfitTypeID = await weatherModel.getOutfitTypeID(condition);
-        const outfit = await weatherModel.getSuggestedOutfit(outfitTypeID);
+        const outfit = await weatherModel.getSuggestedOutfit(condition);
 
         if(!outfit){
             res.status(404).json({error: "Outfit not found"});
@@ -32,13 +31,28 @@ async function getWeather(req,res){
     };
 }
 
-// async function favouriteOutfit(req, res){
-//     try{
-//         // Get userID
-//         // Get outfitID
-//     }
-// }
+async function createFavouriteOutfit(req, res){
+    try{
+        // Get userID from decoded token
+        const userID = req.user.userID;
+
+        // Get outfitID from request body(frontend must send this)
+        const outfitID = req.body.outfitID;
+
+        const newFavouriteOutfit = await weatherModel.createFavouriteOutfit(outfitID, userID);
+
+        if(newFavouriteOutfit.alreadyExists){
+            return res.status(400).json({message: newFavouriteOutfit.message})
+        }
+        res.status(201).json(newFavouriteOutfit);
+        
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({error: "Error creating favourite outfit"})
+    }
+}
 
 module.exports = {
     getWeather,
+    createFavouriteOutfit,
 }

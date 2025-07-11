@@ -1,41 +1,24 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-async function getOutfitTypeID(condition){
-    let connection; 
-    try{
-        connection = await sql.connect(dbConfig);
-        const query = `SELECT outfitTypeID FROM OutfitRule WHERE 
-                        weatherCondition = @condition`;
-        const request = connection.request();
-        request.input("condition", condition);
-        const result = await request.query(query);
-
-        if (result.recordset.length === 0 ){
-            return null; // OutfitTypeID not found
-        }
-        return result.recordset[0].outfitTypeID;
-    }catch(error){
-        console.error("Database error: ", error);
-        throw error;
-    }finally{
-        if (connection){
-            try{
-                await connection.close();
-            } catch(closeError){
-                console.error("Error closing connection: ", closeError);
-            }
-        }
-    }
-}
-
-async function getSuggestedOutfit(outfitTypeID){
+async function getSuggestedOutfit(condition){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT * FROM SuggestedOutfit WHERE outfitTypeID = @outfitTypeID`;
+        const query = `SELECT TOP 1 * 
+                        FROM SuggestedOutfit 
+                        WHERE outfitTypeID IN (
+                            SELECT outfitTypeID 
+                            FROM OutfitRule 
+                            WHERE weatherCondition = @condition
+                        )
+                        ORDER BY NEWID();
+                        `
+                    // NEWID() generates a unique random value per row
+                    // ORDER BY NEWID() shuffles the rows
+                    // TOP 1 then picks one randomly
         const request = connection.request();
-        request.input("outfitTypeID", outfitTypeID);
+        request.input("condition", condition);
         const result = await request.query(query);
 
         if (result.recordset.length === 0){
@@ -57,17 +40,30 @@ async function getSuggestedOutfit(outfitTypeID){
 }
 
 // Favourite an outfit
-async function favouriteOutfit(outfitID, userID){
+async function createFavouriteOutfit(outfitID, userID){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `INSERT INTO FavouriteOutfit (outfitId, userId) VALUES (@outfitID, @userID);`
+
+        const checkQuery = `SELECT * FROM FavouriteOutfit WHERE outfitID = @outfitID AND userID = @userID`;
+        const checkRequest = connection.request();
+        checkRequest.input("outfitID", outfitID);
+        checkRequest.input("userID", userID);
+        const checkResult = await checkRequest.query(checkQuery);
+
+        if(checkResult.recordset.length > 0){
+            return {
+                message: "This outfit is already favourited" ,
+                alreadyExists: true
+            };
+        };
+
+        const query = `INSERT INTO FavouriteOutfit (outfitID, userID) VALUES (@outfitID, @userID);`
         const request = connection.request();
         request.input("outfitID", outfitID);
         request.input("userID", userID);
         const result = await request.query(query);
 
-        console.log(result);
         return result;
     }catch(error){
         console.error("Database error: ", error);
@@ -85,6 +81,5 @@ async function favouriteOutfit(outfitID, userID){
 
 module.exports = {
     getSuggestedOutfit,
-    getOutfitTypeID,
-    favouriteOutfit,
+    createFavouriteOutfit,
 }
