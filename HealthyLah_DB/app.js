@@ -47,7 +47,6 @@ app.get( "/weather",  weatherController.getWeather );
 app.post("/translate", translateText );
 
 // Appointment route
-app.get("/appointments", appointmentController.getAllAppointments);
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 
@@ -67,9 +66,12 @@ app.post( "/posts",
   postsController.createPost
 );
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+}).on('error', (err) => {
+  console.error('Server failed to start:', err.message);
 });
+
 
 process.on("SIGINT", async () => {
   console.log("Server is gracefully shutting down");
