@@ -5,6 +5,16 @@ async function getToken(token){
     if (token){     
         try{
             const decoded = jwt_decode(token);
+            const currentTime = Math.floor(Date.now()/1000); // Get in seconds
+
+            if(decoded.exp && decoded.exp < currentTime){
+                // Token has expired
+                console.warn("Token exipred");
+                localStorage.removeItem("authToken");
+                userProfile.innerHTML = `<span class="profile-name"><a href="login.html">Login here</a></span>`;
+                return null;
+            }
+
             const username = decoded.username;
             const userID = decoded.userID;
 
@@ -17,9 +27,11 @@ async function getToken(token){
         } catch(error){
             console.error("Invalid token:", error);
             userProfile.innerHTML = `<span class="profile-name"><a href="login.html">Login here</a></span>`;
+            return null;
         }
     } else {
         userProfile.innerHTML = `<span class="profile-name"><a href="login.html">Login here</a></span>`;
+        return null;
     }
 }
 
