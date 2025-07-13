@@ -24,7 +24,10 @@ async function getPostById(req, res) {
 
 async function createPost(req, res) {
   try {
-    const newPost = await postModel.createPost(req.body);
+    const userID = req.user.userID; // Get userID from decoded token
+    const { Content, ImageURL } = req.body;
+
+    const newPost = await postModel.createPost({ userID, Content, ImageURL });
     res.status(201).json(newPost);
   } catch (err) {
     console.error("Controller createPost error:", err);
