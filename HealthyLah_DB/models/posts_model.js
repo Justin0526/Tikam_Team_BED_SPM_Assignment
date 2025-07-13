@@ -51,6 +51,7 @@ async function createPost({ UserID, Content, ImageURL }) {
   return getPostById(newId);
 }
 
+
 module.exports = {
   getAllPosts,
   getPostById,

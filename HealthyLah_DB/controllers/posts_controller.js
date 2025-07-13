@@ -1,5 +1,6 @@
 const postModel = require("../models/posts_model");
 
+// Get all posts
 async function getAllPosts(req, res) {
   try {
     const posts = await postModel.getAllPosts();
@@ -10,6 +11,7 @@ async function getAllPosts(req, res) {
   }
 }
 
+// Get a single post by ID
 async function getPostById(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
@@ -22,12 +24,13 @@ async function getPostById(req, res) {
   }
 }
 
+// Create a new post (requires authentication)
 async function createPost(req, res) {
   try {
-    const userID = req.user.userID; // Get userID from decoded token
+    const UserID = req.user.userID; // Extract user ID from decoded JWT token
     const { Content, ImageURL } = req.body;
 
-    const newPost = await postModel.createPost({ userID, Content, ImageURL });
+    const newPost = await postModel.createPost({ UserID, Content, ImageURL });
     res.status(201).json(newPost);
   } catch (err) {
     console.error("Controller createPost error:", err);
