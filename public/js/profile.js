@@ -1,5 +1,4 @@
-
-  const userID = 1; // 🔁 Replace with actual logged-in user ID
+const userID = 1; // 🔁 Replace with actual logged-in user ID
 
   fetch(`http://localhost:3000/api/profile/${userID}`)
     .then(res => res.json())
@@ -141,4 +140,3 @@
       alert('❌ Failed to update profile. Please try again later.');
     });
   });
-

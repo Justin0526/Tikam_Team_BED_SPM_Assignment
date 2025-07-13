@@ -14,7 +14,7 @@ const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
-const userProfileController = require("./controllers/userProfile_controller")
+const profileController = require('./controllers/profileController');
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -81,6 +81,11 @@ app.listen(3000, () => {
   console.error('Server failed to start:', err.message);
 });
 
+// Profile-related routes
+app.get('/api/profile/:userID', profileController.getProfile);
+app.post('/api/profile/update', profileController.updateProfile);
+
+
 
 process.on("SIGINT", async () => {
   console.log("Server is gracefully shutting down");
@@ -88,7 +93,4 @@ process.on("SIGINT", async () => {
   console.log("Database connection closed");
   process.exit(0);
 });
-
-//Profile routes
-app.post('/api/profile/update', validateProfile, userProfileController.updateProfile);
 
