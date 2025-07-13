@@ -8,8 +8,7 @@ const {
 // Returns today's medications for the current user.
 // Calculates the start and end timestamps for the current day.
 async function getTodayMeds(req, res) {
-  const userID = req.user?.userID; // Get user ID from verified token
-  if (!userID) return res.status(401).send("Unauthorised");
+  const userID = 1; // Hardcode a test user ID
 
   // Date objects in JS default to current time. We adjust it below:
   const start = new Date();            // e.g. 2025-07-13T07:12:00.000Z (now)
@@ -30,9 +29,7 @@ async function getTodayMeds(req, res) {
 // POST /medications
 // Adds a new medication record for the logged-in user.
 async function addMedication(req, res) {
-  const userID = req.user?.userID; // Get user ID from verified token
-  if (!userID) return res.status(401).send("Unauthorised");
-
+  const userID = 1; // Hardcode a test user ID
   const data = req.body;
 
   try {
