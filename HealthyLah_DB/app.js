@@ -1,17 +1,15 @@
-// app.js
-require("dotenv").config();
-
 const express = require("express");
 const sql = require("mssql");
 const cors = require("cors");
 const path = require("path");
+const dotenv = require("dotenv");
 
-// ─── Load your DB config ────────────────────────────────────────────────────────
-const dbConfig = require("./dbConfig");
+dotenv.config()
 
 // ─── Controllers ────────────────────────────────────────────────────────────────
 const userController = require("./controllers/user_controller");
 const weatherController = require("./controllers/weather_controller");
+const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
@@ -23,6 +21,8 @@ const medicationValidator  = require("./middlewares/medication_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
 const { verify } = require("crypto");
 const {verifyJWT} = require("./middlewares/authMiddleware");
+const validateProfile = require('./middlewares/profile_validation');
+
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -42,9 +42,13 @@ app.get( "/users", userController.getAllUsers );
 app.post("/register", userController.registerUser );
 app.post("/login", userController.loginUser );
 
-// Weather & translation
+// Weather routes
 app.get( "/weather",  weatherController.getWeather );
-app.post("/translate", translateText );
+app.post("/weather", verifyJWT, weatherController.createFavouriteOutfit);
+
+// Favourite outfit routes
+app.get("/favouriteOutfit",verifyJWT, favouriteOutfitController.getFavouriteOutfit)
+app.delete("/favouriteOutfit/:favouriteOutfitID", verifyJWT, favouriteOutfitController.deleteFavouriteOutfit)
 
 // Appointment route
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
@@ -67,6 +71,9 @@ app.post( "/posts",
   postsController.createPost
 );
 
+// Translation
+app.post("/translate", translateText );
+
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 }).on('error', (err) => {
@@ -80,4 +87,7 @@ process.on("SIGINT", async () => {
   console.log("Database connection closed");
   process.exit(0);
 });
+
+//Profile routes
+app.post('/api/profile/update', validateProfile, profileController.updateProfile);
 

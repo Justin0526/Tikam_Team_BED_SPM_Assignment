@@ -12,7 +12,6 @@ function verifyJWT(req, res, next){
             return res.status(403).json({message: "Forbidden"});
         }
 
-        console.log(user.userID);
         req.user = user;
         next();
     })
