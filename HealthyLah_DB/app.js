@@ -21,6 +21,8 @@ const medicationValidator  = require("./middlewares/medication_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
 const { verify } = require("crypto");
 const {verifyJWT} = require("./middlewares/authMiddleware");
+const validateProfile = require('./middlewares/profile_validation');
+
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -51,7 +53,7 @@ app.delete("/favouriteOutfit/:favouriteOutfitID", verifyJWT, favouriteOutfitCont
 // Appointment route
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
-app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentController.updateAppointmentByAppointmentID);
+app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
 
 // Medication routes
 app.get("/medications/today", medicationsController.getTodayMeds );
@@ -85,4 +87,7 @@ process.on("SIGINT", async () => {
   console.log("Database connection closed");
   process.exit(0);
 });
+
+//Profile routes
+app.post('/api/profile/update', validateProfile, profileController.updateProfile);
 

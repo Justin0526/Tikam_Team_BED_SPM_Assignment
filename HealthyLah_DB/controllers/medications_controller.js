@@ -5,12 +5,18 @@ const {
 } = require('../models/medication_models.js');
 
 // GET /medications/today
+// Returns today's medications for the current user.
+// Calculates the start and end timestamps for the current day.
 async function getTodayMeds(req, res) {
-  const userID = 1; // Replace with session user ID if available
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
+  const userID = req.user?.userID; // Get user ID from verified token
+  if (!userID) return res.status(401).send("Unauthorised");
+
+  // Date objects in JS default to current time. We adjust it below:
+  const start = new Date();            // e.g. 2025-07-13T07:12:00.000Z (now)
+  start.setHours(0, 0, 0, 0);          // → 2025-07-13T00:00:00.000Z
+
+  const end = new Date();              // Another new Date instance
+  end.setHours(23, 59, 59, 999);       // → 2025-07-13T23:59:59.999Z
 
   try {
     const meds = await fetchTodayMeds(userID, start, end);
@@ -22,8 +28,11 @@ async function getTodayMeds(req, res) {
 }
 
 // POST /medications
+// Adds a new medication record for the logged-in user.
 async function addMedication(req, res) {
-  const userID = 1; // Replace with actual user session logic
+  const userID = req.user?.userID; // Get user ID from verified token
+  if (!userID) return res.status(401).send("Unauthorised");
+
   const data = req.body;
 
   try {
@@ -35,7 +44,8 @@ async function addMedication(req, res) {
   }
 }
 
-// PATCH /medications/:medicationID/mark-taken
+// PUT /medications/:medicationID/mark-taken
+// Marks the given medication as 'Taken' (was previously PATCH).
 async function markTaken(req, res) {
   const { medicationID } = req.params;
 

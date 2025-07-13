@@ -1,45 +1,88 @@
+const Joi = require('joi');
+
+/**
+ * Joi validation schema for medication input.
+ */
+const medicationSchema = Joi.object({
+  medicineName: Joi.string()
+    .trim()
+    .min(1)
+    .max(100)
+    .required()
+    .messages({
+      'string.base': 'Medicine name must be a string.',
+      'string.empty': 'Medicine name is required.',
+      'any.required': 'Medicine name is required.'
+    }),
+
+  dosage: Joi.string()
+    .trim()
+    .min(1)
+    .max(50)
+    .required()
+    .messages({
+      'string.base': 'Dosage must be a string.',
+      'string.empty': 'Dosage is required.',
+      'any.required': 'Dosage is required.'
+    }),
+
+  frequency: Joi.string()
+    .valid('Daily', 'Weekly', 'As Needed')
+    .required()
+    .messages({
+      'any.only': 'Frequency must be Daily, Weekly, or As Needed.',
+      'any.required': 'Frequency is required.'
+    }),
+
+  consumptionTime: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Consumption time must be in HH:mm or HH:mm:ss format.',
+      'any.required': 'Consumption time is required.'
+    }),
+
+  startDate: Joi.date()
+    .iso()
+    .required()
+    .messages({
+      'date.base': 'Start date must be a valid date.',
+      'any.required': 'Start date is required.'
+    }),
+
+  endDate: Joi.date()
+    .iso()
+    .allow(null, '')
+    .messages({
+      'date.base': 'End date must be a valid date.'
+    }),
+
+  userID: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      'number.base': 'User ID must be a number.',
+      'number.integer': 'User ID must be an integer.',
+      'number.positive': 'User ID must be positive.',
+      'any.required': 'User ID is required.'
+    }),
+
+  notes: Joi.string().allow('').optional()
+});
+
+/**
+ * Middleware for validating medication creation/editing requests using Joi.
+ */
 function validateMedication(req, res, next) {
-  const {
-    medicineName,
-    dosage,
-    frequency,
-    consumptionTime,
-    startDate
-  } = req.body;
+  const { error } = medicationSchema.validate(req.body, { abortEarly: false });
 
-  // Required fields check
-  if (!medicineName || !dosage || !frequency || !consumptionTime || !startDate) {
-    return res.status(400).json({
-      error: "Missing required fields. Please fill in all mandatory fields."
-    });
+  if (error) {
+    const errorMessages = error.details.map(d => d.message);
+    return res.status(400).json({ errors: errorMessages });
   }
 
-  // Type checks (basic string/date validation)
-  if (typeof medicineName !== 'string' || typeof dosage !== 'string') {
-    return res.status(400).json({ error: "Invalid input type for medicineName or dosage." });
-  }
-
-  const allowedFrequencies = ['Daily', 'Weekly', 'As Needed'];
-  if (!allowedFrequencies.includes(frequency)) {
-    return res.status(400).json({ error: "Invalid frequency. Must be Daily, Weekly, or As Needed." });
-  }
-
-  // Time format check (basic HH:mm or HH:mm:ss)
-  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/;
-  if (!timeRegex.test(consumptionTime)) {
-    return res.status(400).json({ error: "Invalid time format. Use HH:mm or HH:mm:ss." });
-  }
-
-  // Date format check
-  if (isNaN(Date.parse(startDate))) {
-    return res.status(400).json({ error: "Invalid start date." });
-  }
-
-  if (req.body.endDate && isNaN(Date.parse(req.body.endDate))) {
-    return res.status(400).json({ error: "Invalid end date." });
-  }
-
-  next(); //Passed all checks
+  next();
 }
 
 module.exports = validateMedication;

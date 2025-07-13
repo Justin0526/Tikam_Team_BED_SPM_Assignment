@@ -7,7 +7,7 @@ async function getAllAppointments(){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        console.log("DB conntected");
+        console.log("DB conntected");//To debug if connection is successful
         const query = "SELECT * FROM Appointments ORDER BY appointmentDate, appointmentTime";
         const result = await connection.request().query(query);
         return result.recordset;
@@ -80,7 +80,7 @@ async function getAppointmentsByUserID(userID) {
     }
 }
 
-//Add Appointment
+//Create Appointment
 async function createAppointment(appointment){
     let connection;
     try{
@@ -91,7 +91,7 @@ async function createAppointment(appointment){
         VALUES (@userID, @doctorName, @clinicName, @appointmentDate, @appointmentTime, @purpose, @reminderDate);
         `;
         
-        // Default reminder date = one day before the appointment date        
+        // Set Default reminder date = one day before the appointment date (if the reminderDate is not provided)        
         const reminderDate = appointment.reminderDate
         ? appointment.reminderDate: new Date(new Date(appointment.appointmentDate).getTime() - 24 * 60 * 60 * 1000);
 
@@ -100,7 +100,7 @@ async function createAppointment(appointment){
         request.input("doctorName", sql.VarChar, appointment.doctorName);
         request.input("clinicName", sql.VarChar, appointment.clinicName);
         request.input("appointmentDate", sql.Date, appointment.appointmentDate);
-        request.input("appointmentTime", sql.VarChar, appointment.appointmentTime);
+        request.input("appointmentTime", appointment.appointmentTime);
         request.input("purpose", sql.VarChar, appointment.purpose);
         request.input("reminderDate", sql.Date, reminderDate);
 
@@ -147,7 +147,7 @@ async function updateAppointmentByAppointmentID(appointmentID, userID, appointme
       request.input("doctorName", sql.VarChar, appointment.doctorName);
       request.input("clinicName", sql.VarChar, appointment.clinicName);
       request.input("appointmentDate", sql.Date, appointment.appointmentDate);
-      request.input("appointmentTime", sql.Time, appointment.appointmentTime); 
+      request.input("appointmentTime", appointment.appointmentTime); 
       request.input("purpose", sql.VarChar, appointment.purpose);
       request.input("reminderDate", sql.Date, reminderDate);
     
@@ -167,40 +167,6 @@ async function updateAppointmentByAppointmentID(appointmentID, userID, appointme
     }
   }
 }
-
-// //Delete Appointment
-// async function deleteAppointment(appointmentId) {
-//     let connection;
-//     try{
-//         connection = await sql.connect(dbConfig);
-//         const query = `
-//             DELETE FROM Appointments WHERE appointment_id = @appointmentId;
-//         `;
-//         const request = connection.request();
-//         request.input("appointmentId", sql.Int, appointmentId);
-//         const result = await request.query(query);
-       
-//         if(result.rowsAffected[0] === 0){
-//             return false;
-//         }
-//         return true;
-//     }
-//     catch(error){
-//         console.error("Database error:", error);
-//         throw error;
-//     }
-//     finally{
-//         if(connection){
-//             try{
-//                 await connection.close();
-//             }
-//             catch(error){
-//                 console.error("Error closing connection:",error);
-//             }
-//         }
-//     }
-    
-// }
 
 module.exports = {
     getAllAppointments,

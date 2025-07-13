@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../css/index.css">
   <script src="../js/google_translate_loader.js" defer></script>
   <script src="../js/settings_translation.js" defer></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
     <header class="top-bar">
@@ -15,9 +15,8 @@
                 <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img"> <!-- Replace with actual logo path -->
                 
             </div>
-            <div class="profile">
-                <div class="profile-pic"></div>
-                <span class="profile-name">Welcome, Mr Tan</span>
+            <div class="profile" id="user-profile">
+            <!-- Dynamic profile -->
             </div>
         </div>
         <nav class="nav-bar">
@@ -112,5 +111,7 @@
     </div>
     <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
+  <script src="../js/auth.js"></script>
+  <script src="../js/index.js"></script>
 </body>
 </html>

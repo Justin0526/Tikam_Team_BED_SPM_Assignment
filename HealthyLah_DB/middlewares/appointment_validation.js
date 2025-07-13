@@ -37,19 +37,32 @@ function validateAppointment(req, res, next) {
         const errorMessage = error.details.map(d => d.message).join(", ");
         return res.status(400).json({ error: errorMessage });
     }
+
+    //Ensure reminderDate is not after appointmentDate
+    const {appointmentDate, reminderDate} = req.body;
+    if(reminderDate){
+        const appointment = new Date(appointmentDate);
+        const reminder = new Date(reminderDate);
+
+        if(reminder > appointment){
+            return res.status(400).json({
+                error: "Reminder date cannot be later than the appointment date."
+            });
+        }
+    }
     next();
 }
 
-// //After verifyJWT(authorization) and token includes appointmentID, validation for req.params might not be needed anymore!!
-// // Middleware to validate appointmentID (or userID) in req.params
-// function validateAppointmentId(req, res, next) {
-//     const userID = parseInt(req.params.userID);
-//     if (isNaN(userID) || userID <= 0) {
-//         return res.status(400).json({ error: "Invalid ID. Must be a positive number." });
-//     }
-//     next();
-// }
+// Middleware to validate appointmentID in req.params
+function validateAppointmentId(req, res, next) {
+    const appointmentID = parseInt(req.params.appointmentID);
+    if (isNaN(appointmentID) || appointmentID <= 0) {
+        return res.status(400).json({ error: "Invalid ID. Must be a positive number." });
+    }
+    next();
+}
 
 module.exports = {
-    validateAppointment
+    validateAppointment,
+    validateAppointmentId,
 };
