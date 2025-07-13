@@ -13,21 +13,7 @@ async function getAllAppointments(req, res){
     }
 }
 
-//Get My Appointments for verifyJWT (authorization)
-// async function getMyAppointments(req, res) {
-//   const userID = req.user.id;
-//   try{
-//     const appointment = await appointmentModel.getMyAppointments(userID);
-//     res.status(200).json(appointment);
-//   }
-//   catch(error){
-//     console.error("Error fetching borrowed books:", error);
-//     res.status(500).json({
-//       message: "Failed to get borrowed books"
-//     });
-//   }
-// }
-
+//Get Appointments by UserID
 async function getAppointmentsByUserID(req, res){
     const userID = req.user.userID;
     try{
@@ -44,11 +30,10 @@ async function getAppointmentsByUserID(req, res){
     }
 }
 
-//create appointment
+//Create appointment
 async function createAppointment(req, res){
     //Log the incoming request body
     console.log("Incoming appointment:");
-    
     try{
         const appointment = {
             ... req.body,
@@ -66,7 +51,7 @@ async function createAppointment(req, res){
     }
 }
 
-// update appointment by appointmentID
+// Update appointment by appointmentID
 async function updateAppointmentByAppointmentID(req, res){
   try {
     const appointmentID = parseInt(req.params.appointmentID);
@@ -87,24 +72,6 @@ async function updateAppointmentByAppointmentID(req, res){
     res.status(500).json({ error: "Error updating appointment" });
   }
 };
-
-// //delete appointment
-// async function deleteAppointment(req, res) {
-//     try{
-//         const id = parseInt(req.params.appointmentId);
-//         const deleted = await appointmentModel.deleteAppointment(id);
-
-//         if(!deleted){
-//             return res.status(404).json({error: "Appointment not found or already deleted"});
-//         }
-
-//         res.json({message: "Appointment deleted successfully"});
-//     }
-//     catch(error){
-//         console.error("Controller error:", error);
-//         res.status(500).json({error: "Error deleting Appointment"});
-//     } 
-// }
 
 module.exports = {
     getAllAppointments,
