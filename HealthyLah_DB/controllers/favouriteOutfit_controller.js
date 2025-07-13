@@ -8,7 +8,7 @@ async function getFavouriteOutfit(req, res){
         return res.status(200).json(outfits);
     }catch(error){
         console.error("Controller error: ", error);
-        res.status(500).json({error: "Error retrieving favourite outfits"})
+        res.status(500).json({error: "Error retrieving favourite outfits"});
     }
 }
 
@@ -20,7 +20,7 @@ async function deleteFavouriteOutfit(req, res){
         if(!success){
             return res.status(404).json({error: "Outfit not found!"});
         }
-        return res.status(204).json({message: `Outfit deleted successfully`});
+        return res.status(200).json({message: "Outfit deleted successfully"});
     }catch(error){
         console.error("Controller error: ", error);
         res.status(500).json({error: "Error deleting the outfit"});

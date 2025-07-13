@@ -5,10 +5,21 @@ async function getFavouriteOutfit(userID){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT * FROM SuggestedOutfit so
-                       INNER JOIN FavouriteOutfit fo
-                       ON so.outfitID = fo.outfitID
-                       WHERE fo.userID = @userID`;
+        const query = `SELECT 
+                            so.outfitID, 
+                            so.outfitName, 
+                            so.outfitImageURL, 
+                            so.outfitGender,
+                            so.outfitDesc,
+                            so.outfitTypeID,
+                            fo.favouriteOutfitID,
+                            fo.userID,
+                            fo.favouriteDateTime
+                        FROM SuggestedOutfit so
+                        INNER JOIN FavouriteOutfit fo
+                        ON so.outfitID = fo.outfitID
+                        WHERE fo.userID = @userID;
+                        `;
         const request = connection.request();
         request.input("userID", userID);
         const result = await request.query(query);

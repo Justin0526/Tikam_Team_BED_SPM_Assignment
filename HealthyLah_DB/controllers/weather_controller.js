@@ -44,7 +44,7 @@ async function createFavouriteOutfit(req, res){
         if(newFavouriteOutfit.alreadyExists){
             return res.status(400).json({message: newFavouriteOutfit.message})
         }
-        res.status(201).json(newFavouriteOutfit);
+        res.status(201).json({message: "Outfit favourited successfully!", outfit: newFavouriteOutfit});
         
     }catch(error){
         console.error("Controller error: ", error);

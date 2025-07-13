@@ -140,7 +140,7 @@ async function unlikeFavouriteOutfit(event, outfitCard){
           ? await response.json()
           : {message: response.statusText};
         
-        if(response.status === 204){
+        if(response.status === 200){
             message.textContent = "Outfit deleted successfully!";
             message.style.color = "green";
 
