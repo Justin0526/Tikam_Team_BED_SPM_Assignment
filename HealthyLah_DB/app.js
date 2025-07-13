@@ -14,6 +14,7 @@ const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
+const userProfileController = require("./controllers/userProfile_controller")
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -89,5 +90,5 @@ process.on("SIGINT", async () => {
 });
 
 //Profile routes
-app.post('/api/profile/update', validateProfile, profileController.updateProfile);
+app.post('/api/profile/update', validateProfile, userProfileController.updateProfile);
 
