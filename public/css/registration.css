@@ -45,6 +45,7 @@ body.register-page {
 .logo-img {
   width: 1000px;
   max-width: 100%;
+  transform: none; /* This removes the scale and translate from layout.css */
 }
 
 /* === Registration Form === */
