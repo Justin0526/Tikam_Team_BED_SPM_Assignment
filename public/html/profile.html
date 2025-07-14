@@ -4,18 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Profile – HealthyLah!</title>
-  <link rel="stylesheet" href="/public/css/profile.css" />
-  <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/profile.css" />
 </head>
 <body>
   <header class="top-bar">
+    <header class="top-bar">
     <div class="logo-bar">
       <div class="logo-container">
-        <img src="public\images\logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
       </div>
       <div class="profile">
-        <img id="headerProfilePic" src="../images/default_avatar.png" alt="Profile Picture" class="circle-img" />
-        <span class="profile-name">Welcome, BEDCheckpoint2</span>
+        <div class="profile-pic"></div>
+        <span class="profile-name">Welcome, Mr Tan</span>
       </div>
     </div>
     <nav class="nav-bar">
@@ -92,9 +93,25 @@
     </form>
   </main>
 
-  <footer class="footer">
-    © 2025 HealthyLah • Designed with care for our seniors
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links" style="display:inline-block;">
+      <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
+      <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
+      <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
+      <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
+      </a>
+      <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
+        <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
+      </a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
- <script src="/public/js/profile.js" defer></script>
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+  <script src="/public/js/profile.js" defer></script>
 </body>
 </html>
