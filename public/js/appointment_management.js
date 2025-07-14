@@ -1,19 +1,9 @@
-//Extract userID from JWT token
-function getUserIdFromToken(token) {
-  if (!token) return null;
-  const payload = token.split('.')[1];
-  try {
-    const decoded = JSON.parse(atob(payload));
-    return decoded.userID;
-  } catch (e) {
-    console.error("Invalid token:", e);
-    return null;
-  }
-}
-
-const loggedInUserID = getUserIdFromToken(token);
+let currentUser = null;
 let appointments = [];
 let isEditing = false;//For edit form
+
+//Debugging
+console.log("Current User:", currentUser);
 
 function resetFormMode() {
   isEditing = false;
@@ -23,6 +13,7 @@ function resetFormMode() {
   document.getElementById('addButton').style.display = 'block';
 }
 
+// Handle form submission for creating or updating appointments
 document.getElementById('appointment-form').addEventListener('submit', async function (e) {
   e.preventDefault();
   if(!token){
@@ -118,7 +109,6 @@ function renderTable() {
 
 async function loadAppointments() {
     try {
-    // const token = localStorage.getItem("token");
     const response = await fetch(`http://localhost:3000/appointments/me`,{
       headers: {
         'Authorization': `Bearer ${token}`
@@ -217,12 +207,8 @@ function closeSuccessModal() {
     document.getElementById('successModal').style.display = 'none';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    if(!token || !loggedInUserID){
-      alert("Please log in first.");
-      window.location.href = "login.html";
-      return;
-    }
+document.addEventListener("DOMContentLoaded", async function () {
+    currentUser = await getToken(token);
     loadAppointments();
 
     document.getElementById('cancelEditButton').addEventListener('click', function () {
