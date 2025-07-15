@@ -27,24 +27,45 @@
     </nav>
   </header>
 
-  <h1>Edit Medication</h1>
+  <main class="edit-med-container">
+  <div class="edit-header">
+    <a href="medication_management.html" class="back-button">←</a>
+    <div>
+      <h2>Manage My Medication</h2>
+      <p>Take care of your health, Mr Tan</p>
+    </div>
+  </div>
+
   <form id="edit-form">
-    <!-- same fields as add form -->
     <input type="hidden" id="med-id">
-    <label>Name <input id="med-name" required></label><br>
-    <label>Dosage <input id="dosage" required></label><br>
-    <label>Frequency 
-      <select id="frequency">
-        <option value="Daily">Daily</option>
-        <option value="Weekly">Weekly</option>
-        <option value="As Needed">As Needed</option>
-      </select>
-    </label><br>
-    <label>Time <input type="time" id="time" required></label><br>
-    <label>Start Date <input type="date" id="start-date" required></label><br>
-    <label>End Date <input type="date" id="end-date"></label><br>
-    <button type="submit">Save Changes</button>
-  </form>
+
+    <label for="med-name">Name</label>
+    <input id="med-name" required>
+
+    <label for="dosage">Dosage</label>
+    <input id="dosage" required>
+
+    <label for="frequency">Frequency</label>
+    <select id="frequency">
+      <option value="Daily">Daily</option>
+      <option value="Weekly">Weekly</option>
+      <option value="As Needed">As Needed</option>
+    </select>
+
+    <label for="time">Time</label>
+    <input type="time" id="time" required>
+
+    <label for="start-date">Start Date</label>
+    <input type="date" id="start-date" required>
+
+    <label for="end-date">End Date</label>
+    <input type="date" id="end-date">
+
+    <div class="form-buttons">
+      <button type="submit" class="save-btn">Save</button>
+      <button type="button" class="delete-btn">Delete</button>
+    </div>
+  </main>
 
   <footer>
       <p>© 2025 HealthyLah – Designed with care for our seniors</p>

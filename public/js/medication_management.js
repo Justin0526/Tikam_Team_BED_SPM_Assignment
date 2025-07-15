@@ -128,7 +128,7 @@ function attachMenuButtons() {
           `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 
         // Navigate to the edit page with the medication ID
-        window.location.href = `/HealthyLah_DB/public/html/edit_medication.html?id=${id}`;
+        window.location.href = `edit_medication.html?id=${id}`;
       }
     });
   });
