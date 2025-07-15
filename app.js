@@ -59,7 +59,7 @@ app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validate
 // Medication routes
 app.get("/medications/today", medicationsController.getTodayMeds );
 app.post("/medications", medicationValidator, medicationsController.addMedication );
-app.patch("/medications/:medicationID/mark-taken", medicationsController.markTaken );
+app.put("/medications/:medicationID/mark-taken", medicationsController.markTaken );
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts );
