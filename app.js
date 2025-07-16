@@ -89,7 +89,8 @@ app.listen(3000, () => {
 app.get('/api/profile/:userID', profileController.getProfile);
 app.post('/api/profile/update', profileController.updateProfile);
 
-
+// Reset medication route
+require('./models/reset_medication_status');
 
 process.on("SIGINT", async () => {
   console.log("Server is gracefully shutting down");
