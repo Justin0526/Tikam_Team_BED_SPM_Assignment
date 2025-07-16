@@ -23,7 +23,9 @@ const medicationValidator  = require("./middlewares/medication_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
 const { verify } = require("crypto");
 const {verifyJWT} = require("./middlewares/authMiddleware");
-const validateProfile = require('./middlewares/profile_validation');
+const {validateUserProfile} = require('./middlewares/userProfile_validation');
+const { validateRegistration } = require('./middlewares/registration_validation');
+const { validateLogin } = require('./middlewares/login_validation');
 
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
@@ -41,8 +43,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // ─── Routes ─────────────────────────────────────────────────────────────────────
 // User routes
 app.get( "/users", userController.getAllUsers );
-app.post("/register", userController.registerUser );
-app.post("/login", userController.loginUser );
+app.post("/register", validateRegistration, userController.registerUser );
+app.post("/login", validateLogin, userController.loginUser );
 
 // Weather routes
 app.get( "/weather",  weatherController.getWeather );
@@ -87,7 +89,7 @@ app.listen(3000, () => {
 
 // Profile-related routes
 app.get('/api/profile/:userID', profileController.getProfile);
-app.post('/api/profile/update', profileController.updateProfile);
+app.post('/api/profile/update', validateUserProfile, profileController.updateProfile);
 
 // Reset medication route
 require('./models/reset_medication_status');
