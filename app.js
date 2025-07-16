@@ -15,6 +15,7 @@ const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const profileController = require('./controllers/profileController');
+const { uploadImage } = require('./controllers/upload_controller')
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -31,7 +32,7 @@ const port = process.env.PORT || 3000;
 
 // ─── Global Middleware ───────────────────────────────────────────────────────────
 app.use(cors());
-app.use(express.json());
+app.use(express.json({limit : "10mb"}));
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Static Files ────────────────────────────────────────────────────────────────
@@ -64,13 +65,16 @@ app.put("/medications/:medicationID/mark-taken", medicationsController.markTaken
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts );
 app.get("/posts/:id",
+  verifyJWT,
   validatePostId,
   postsController.getPostById
 );
 app.post( "/posts",
+  verifyJWT,
   validatePost,
   postsController.createPost
 );
+app.post("/api/upload", uploadImage);
 
 // Translation
 app.post("/translate", translateText );

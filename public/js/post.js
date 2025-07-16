@@ -1,21 +1,50 @@
 // public/js/post.js
 
-function fileToDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload  = e => resolve(e.target.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+// ─── Config & State ─────────────────────────────────────────────────────────
+const apiBaseUrl = "http://localhost:3000";
+let currentUser   = null;
 
+// ─── DOM Nodes ────────────────────────────────────────────────────────────────
 const imageInput = document.getElementById("postImage");
 const preview    = document.getElementById("imagePreview");
 const removeBtn  = document.getElementById("removeImageBtn");
 const shareBtn   = document.querySelector(".share-btn");
 const contentEl  = document.getElementById("postContent");
+const container  = document.querySelector(".posts-list");
 
-// Preview logic
+// ─── Load & Render Public Posts ───────────────────────────────────────────────
+async function loadPosts() {
+  try {
+    const res   = await fetch(`${apiBaseUrl}/posts`);
+    const posts = await res.json();
+    container.innerHTML = posts.length
+      ? posts.map(p => `
+          <div class="post-item">
+            <div class="post-header">
+              <div class="avatar"></div>
+              <div class="meta">
+                <span class="author">${p.Author}</span>
+                <span class="date">${
+                  new Date(p.CreatedAt)
+                    .toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})
+                }</span>
+              </div>
+            </div>
+            <div class="post-body">${p.Content}</div>
+            ${p.ImageURL ? `
+              <div class="post-image-wrap">
+                <img src="${p.ImageURL}" class="post-image" alt="Post image">
+              </div>` : ""}
+          </div>
+        `).join("")
+      : "<p>No posts yet.</p>";
+  } catch (err) {
+    console.error("Error loading posts:", err);
+    container.innerHTML = `<p class="error">Failed to load posts.</p>`;
+  }
+}
+
+// ─── Image Preview Logic ──────────────────────────────────────────────────────
 imageInput.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) {
@@ -24,88 +53,61 @@ imageInput.addEventListener("change", e => {
   }
   const reader = new FileReader();
   reader.onload = evt => {
-    preview.src           = evt.target.result;
-    preview.style.display = "block";
+    preview.src             = evt.target.result;
+    preview.style.display   = "block";
     removeBtn.style.display = "inline-block";
   };
   reader.readAsDataURL(file);
 });
-
 removeBtn.addEventListener("click", () => {
   imageInput.value = "";
   preview.style.display = removeBtn.style.display = "none";
 });
 
-// Load & render posts
-async function loadPosts() {
-  try {
-    const res = await fetch("/posts");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const posts = await res.json();
-
-    const container = document.querySelector(".posts-list");
-    container.innerHTML = "";
-
-    posts.forEach(p => {
-      const postEl = document.createElement("div");
-      postEl.classList.add("post-item");
-
-      // Header
-      const hdr = document.createElement("div");
-      hdr.classList.add("post-header");
-      hdr.innerHTML = `
-        <div class="avatar"></div>
-        <div class="meta">
-          <span class="author">${p.Author}</span>
-          <span class="date">${
-            new Date(p.CreatedAt)
-              .toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })
-          }</span>
-        </div>`;
-      postEl.appendChild(hdr);
-
-      // Content
-      const body = document.createElement("div");
-      body.classList.add("post-body");
-      body.textContent = p.Content;
-      postEl.appendChild(body);
-
-      // Image
-      if (p.ImageURL) {
-        const wrap = document.createElement("div");
-        wrap.classList.add("post-image-wrap");
-        const img = document.createElement("img");
-        img.src = p.ImageURL;
-        img.alt = "Post image";
-        img.classList.add("post-image");
-        wrap.appendChild(img);
-        postEl.appendChild(wrap);
-      }
-
-      container.appendChild(postEl);
-    });
-  } catch (err) {
-    console.error("Error loading posts:", err);
-    document.querySelector(".posts-list")
-      .innerHTML = `<p class="error">Failed to load posts.</p>`;
-  }
-}
-
-// Share‐post handler
+// ─── Share Post Handler (login required) ─────────────────────────────────────
 shareBtn.addEventListener("click", async () => {
   const content = contentEl.value.trim();
-  if (!content) return alert("Please write something.");
-
-  let imageURL = null;
-  if (preview.src && preview.style.display !== "none") {
-    imageURL = preview.src;
+  if (!content) {
+    return alert("Please write something before sharing.");
+  }
+  if (!currentUser) {
+    alert("Please log in to share a post.");
+    return window.location.href = "/html/login.html";
   }
 
-  const payload = { UserID:1, Content:content, ImageURL:imageURL };
-  const res = await fetch("/posts", {
-    method:  "POST",
-    headers: { "Content-Type":"application/json" },
-    body:    JSON.stringify(payload)
+  // 1) Upload the file to your new /api/upload endpoint (if any)
+  let imageURL = null;
+  const file = imageInput.files[0];
+  if (file) {
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const uplRes = await fetch(`${apiBaseUrl}/api/upload`, {
+        method: "POST",
+        body:   form
+      });
+      if (!uplRes.ok) throw new Error("Upload failed");
+      const { url } = await uplRes.json();
+      imageURL = url;
+    } catch (err) {
+      console.error("Upload error:", err);
+      return alert("Image upload failed.");
+    }
+  }
+
+  // 2) Create the post, sending your JWT & userID
+  const userID = currentUser.userID || currentUser.sub;
+  const res = await fetch(`${apiBaseUrl}/posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type":  "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      UserID: currentUser.userID,
+      Content: content,
+      ImageURL: imageURL
+    })
   });
 
   if (!res.ok) {
@@ -113,11 +115,17 @@ shareBtn.addEventListener("click", async () => {
     return alert(err.error || "Failed to share post");
   }
 
+  // 3) On success clear & reload
   contentEl.value = "";
   imageInput.value = "";
   preview.style.display = removeBtn.style.display = "none";
   loadPosts();
 });
 
-// Init
+// ─── Init & Auth ──────────────────────────────────────────────────────────────
+// 1) First load public posts
 document.addEventListener("DOMContentLoaded", loadPosts);
+
+window.addEventListener("load", async () => {
+  currentUser = await getToken(token);
+});

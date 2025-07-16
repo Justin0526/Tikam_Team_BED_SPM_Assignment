@@ -140,3 +140,5 @@ const userID = 1; // 🔁 Replace with actual logged-in user ID
       alert('❌ Failed to update profile. Please try again later.');
     });
   });
+
+  
