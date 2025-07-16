@@ -4,33 +4,26 @@
   <meta charset="UTF-8" />
   <title>HealthyLah Post Forum</title>
   <link rel="stylesheet" href="../css/post.css">
-  <script src="../js/settings_translation.js" defer></script>
-  <script src="../js/auth.js"></script>
-  <!-- Make sure post.js runs after the DOM is ready -->
-  <script src="../js/post.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-  <header class="top-bar">
-    <div class="logo-bar">
-      <div class="logo-container">
-        <img src="logo.png" alt="HealthyLah Logo" class="logo-img">
-        <span class="logo-text">HealthyLah</span>
+ <header class="top-bar">
+      <div class="logo-bar">
+        <div class="logo-container">
+          <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+        </div>
+        <div class="profile" id="user-profile">
+          <!-- Dynamic profile -->
+        </div>
       </div>
-      <div class="profile">
-        <div class="profile-pic"></div>
-        <span class="profile-name">Welcome, Mr Tan</span>
-      </div>
-    </div>
-    <nav class="nav-bar">
-      <a href="../index.html">Home</a>
-      <a href="../about_us.html">About us</a>
-      <a href="../weather.html">Weather</a>
-      <a href="../Transport_and_Facilities.html">Transport &amp; Facilities</a>
-      <a href="#">Health</a>
-      <a href="post_forum.html">Post</a>
-    </nav>
-  </header>
+      <nav class="nav-bar">
+        <a href="index.html">Home</a>
+        <a href="about_us.html">About us</a>
+        <a href="weather.html">Weather</a>
+        <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+        <a href="#">Health</a>
+        <a href="post_forum.html">Post</a>
+      </nav>
+    </header>
 
   <main>
     <section class="post-section">
@@ -88,5 +81,9 @@
         </div>
         <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/settings_translation.js" defer></script>
+  <script src="../js/post.js" defer></script>
 </body>
 </html>

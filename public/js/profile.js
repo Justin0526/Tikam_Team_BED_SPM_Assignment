@@ -153,3 +153,5 @@ async function getUserProfile(currentUser) {
       alert('❌ Failed to update profile. Please try again later.');
     });
   });
+
+  

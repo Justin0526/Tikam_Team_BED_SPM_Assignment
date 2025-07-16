@@ -27,7 +27,7 @@ async function getPostById(req, res) {
 // Create a new post (requires authentication)
 async function createPost(req, res) {
   try {
-    const UserID = req.user.userID; // Extract user ID from decoded JWT token
+    const UserID = req.user.userID; 
     const { Content, ImageURL } = req.body;
 
     const newPost = await postModel.createPost({ UserID, Content, ImageURL });

@@ -17,6 +17,7 @@ async function fetchTodayMeds(userID, start, end) {
         WHERE userID = @userID 
           AND startDate <= @end 
           AND (endDate IS NULL OR endDate >= @start)
+          AND (status IS NULL or status != 'Taken')
       `);
     return result.recordset;
   } catch (err) {

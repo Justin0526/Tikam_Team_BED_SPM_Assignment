@@ -79,6 +79,8 @@ function attachMarkButtons() {
   buttons.forEach(button => {
     button.addEventListener('click', async () => {
       const id = button.getAttribute('data-id');
+      const row = button.closest('tr');
+
       try {
         const res = await fetch(`${apiBaseURL}/medications/${id}/mark-taken`, {
           method: 'PUT'
@@ -86,7 +88,10 @@ function attachMarkButtons() {
 
         if (res.ok) {
           showNotification('Medication marked as taken!');
-          loadTodayMeds(); // Reload the updated list
+          
+          // Add fade-out animation then remove the row
+          row.classList.add('fade-out');
+          setTimeout(() => row.remove(), 500); // wait for 0.5s to match animation
         } else {
           const errorText = await res.text();
           console.error('Server error:', errorText);
@@ -128,7 +133,7 @@ function attachMenuButtons() {
           `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 
         // Navigate to the edit page with the medication ID
-        window.location.href = `/HealthyLah_DB/public/html/edit_medication.html?id=${id}`;
+        window.location.href = `edit_medication.html?id=${id}`;
       }
     });
   });

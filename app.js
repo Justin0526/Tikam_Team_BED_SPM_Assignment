@@ -15,6 +15,7 @@ const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const profileController = require('./controllers/profileController');
+const { uploadImage } = require('./controllers/upload_controller')
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -31,7 +32,7 @@ const port = process.env.PORT || 3000;
 
 // ─── Global Middleware ───────────────────────────────────────────────────────────
 app.use(cors());
-app.use(express.json());
+app.use(express.json({limit : "10mb"}));
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Static Files ────────────────────────────────────────────────────────────────
@@ -59,18 +60,21 @@ app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validate
 // Medication routes
 app.get("/medications/today", medicationsController.getTodayMeds );
 app.post("/medications", medicationValidator, medicationsController.addMedication );
-app.patch("/medications/:medicationID/mark-taken", medicationsController.markTaken );
+app.put("/medications/:medicationID/mark-taken", medicationsController.markTaken );
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts );
 app.get("/posts/:id",
+  verifyJWT,
   validatePostId,
   postsController.getPostById
 );
 app.post( "/posts",
+  verifyJWT,
   validatePost,
   postsController.createPost
 );
+app.post("/api/upload", uploadImage);
 
 // Translation
 app.post("/translate", translateText );
@@ -85,7 +89,8 @@ app.listen(3000, () => {
 app.get('/api/profile/:userID', profileController.getProfile);
 app.post('/api/profile/update', profileController.updateProfile);
 
-
+// Reset medication route
+require('./models/reset_medication_status');
 
 process.on("SIGINT", async () => {
   console.log("Server is gracefully shutting down");
