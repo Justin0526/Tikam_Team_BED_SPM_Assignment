@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/appointment_management.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="../js/auth.js"></script>
+  <script src="../js/settings_translation.js" defer></script>
+  <script src="../js/appointment_management.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
 </head>
 <body>
@@ -15,10 +19,6 @@
       <div class="logo-container">
         <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
       </div>
-      <!-- <div class="profile">
-        <div class="profile-pic"></div>
-        <span class="profile-name">Welcome, Mr Tan</span>
-      </div> -->
       <div class="profile" id="user-profile">
           <!-- Dynamic profile -->
       </div>
@@ -34,35 +34,6 @@
   </header>
 
   <div class="welcome">Appointment Management</div>
-
-  <!-- <form id="appointment-form">
-    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Add New Appointment</h3>
-
-    //Temporary 
-    <label for="userID">User ID</label>
-    <input type="number" id="userID" placeholder="Enter your User ID" required>
-
-    <label for="doctorName">Doctor’s Name</label>
-    <input type="text" id="doctorName" placeholder="Enter your Doctor’s name here" required>
-
-    <label for="clinicName">Clinic Name</label>
-    <input type="text" id="clinicName" placeholder="Enter your clinic name here" required>
-
-    <label for="appointmentDate">Appointment Date</label>
-    <input type="date" id="appointmentDate" required>
-
-    <label for="appointmentTime">Appointment Time</label>
-    <input type="time" id="appointmentTime" required>
-
-    <label for="purpose">Purpose</label>
-    <input type="text" id="purpose" placeholder="Purpose of Appointment" required>
-
-    <label for="reminderDate">Reminder Date ( Optional )</label>
-    <input type="date" id="reminderDate">
-
-    <div id="errorBox" style="color: red; font-weight: bold; display: none;"></div>
-    <button type="submit">Add Appointment</button>
-  </form> -->
 
   <form id="appointment-form">
     <h3 class="section-title" id="form-title"><i class="fas fa-plus-circle"></i> Add New Appointment</h3>
@@ -98,7 +69,6 @@
 
   </form>
 
-
   <div id="successModal" class="modal" style="display: none;">
      <div class="modal-content">
         <p>Appointment added successfully.</p>
@@ -106,7 +76,6 @@
     </div>
   </div>
    
-
   <div class="search-filter">
     <input type="text" id="searchKeyword" placeholder="Search by doctor, clinic or purpose">
     <button onclick="searchAppointments()">Search</button>
@@ -138,7 +107,6 @@
       </table>
     </div>
   </div>
-
   <footer>
     <p>© 2025 HealthyLah – Designed with care for our seniors</p>
     <div class="social-links" style="display:inline-block;">
@@ -157,9 +125,5 @@
     </div>
     <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/settings_translation.js" defer></script>
-  <script src="../js/appointment_management.js" defer></script>
 </body>
 </html>
