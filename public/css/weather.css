@@ -133,14 +133,13 @@
   text-decoration: none;
 }
 
-.btn-blue {
-  background-color: #3399CC;
-  color: #FFFFFF;
-}
-
 .btn-yellow {
   background-color: #A4D038;
   color: #FFFFFF;
+}
+
+.btn-yellow:hover {
+  background-color: #2B7DA4;
 }
 
 .forecast-list {
@@ -192,8 +191,17 @@
   display: none;
 }
 
-li[data-target] {
+li.toggle-definition[data-target] {
   cursor: pointer;
   font-weight: bold;
   margin: 10px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+li.toggle-definition[data-target]:hover {
+  background-color: #A4D038; /* light green */
+  color: white;
+}
+
