@@ -39,7 +39,7 @@
     <section class="medication-box">
 
       <!-- Today's Medications -->
-      <h2>Today's Medication</h2>
+      <h2 id="today-header">Today's Medication</h2>
       <table class="medication-table">
         <thead>
           <tr>
@@ -68,12 +68,8 @@
             <th>Dosage</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td><i class="fas fa-clock"></i> 2:00 PM</td>
-            <td>Panadol</td>
-            <td>2 tablets</td>
-          </tr>
+        <tbody id="upcoming-meds-body">
+          <!-- Populated dynamically by JS -->
         </tbody>
       </table>
 

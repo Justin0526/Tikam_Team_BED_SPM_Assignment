@@ -28,6 +28,34 @@ async function fetchTodayMeds(userID, start, end) {
   }
 }
 
+async function fetchUpcomingMeds(userID, now, oneHourLater) {
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+
+    // Convert times to HH:mm:ss format
+    const nowStr = now.toTimeString().split(' ')[0];         // "HH:mm:ss"
+    const nextHourStr = oneHourLater.toTimeString().split(' ')[0];
+
+    const result = await pool.request()
+      .input('userID', sql.Int, userID)
+      .input('now', sql.VarChar(8), nowStr)
+      .input('nextHour', sql.VarChar(8), nextHourStr)
+      .query(`
+        SELECT * FROM Medications 
+        WHERE userID = @userID
+          AND status != 'Taken'
+          AND CAST(consumptionTime AS TIME) >= @now
+          AND CAST(consumptionTime AS TIME) < @nextHour
+          AND CAST(GETDATE() AS DATE) BETWEEN CAST(startDate AS DATE) AND ISNULL(CAST(endDate AS DATE), GETDATE())
+      `);
+
+    return result.recordset;
+  } finally {
+    sql.close();
+  }
+}
+
 /**
  * Inserts a new medication record into the database.
  */
@@ -82,5 +110,6 @@ async function updateMedicationAsTaken(medicationID) {
 module.exports = {
   fetchTodayMeds,
   insertMedication,
-  updateMedicationAsTaken
+  updateMedicationAsTaken,
+  fetchUpcomingMeds
 };

@@ -33,6 +33,12 @@ function formatTime(timeString) {
  * Also attaches the event handlers for mark and menu buttons.
  */
 async function loadTodayMeds() {
+  const todayHeader = document.getElementById('today-header');
+  const today = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const formattedDate = today.toLocaleDateString('en-SG', options);
+  todayHeader.textContent = `Today's Medication — ${formattedDate}`;
+
   try {
     const response = await fetch(`${apiBaseURL}/medications/today`);
     if (!response.ok) throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
@@ -40,7 +46,9 @@ async function loadTodayMeds() {
     const medications = await response.json();
     const tbody = document.getElementById('medication-table-body');
     tbody.innerHTML = ''; // Clear existing rows
-
+    medications.sort((a, b) => {
+      return a.consumptionTime.localeCompare(b.consumptionTime);
+    });
     // Create table rows for each medication
     medications.forEach(med => {
       const row = document.createElement('tr');
@@ -91,7 +99,10 @@ function attachMarkButtons() {
           
           // Add fade-out animation then remove the row
           row.classList.add('fade-out');
-          setTimeout(() => row.remove(), 500); // wait for 0.5s to match animation
+          setTimeout(() => {
+            row.remove(); // wait for 0.5s to match animation
+            loadUpcomingMeds();
+          }, 500);
         } else {
           const errorText = await res.text();
           console.error('Server error:', errorText);
@@ -137,6 +148,35 @@ function attachMenuButtons() {
       }
     });
   });
+}
+
+async function loadUpcomingMeds() {
+  try {
+    const res = await fetch(`${apiBaseURL}/medications/upcoming`);
+    const data = await res.json();
+
+    const tbody = document.querySelector('.reminder-table tbody');
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td colspan="3" style="text-align:center;">No medication in the next hour.</td>`;
+      tbody.appendChild(row);
+      return;
+    }
+
+    data.forEach(med => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><i class="fas fa-clock"></i> ${formatTime(med.consumptionTime)}</td>
+        <td>${med.medicineName}</td>
+        <td>${med.dosage}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Error loading upcoming medications:", err);
+  }
 }
 
 /**
@@ -207,4 +247,6 @@ window.addEventListener('DOMContentLoaded', function() {
   });
 
   loadTodayMeds(); // Initial load of today's medications
+  loadUpcomingMeds();
+  setInterval(loadUpcomingMeds, 60 * 60 * 1000); // reload every hour
 });
