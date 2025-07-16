@@ -1,6 +1,17 @@
-const userID = 1; // 🔁 Replace with actual logged-in user ID
+let currentUser = null;
+const apiBaseURl = "http://localhost:3000/api";
+window.addEventListener('load', async () => {
+  let currentUser = await getToken(token);
+  getUserProfile(currentUser);
+});
 
-  fetch(`http://localhost:3000/api/profile/${userID}`)
+async function getUserProfile(currentUser) {  
+  if (!currentUser) {
+    console.warn("No user is currently logged in.");
+    return;
+  }
+  const userID = currentUser.userID;
+  fetch(`${apiBaseURl}/profile/${userID}`)
     .then(res => res.json())
     .then(data => {
       if (data) {
@@ -50,6 +61,8 @@ const userID = 1; // 🔁 Replace with actual logged-in user ID
       console.error("Failed to load profile:", err);
       alert("❌ Failed to load profile data.");
     });
+}
+  
 
   document.addEventListener('DOMContentLoaded', () => {
     const allergyDropdown = document.getElementById("allergies");
