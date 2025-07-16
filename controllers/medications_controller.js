@@ -1,7 +1,8 @@
-const {
+const{
   fetchTodayMeds,
   insertMedication,
-  updateMedicationAsTaken
+  updateMedicationAsTaken,
+  fetchUpcomingMeds
 } = require('../models/medication_models.js');
 
 // GET /medications/today
@@ -25,6 +26,22 @@ async function getTodayMeds(req, res) {
     res.status(500).send("Failed to retrieve medications");
   }
 }
+
+// GET /medications/upcoming
+async function getUpcomingMeds(req, res) {
+  const userID = 1; // Replace with actual logged-in user ID in future
+  const now = new Date();
+  const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+
+  try {
+    const meds = await fetchUpcomingMeds(userID, now, nextHour);
+    res.status(200).json(meds);
+  } catch (err) {
+    console.error("Error fetching upcoming meds:", err);
+    res.status(500).send("Failed to retrieve upcoming medications");
+  }
+}
+
 
 // POST /medications
 // Adds a new medication record for the logged-in user.
@@ -58,5 +75,6 @@ async function markTaken(req, res) {
 module.exports = {
   getTodayMeds,
   addMedication,
-  markTaken
+  markTaken,
+  getUpcomingMeds
 };
