@@ -88,16 +88,18 @@ async function insertMedication(userID, data) {
 /**
  * Updates a medication’s status to "Taken".
  */
-async function updateMedicationAsTaken(medicationID) {
+async function updateMedicationAsTaken(userID, medicationID) {
   let pool;
   try {
     pool = await sql.connect(dbConfig);
     await pool.request()
       .input('medicationID', sql.Int, medicationID)
+      .input('userID', sql.Int, userID)
       .query(`
         UPDATE Medications
         SET status = 'Taken'
         WHERE medicationID = @medicationID
+          AND userID = @userID
       `);
   } catch (err) {
     console.error("Database error in updateMedicationAsTaken:", err);

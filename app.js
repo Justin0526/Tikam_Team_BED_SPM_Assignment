@@ -60,10 +60,10 @@ app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, a
 app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
 
 // Medication routes
-app.get("/medications/today", medicationsController.getTodayMeds );
-app.post("/medications", medicationValidator, medicationsController.addMedication );
-app.put("/medications/:medicationID/mark-taken", medicationsController.markTaken );
-app.get("/medications/upcoming", medicationsController.getUpcomingMeds);
+app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
+app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
+app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
+app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts );
