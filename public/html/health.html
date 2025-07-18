@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Health Page</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/health.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/settings_translation.js" defer></script>
+</head>
+<body>
+    <header class="top-bar">
+    <div class="logo-bar">
+      <div class="logo-container">
+        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+      </div>
+      <div class="profile" id="user-profile">
+            <!-- Dynamic profile -->
+      </div>
+    </div>
+    <nav class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="about_us.html">About Us</a>
+      <a href="weather.html">Weather</a>
+      <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+      <a href="health.html">Health</a>
+      <a href="post_forum.html">Post</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Health Dashboard</h1>
+            <p>Access and manage all your health features in one place</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <section class="profile-section">
+            <h2>My Health Profile</h2>
+            <div class="profile-name">Mr Tan Choon Peng</div>
+            <div class="profile-details">
+                <div class="detail-item">
+                    <strong>Age:</strong>
+                    <span>68 years</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Gender:</strong>
+                    <span>Male</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Allergies:</strong>
+                    <span>Penicillin, Shellfish</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Chronic Conditions:</strong>
+                    <span>Hypertension, Type 2 Diabetes</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Emergency Contact:</strong>
+                    <span>Tan Wei Ling (Daughter) - +65 9123 4567</span>
+                </div>
+            </div>
+        </section>
+        <a href="" class="feature-card-link">
+            <section class="features-section-grid">
+            <div class="feature-card">
+                <i class="fas fa-file-medical"></i>
+                <span>View Health Records</span>
+            </div>
+        </a>
+        <a href="" class="feature-card-link">
+            <div class="feature-card">
+                <i class="fas fa-bell"></i>
+                <span>Health Reminder</span>
+            </div>
+        </a>
+        <a href="medication_management.html" class="feature-card-link">
+            <div class="feature-card">
+                <i class="fas fa-pills"></i>
+                <span>Medication Management</span>
+            </div>
+        </a>
+        <a href="" class="feature-card-link">
+            <div class="feature-card">
+                <i class="fas fa-utensils"></i>
+                <span>Meal Log</span>
+            </div>
+        </a>
+        <a href="" class="feature-card-link">
+            <div class="feature-card">
+                <i class="fas fa-calculator"></i>
+                <span>BMI Calculator</span>
+            </div>
+        </a>
+        <a href="" class="feature-card-link">
+            <div class="feature-card">
+                <i class="fas fa-calendar-check"></i>
+                <span>Appointment Management</span>
+            </div>
+        </a>
+    </section>
+    </div>
+
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links" style="display:inline-block;">
+      <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
+      <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
+      <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
+      <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
+      </a>
+      <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
+        <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
+      </a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="../js/auth.js"></script>
+</body>
+</html>
