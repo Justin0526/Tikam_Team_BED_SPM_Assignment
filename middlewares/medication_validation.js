@@ -75,7 +75,8 @@ const medicationSchema = Joi.object({
  * Middleware for validating medication creation/editing requests using Joi.
  */
 function validateMedication(req, res, next) {
-  const { error } = medicationSchema.validate(req.body, { abortEarly: false });
+  req.body.userID = req.user.userID; // Set userID from JWT token
+  const { error } = medicationSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
 
   if (error) {
     const errorMessages = error.details.map(d => d.message);

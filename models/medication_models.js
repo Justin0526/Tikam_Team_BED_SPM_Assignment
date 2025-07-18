@@ -17,11 +17,40 @@ async function fetchTodayMeds(userID, start, end) {
         WHERE userID = @userID 
           AND startDate <= @end 
           AND (endDate IS NULL OR endDate >= @start)
+          AND (status IS NULL or status != 'Taken')
       `);
     return result.recordset;
   } catch (err) {
     console.error("Database error in fetchTodayMeds:", err);
     throw err;
+  } finally {
+    sql.close();
+  }
+}
+
+async function fetchUpcomingMeds(userID, now, oneHourLater) {
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+
+    // Convert times to HH:mm:ss format
+    const nowStr = now.toTimeString().split(' ')[0];         // "HH:mm:ss"
+    const nextHourStr = oneHourLater.toTimeString().split(' ')[0];
+
+    const result = await pool.request()
+      .input('userID', sql.Int, userID)
+      .input('now', sql.VarChar(8), nowStr)
+      .input('nextHour', sql.VarChar(8), nextHourStr)
+      .query(`
+        SELECT * FROM Medications 
+        WHERE userID = @userID
+          AND status != 'Taken'
+          AND CAST(consumptionTime AS TIME) >= @now
+          AND CAST(consumptionTime AS TIME) < @nextHour
+          AND CAST(GETDATE() AS DATE) BETWEEN CAST(startDate AS DATE) AND ISNULL(CAST(endDate AS DATE), GETDATE())
+      `);
+
+    return result.recordset;
   } finally {
     sql.close();
   }
@@ -59,16 +88,18 @@ async function insertMedication(userID, data) {
 /**
  * Updates a medication’s status to "Taken".
  */
-async function updateMedicationAsTaken(medicationID) {
+async function updateMedicationAsTaken(userID, medicationID) {
   let pool;
   try {
     pool = await sql.connect(dbConfig);
     await pool.request()
       .input('medicationID', sql.Int, medicationID)
+      .input('userID', sql.Int, userID)
       .query(`
         UPDATE Medications
         SET status = 'Taken'
         WHERE medicationID = @medicationID
+          AND userID = @userID
       `);
   } catch (err) {
     console.error("Database error in updateMedicationAsTaken:", err);
@@ -81,5 +112,6 @@ async function updateMedicationAsTaken(medicationID) {
 module.exports = {
   fetchTodayMeds,
   insertMedication,
-  updateMedicationAsTaken
+  updateMedicationAsTaken,
+  fetchUpcomingMeds
 };

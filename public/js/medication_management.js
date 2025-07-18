@@ -1,6 +1,12 @@
 // Base URL for API calls — change this if deploying to a live server
 const apiBaseURL = 'http://localhost:3000';
 
+// grab the JWT and build headers
+const authHeaders = {
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${token}`
+};
+
 /**
  * Converts a UTC time string to 12-hour AM/PM format for display.
  * @param {string} timeString - A UTC time string (e.g. "13:30:00").
@@ -33,14 +39,22 @@ function formatTime(timeString) {
  * Also attaches the event handlers for mark and menu buttons.
  */
 async function loadTodayMeds() {
+  const todayHeader = document.getElementById('today-header');
+  const today = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const formattedDate = today.toLocaleDateString('en-SG', options);
+  todayHeader.textContent = `Today's Medication — ${formattedDate}`;
+
   try {
-    const response = await fetch(`${apiBaseURL}/medications/today`);
+    const response = await fetch(`${apiBaseURL}/medications/today`, {headers:authHeaders});
     if (!response.ok) throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
     
     const medications = await response.json();
     const tbody = document.getElementById('medication-table-body');
     tbody.innerHTML = ''; // Clear existing rows
-
+    medications.sort((a, b) => {
+      return a.consumptionTime.localeCompare(b.consumptionTime);
+    });
     // Create table rows for each medication
     medications.forEach(med => {
       const row = document.createElement('tr');
@@ -79,14 +93,23 @@ function attachMarkButtons() {
   buttons.forEach(button => {
     button.addEventListener('click', async () => {
       const id = button.getAttribute('data-id');
+      const row = button.closest('tr');
+
       try {
         const res = await fetch(`${apiBaseURL}/medications/${id}/mark-taken`, {
-          method: 'PUT'
+          method: 'PUT',
+          headers: authHeaders
         });
 
         if (res.ok) {
           showNotification('Medication marked as taken!');
-          loadTodayMeds(); // Reload the updated list
+          
+          // Add fade-out animation then remove the row
+          row.classList.add('fade-out');
+          setTimeout(() => {
+            row.remove(); // wait for 0.5s to match animation
+            loadUpcomingMeds();
+          }, 500);
         } else {
           const errorText = await res.text();
           console.error('Server error:', errorText);
@@ -134,6 +157,35 @@ function attachMenuButtons() {
   });
 }
 
+async function loadUpcomingMeds() {
+  try {
+    const res = await fetch(`${apiBaseURL}/medications/upcoming`, {headers:authHeaders});
+    const data = await res.json();
+
+    const tbody = document.querySelector('.reminder-table tbody');
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td colspan="3" style="text-align:center;">No medication in the next hour.</td>`;
+      tbody.appendChild(row);
+      return;
+    }
+
+    data.forEach(med => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><i class="fas fa-clock"></i> ${formatTime(med.consumptionTime)}</td>
+        <td>${med.medicineName}</td>
+        <td>${med.dosage}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Error loading upcoming medications:", err);
+  }
+}
+
 /**
  * Displays a floating notification on screen with a message.
  * Automatically disappears after 3 seconds.
@@ -158,7 +210,10 @@ function showNotification(message) {
  * - Handles medication form submission.
  * - Loads today's medications.
  */
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
+  const user = await getToken(token);
+  if (!user) return this.window.location.href = 'login.html';
+
   document.getElementById('start-date').valueAsDate = new Date();
 
   document.querySelector('.medication-form').addEventListener('submit', async function(e) {
@@ -168,7 +223,6 @@ window.addEventListener('DOMContentLoaded', function() {
     const formattedTime = timeInput ? `${timeInput}:00` : '';
 
     const payload = {
-      userID: 1, // Hardcoded user ID for demo purposes
       medicineName: document.getElementById('med-name').value,
       dosage: document.getElementById('dosage').value,
       frequency: document.getElementById('frequency').value,
@@ -181,7 +235,7 @@ window.addEventListener('DOMContentLoaded', function() {
     try {
       const response = await fetch(`${apiBaseURL}/medications`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify(payload)
       });
 
@@ -202,4 +256,6 @@ window.addEventListener('DOMContentLoaded', function() {
   });
 
   loadTodayMeds(); // Initial load of today's medications
+  loadUpcomingMeds();
+  setInterval(loadUpcomingMeds, 60 * 60 * 1000); // reload every hour
 });

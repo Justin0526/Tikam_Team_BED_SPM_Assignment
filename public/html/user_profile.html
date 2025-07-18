@@ -10,13 +10,13 @@
 <body>
   <header class="top-bar">
     <header class="top-bar">
-    <div class="logo-bar">
-      <div class="logo-container">
-        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
-      </div>
-      <div class="profile">
-        <div class="profile-pic"></div>
-        <span class="profile-name">Welcome, Mr Tan</span>
+      <div class="logo-bar">
+        <div class="logo-container">
+          <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+        </div>
+        <div class="profile" id="user-profile">
+          <!-- Dynamic profile -->
+        </div>
       </div>
     </div>
     <nav class="nav-bar">
@@ -111,6 +111,8 @@
     </div>
     <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="../js/auth.js"></script>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
   <script src="/js/profile.js" defer></script>
 </body>
