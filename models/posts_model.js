@@ -51,9 +51,79 @@ async function createPost({ UserID, Content, ImageURL }) {
   return getPostById(newId);
 }
 
+async function getAllComments() {
+  const pool = await poolPromise;
+  const result = await pool.request()
+    .query(`
+      SELECT 
+        CommentID,
+        PostID,
+        UserID,
+        Content,
+        CommentDateTime
+      FROM Comments
+      ORDER BY CommentDateTime DESC
+    `);
+  return result.recordset;
+}
+
+async function getCommentByID(commentID) {
+  const pool = await poolPromise;
+  const result = await pool.request()
+    .input("CommentID", sql.Int, commentID)
+    .query(`
+      SELECT 
+        CommentID,
+        PostID,
+        UserID,
+        Content,
+        CommentDateTime
+      FROM Comments
+      WHERE CommentID = @CommentID
+    `);
+  return result.recordset[0] || null;
+}
+
+// — Create a new comment on a given post
+async function createComment({ UserID, PostID, Content }) {
+  const pool = await poolPromise;
+  const result = await pool.request()
+    .input("UserID",  sql.Int,         UserID)
+    .input("PostID",  sql.Int,         PostID)
+    .input("Content", sql.VarChar(100), Content)
+    .query(`
+      INSERT INTO Comments (UserID, PostID, Content, CommentDateTime)
+      OUTPUT 
+        inserted.CommentID,
+        inserted.UserID,
+        inserted.PostID,
+        inserted.Content,
+        inserted.CommentDateTime
+      VALUES (@UserID, @PostID, @Content, GETDATE())
+    `);
+  return result.recordset[0];
+}
+
+async function getCommentsByPostID(postID) {
+  const pool = await poolPromise;
+  const result = await pool.request()
+    .input("PostID", sql.Int, postID)
+    .query(`
+      SELECT CommentID, PostID, UserID, Content, CommentDateTime
+      FROM Comments
+      WHERE PostID = @PostID
+      ORDER BY CommentDateTime
+    `);
+  return result.recordset;
+}
 
 module.exports = {
   getAllPosts,
   getPostById,
-  createPost
+  createPost,
+  getAllComments,
+  getCommentByID,
+  createComment,
+  getCommentsByPostID
 };
+

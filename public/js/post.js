@@ -1,4 +1,3 @@
-// public/js/post.js
 
 // ─── Config & State ─────────────────────────────────────────────────────────
 const apiBaseUrl = "http://localhost:3000";
@@ -15,19 +14,34 @@ const container  = document.querySelector(".posts-list");
 // ─── Load & Render Public Posts ───────────────────────────────────────────────
 async function loadPosts() {
   try {
-    const res   = await fetch(`${apiBaseUrl}/posts`);
+    const res = await fetch(`${apiBaseUrl}/posts`);
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const posts = await res.json();
-    container.innerHTML = posts.length
-      ? posts.map(p => `
-          <div class="post-item">
+
+    // if there's zero posts
+    if (!Array.isArray(posts) || posts.length === 0) {
+      container.innerHTML = `<p>No posts yet.</p>`;
+      return;
+    }
+
+    // otherwise build the HTML
+    container.innerHTML = posts
+      .map(p => {
+        // format the date properly
+        const humanDate = new Date(p.CreatedAt)
+          .toLocaleDateString("en-GB", {
+            day:   "numeric",
+            month: "short",
+            year:  "numeric"
+          });
+
+        return `
+          <div class="post-item" data-post-id="${p.PostID}">
             <div class="post-header">
               <div class="avatar"></div>
               <div class="meta">
                 <span class="author">${p.Author}</span>
-                <span class="date">${
-                  new Date(p.CreatedAt)
-                    .toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})
-                }</span>
+                <span class="date">${humanDate}</span>
               </div>
             </div>
             <div class="post-body">${p.Content}</div>
@@ -35,9 +49,91 @@ async function loadPosts() {
               <div class="post-image-wrap">
                 <img src="${p.ImageURL}" class="post-image" alt="Post image">
               </div>` : ""}
+            <div class="post-actions">
+              <button class="comment-toggle">💬 Comment</button>
+              <button class="like-btn">👍</button>
+              <button class="share-btn-outer">↗️</button>
+            </div>
+            <div class="comments-section" hidden>
+              <div class="comment-list"></div>
+              <textarea class="new-comment" placeholder="Write a comment..."></textarea>
+              <button class="submit-comment">Post Comment</button>
+            </div>
           </div>
-        `).join("")
-      : "<p>No posts yet.</p>";
+        `;
+      })
+      .join("");
+
+    // wire up comment‐toggle & comment submission for each post
+    container.querySelectorAll(".post-item").forEach(item => {
+      const postID = item.dataset.postId;
+      const toggle = item.querySelector(".comment-toggle");
+      const section = item.querySelector(".comments-section");
+      const list = item.querySelector(".comment-list");
+      const submitBtn = item.querySelector(".submit-comment");
+      const input = item.querySelector(".new-comment");
+
+      // fetch & render existing comments
+      fetch(`${apiBaseUrl}/posts/${postID}/comments`)
+        .then(r => r.json())
+        .then(comments => {
+          list.innerHTML = comments
+            .map(c => `
+              <div class="comment-item">
+                <div class="meta">
+                  <span class="author">${c.userName}</span>
+                  <span class="date">${toLocaleDate(c.createdAt)}</span>
+                </div>
+                <div class="body">${c.content}</div>
+              </div>
+            `).join("");
+        })
+        .catch(console.error);
+
+      // show/hide comment area
+      toggle.addEventListener("click", () => {
+        section.hidden = !section.hidden;
+      });
+
+      // post a new comment
+      submitBtn.addEventListener("click", async () => {
+        const text = input.value.trim();
+        if (!text) return alert("Please write a comment.");
+        const userID = currentUser.userID || currentUser.sub;
+        if (!userID) {
+          alert("Please log in to comment.");
+          return window.location.href = "/html/login.html";
+        }
+
+        const resp = await fetch(`${apiBaseUrl}/posts/${postID}/comments`, {
+          method: "POST",
+          headers: {
+            "Content-Type":  "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ 
+            UserID: currentUser.userID,
+            PostID: postID,
+            Content: text 
+          })
+        });
+        if (!resp.ok) {
+          return alert("Failed to post comment");
+        }
+        const newComment = await resp.json();
+        list.insertAdjacentHTML("beforeend", `
+          <div class="comment-item">
+            <div class="meta">
+              <span class="author">${currentUser.username}</span>
+              <span class="date">just now</span>
+            </div>
+            <div class="body">${newComment.content}</div>
+          </div>
+        `);
+        input.value = "";
+      });
+    });
+
   } catch (err) {
     console.error("Error loading posts:", err);
     container.innerHTML = `<p class="error">Failed to load posts.</p>`;
@@ -63,6 +159,7 @@ removeBtn.addEventListener("click", () => {
   imageInput.value = "";
   preview.style.display = removeBtn.style.display = "none";
 });
+
 
 // ─── Share Post Handler (login required) ─────────────────────────────────────
 shareBtn.addEventListener("click", async () => {
@@ -121,6 +218,9 @@ shareBtn.addEventListener("click", async () => {
   preview.style.display = removeBtn.style.display = "none";
   loadPosts();
 });
+
+
+
 
 // ─── Init & Auth ──────────────────────────────────────────────────────────────
 // 1) First load public posts

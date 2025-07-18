@@ -63,7 +63,7 @@ app.post("/medications", medicationValidator, medicationsController.addMedicatio
 app.put("/medications/:medicationID/mark-taken", medicationsController.markTaken );
 
 // Posts CRUD
-app.get("/posts", postsController.getAllPosts );
+app.get("/posts", postsController.getAllPosts);
 app.get("/posts/:id",
   verifyJWT,
   validatePostId,
@@ -75,6 +75,12 @@ app.post( "/posts",
   postsController.createPost
 );
 app.post("/api/upload", uploadImage);
+
+// Comments CRUD
+app.get("/comments", postsController.getAllComments);
+app.get("/comments/:id", verifyJWT, postsController.getCommentByID)
+app.get("/posts/:postID/comments", verifyJWT, postsController.getCommentsByPostID);
+app.post("/comments", verifyJWT, postsController.createComment)
 
 // Translation
 app.post("/translate", translateText );

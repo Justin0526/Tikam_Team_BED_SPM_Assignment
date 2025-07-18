@@ -1,6 +1,3 @@
-const apiBaseUrl = "http://localhost:3000";
-let currentUser   = null;
-
 console.log("settings_translation.js loaded");
 
 const sel = document.getElementById("languageSelect");
@@ -83,6 +80,3 @@ async function translatePage(targetLang) {
     console.error("Translation error:", err);
   }
 }
-window.addEventListener("load", async () => {
-  currentUser = await getToken(token);
-});
