@@ -1,4 +1,4 @@
-const sql      = require("mssql");
+const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
 async function getAllPosts() {
@@ -51,70 +51,78 @@ async function createPost({ UserID, Content, ImageURL }) {
   return getPostById(newId);
 }
 
+// ─── Comments ──────────────────────────────────────────────────────────────────
 async function getAllComments() {
-  const pool = await poolPromise;
-  const result = await pool.request()
-    .query(`
-      SELECT 
-        CommentID,
-        PostID,
-        UserID,
-        Content,
-        CommentDateTime
-      FROM Comments
-      ORDER BY CommentDateTime DESC
-    `);
-  return result.recordset;
+  const pool = await sql.connect(dbConfig);
+  const { recordset } = await pool.request().query(`
+    SELECT
+      c.CommentID,
+      c.PostID,
+      c.UserID,
+      c.Content,
+      c.CommentDateTime AS createdAt
+    FROM dbo.Comments c
+    ORDER BY c.CommentDateTime DESC
+  `);
+  return recordset;
 }
 
 async function getCommentByID(commentID) {
-  const pool = await poolPromise;
-  const result = await pool.request()
+  const pool = await sql.connect(dbConfig);
+  const { recordset } = await pool
+    .request()
     .input("CommentID", sql.Int, commentID)
     .query(`
-      SELECT 
-        CommentID,
-        PostID,
-        UserID,
-        Content,
-        CommentDateTime
-      FROM Comments
-      WHERE CommentID = @CommentID
+      SELECT
+        c.CommentID,
+        c.PostID,
+        c.UserID,
+        c.Content,
+        c.CommentDateTime AS createdAt
+      FROM dbo.Comments c
+      WHERE c.CommentID = @CommentID
     `);
-  return result.recordset[0] || null;
-}
-
-// — Create a new comment on a given post
-async function createComment({ UserID, PostID, Content }) {
-  const pool = await poolPromise;
-  const result = await pool.request()
-    .input("UserID",  sql.Int,         UserID)
-    .input("PostID",  sql.Int,         PostID)
-    .input("Content", sql.VarChar(100), Content)
-    .query(`
-      INSERT INTO Comments (UserID, PostID, Content, CommentDateTime)
-      OUTPUT 
-        inserted.CommentID,
-        inserted.UserID,
-        inserted.PostID,
-        inserted.Content,
-        inserted.CommentDateTime
-      VALUES (@UserID, @PostID, @Content, GETDATE())
-    `);
-  return result.recordset[0];
+  return recordset[0] || null;
 }
 
 async function getCommentsByPostID(postID) {
-  const pool = await poolPromise;
-  const result = await pool.request()
+  const pool = await sql.connect(dbConfig);
+  const { recordset } = await pool
+    .request()
     .input("PostID", sql.Int, postID)
     .query(`
-      SELECT CommentID, PostID, UserID, Content, CommentDateTime
-      FROM Comments
-      WHERE PostID = @PostID
-      ORDER BY CommentDateTime
+      SELECT 
+        c.CommentID,
+        c.PostID,
+        c.UserID,
+        u.Username              AS userName,
+        c.Content,
+        c.CommentDateTime       AS createdAt
+      FROM dbo.Comments c
+      JOIN dbo.Users u          ON u.UserID = c.UserID
+      WHERE c.PostID = @PostID
+      ORDER BY c.CommentDateTime ASC
     `);
-  return result.recordset;
+  return recordset;
+}
+
+async function createComment({ PostID, UserID, Content }) {
+  const pool = await sql.connect(dbConfig);
+  const { recordset } = await pool
+    .request()
+    .input("PostID",  sql.Int,    PostID)
+    .input("UserID",  sql.Int,    UserID)
+    .input("Content", sql.VarChar(500), Content)
+    .query(`
+      INSERT INTO dbo.Comments (PostID, UserID, Content, CommentDateTime)
+      OUTPUT inserted.CommentID,
+             inserted.PostID,
+             inserted.UserID,
+             inserted.Content,
+             inserted.CommentDateTime   AS createdAt
+      VALUES (@PostID, @UserID, @Content, GETDATE());
+    `);
+  return recordset[0];
 }
 
 module.exports = {
@@ -123,7 +131,7 @@ module.exports = {
   createPost,
   getAllComments,
   getCommentByID,
-  createComment,
-  getCommentsByPostID
+  getCommentsByPostID,
+  createComment
 };
 

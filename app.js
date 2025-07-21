@@ -80,10 +80,16 @@ app.post( "/posts",
 app.post("/api/upload", uploadImage);
 
 // Comments CRUD
-app.get("/comments", postsController.getAllComments);
-app.get("/comments/:id", verifyJWT, postsController.getCommentByID)
-app.get("/posts/:postID/comments", verifyJWT, postsController.getCommentsByPostID);
-app.post("/comments", verifyJWT, postsController.createComment)
+app.get(
+  "/posts/:postID/comments",
+  verifyJWT,
+  postsController.getCommentsForPost
+);
+app.post(
+  "/posts/:postID/comments",
+  verifyJWT,
+  postsController.createCommentForPost
+);  
 
 // Translation
 app.post("/translate", translateText );

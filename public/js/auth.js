@@ -20,7 +20,7 @@ async function getToken(token){
 
             userProfile.innerHTML = `
                 <div class="profile-pic"></div>
-                <span class="profile-name"><a href="profile.html?${userID}">Welcome,  ${username}</a></span>
+                <span class="profile-name"><a href="user_profile.html?${userID}">Welcome,  ${username}</a></span>
             `;  
 
             return {username: username, userID: userID};
