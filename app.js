@@ -12,6 +12,7 @@ const weatherController = require("./controllers/weather_controller");
 const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
+const editMedicationsController = require('./controllers/edit_medication_controller');
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const profileController = require('./controllers/profileController');
@@ -64,6 +65,11 @@ app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
 app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
 app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
 app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+
+// Edit medication routes
+app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
+app.put("/medications/:medicationID", editMedicationsController.updateMedication);
+app.delete("/medications/:medicationID", editMedicationsController.deleteMedication);
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts);

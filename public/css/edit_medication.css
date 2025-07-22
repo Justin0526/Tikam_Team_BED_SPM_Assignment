@@ -70,7 +70,7 @@ form select {
   cursor: pointer;
 }
 
-.delete-btn {
+.danger-btn {
   background-color: #FF5C5C;
   color: white;
   border: none;
