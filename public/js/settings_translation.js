@@ -80,6 +80,3 @@ async function translatePage(targetLang) {
     console.error("Translation error:", err);
   }
 }
-window.addEventListener("load", async () => {
-  currentUser = await getToken(token);
-});

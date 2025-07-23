@@ -26,28 +26,20 @@
     </header>
 
   <main>
+    <!-- Post composer -->
     <section class="post-section">
       <h2>Post</h2>
-      <!-- Give it an ID for future wiring -->
       <textarea id="postContent"
                 placeholder="What would you like to post about today?"
                 rows="4"></textarea>
-      
       <div class="share-container">
         <div class="left-upload">
-          <label class="upload-btn" for="postImage">
-            📁 Drag or click to upload image
-          </label>
-          <input type="file"
-                 id="postImage"
-                 accept="image/*"
-                 style="display:none;">
+          <label class="upload-btn" for="postImage">📁 Drag or click to upload image</label>
+          <input type="file" id="postImage" accept="image/*" style="display:none;">
         </div>
         <button class="share-btn">Share Post</button>
       </div>
-
-      <img id="imagePreview"
-           alt="Image preview"
+      <img id="imagePreview" alt="Image preview"
            style="display:none; max-width:100%; margin-top:15px; border-radius:10px;">
       <button id="removeImageBtn"
               style="display:none; margin-top:10px; background:#ff4d4d; color:white; border:none; border-radius:8px; padding:8px 15px; cursor:pointer;">
@@ -55,32 +47,26 @@
       </button>
     </section>
 
+    <!-- Posts list -->
     <section class="today-posts">
       <h3>Today's Posts</h3>
-      <div class="posts-list">
-        <!-- post.js will inject .post-item cards here -->
-      </div>
+      <div class="posts-list"></div>
     </section>
   </main>
 
   <footer>
-      <p>© 2025 HealthyLah – Designed with care for our seniors</p>
-      <div class="social-links" style="display:inline-block;">
-        <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
-        <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
-        </a>
-        <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
-        <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
-        </a>
-        <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
-        <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
-        </a>
-        <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
-          <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
-        </a>
-        </div>
-        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links">
+      <!-- your social icons -->
+    </div>
+    <p>
+      <a href="#">Privacy Policy</a> |
+      <a href="#">Terms of Use</a> |
+      <a href="credits.html">Credits</a>
+    </p>
   </footer>
+
+  <!-- JWT Decode & your other scripts -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/settings_translation.js" defer></script>

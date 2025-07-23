@@ -1,6 +1,12 @@
 // Base URL for API calls — change this if deploying to a live server
 const apiBaseURL = 'http://localhost:3000';
 
+// grab the JWT and build headers
+const authHeaders = {
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${token}`
+};
+
 /**
  * Converts a UTC time string to 12-hour AM/PM format for display.
  * @param {string} timeString - A UTC time string (e.g. "13:30:00").
@@ -40,7 +46,7 @@ async function loadTodayMeds() {
   todayHeader.textContent = `Today's Medication — ${formattedDate}`;
 
   try {
-    const response = await fetch(`${apiBaseURL}/medications/today`);
+    const response = await fetch(`${apiBaseURL}/medications/today`, {headers:authHeaders});
     if (!response.ok) throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
     
     const medications = await response.json();
@@ -91,7 +97,8 @@ function attachMarkButtons() {
 
       try {
         const res = await fetch(`${apiBaseURL}/medications/${id}/mark-taken`, {
-          method: 'PUT'
+          method: 'PUT',
+          headers: authHeaders
         });
 
         if (res.ok) {
@@ -152,7 +159,7 @@ function attachMenuButtons() {
 
 async function loadUpcomingMeds() {
   try {
-    const res = await fetch(`${apiBaseURL}/medications/upcoming`);
+    const res = await fetch(`${apiBaseURL}/medications/upcoming`, {headers:authHeaders});
     const data = await res.json();
 
     const tbody = document.querySelector('.reminder-table tbody');
@@ -203,7 +210,10 @@ function showNotification(message) {
  * - Handles medication form submission.
  * - Loads today's medications.
  */
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
+  const user = await getToken(token);
+  if (!user) return this.window.location.href = 'login.html';
+
   document.getElementById('start-date').valueAsDate = new Date();
 
   document.querySelector('.medication-form').addEventListener('submit', async function(e) {
@@ -213,7 +223,6 @@ window.addEventListener('DOMContentLoaded', function() {
     const formattedTime = timeInput ? `${timeInput}:00` : '';
 
     const payload = {
-      userID: 1, // Hardcoded user ID for demo purposes
       medicineName: document.getElementById('med-name').value,
       dosage: document.getElementById('dosage').value,
       frequency: document.getElementById('frequency').value,
@@ -226,7 +235,7 @@ window.addEventListener('DOMContentLoaded', function() {
     try {
       const response = await fetch(`${apiBaseURL}/medications`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify(payload)
       });
 

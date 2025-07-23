@@ -12,9 +12,10 @@ const weatherController = require("./controllers/weather_controller");
 const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
+const editMedicationsController = require('./controllers/edit_medication_controller');
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
-const profileController = require('./controllers/profileController');
+const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
@@ -60,13 +61,18 @@ app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, a
 app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
 
 // Medication routes
-app.get("/medications/today", medicationsController.getTodayMeds );
-app.post("/medications", medicationValidator, medicationsController.addMedication );
-app.put("/medications/:medicationID/mark-taken", medicationsController.markTaken );
-app.get("/medications/upcoming", medicationsController.getUpcomingMeds);
+app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
+app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
+app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
+app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+
+// Edit medication routes
+app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
+app.put("/medications/:medicationID", editMedicationsController.updateMedication);
+app.delete("/medications/:medicationID", editMedicationsController.deleteMedication);
 
 // Posts CRUD
-app.get("/posts", postsController.getAllPosts );
+app.get("/posts", postsController.getAllPosts);
 app.get("/posts/:id",
   verifyJWT,
   validatePostId,
@@ -78,6 +84,18 @@ app.post( "/posts",
   postsController.createPost
 );
 app.post("/api/upload", uploadImage);
+
+// Comments CRUD
+app.get(
+  "/posts/:postID/comments",
+  verifyJWT,
+  postsController.getCommentsForPost
+);
+app.post(
+  "/posts/:postID/comments",
+  verifyJWT,
+  postsController.createCommentForPost
+);  
 
 // Translation
 app.post("/translate", translateText );

@@ -9,7 +9,7 @@ const{
 // Returns today's medications for the current user.
 // Calculates the start and end timestamps for the current day.
 async function getTodayMeds(req, res) {
-  const userID = 1; // Hardcode a test user ID
+  const userID = req.user.userID; // Fethch the user ID from the JWT token
 
   // Date objects in JS default to current time. We adjust it below:
   const start = new Date();            // e.g. 2025-07-13T07:12:00.000Z (now)
@@ -29,7 +29,7 @@ async function getTodayMeds(req, res) {
 
 // GET /medications/upcoming
 async function getUpcomingMeds(req, res) {
-  const userID = 1; // Replace with actual logged-in user ID in future
+  const userID = req.user.userID; // Fetch the user ID from the JWT token
   const now = new Date();
   const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
 
@@ -46,7 +46,7 @@ async function getUpcomingMeds(req, res) {
 // POST /medications
 // Adds a new medication record for the logged-in user.
 async function addMedication(req, res) {
-  const userID = 1; // Hardcode a test user ID
+  const userID = req.user.userID; // Fetch the user ID from the JWT token
   const data = req.body;
 
   try {
@@ -64,7 +64,7 @@ async function markTaken(req, res) {
   const { medicationID } = req.params;
 
   try {
-    await updateMedicationAsTaken(medicationID);
+    await updateMedicationAsTaken(req.user.userID, medicationID);
     res.status(200).send("Medication marked as taken");
   } catch (err) {
     console.error("Error marking medication as taken:", err);

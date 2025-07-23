@@ -1,4 +1,4 @@
-// controllers/upload_controller.js
+//require node stuff
 const { v2: cloudinary } = require('cloudinary');
 const multer              = require('multer');
 const streamifier         = require('streamifier');
@@ -10,8 +10,7 @@ cloudinary.config({
   api_key:    process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
-
-// multer into memory
+// use multer for storage 
 const upload = multer({ storage: multer.memoryStorage() });
 
 // this is an array of two middleware functions:
@@ -39,4 +38,5 @@ const uploadImage = [
   }
 ];
 
+//export the function to use in app.js
 module.exports = { uploadImage };

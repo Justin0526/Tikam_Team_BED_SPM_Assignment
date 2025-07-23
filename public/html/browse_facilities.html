@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>HealthyLah - Browse Facilities</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/browse_facilities.css">
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="logo-bar">
+        <div class="logo-container">
+          <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+        </div>
+        <div class="profile" id="user-profile">
+          <!-- Dynamic profile -->
+        </div>
+      </div>
+      <nav class="nav-bar">
+        <a href="index.html">Home</a>
+        <a href="about_us.html">About us</a>
+        <a href="weather.html">Weather</a>
+        <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+        <a href="#">Health</a>
+        <a href="post_forum.html">Post</a>
+      </nav>
+    </header>
+    <main>
+        <h1 class="page-title">Browse Facilities</h1>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search for facilities" id="textQuery" required />
+            <button id="go-btn">Go</button>
+        </div>
+
+        <div class="quicksearch-container" id="quicksearch-container" >
+          <h2 class="quicksearch-title">Quick Search</h2>
+          <div class="quicksearch-scroll">
+            <div class="quicksearch-card">
+              <img class="quicksearch-image" src="../images/hawker_centre.jpg"/>
+              <p class="quicksearch-label">Hawker Centre</p>
+            </div>
+            <div class="quicksearch-card">
+              <img class="quicksearch-image" src="../images/polyclinic.jpeg"/>
+              <p class="quicksearch-label">Clinic/ Hospital</p>
+            </div>
+            <div class="quicksearch-card">
+              <img class="quicksearch-image" src="../images/community_centre.jpg"/>
+              <p class="quicksearch-label">Community Centre</p>
+            </div>
+            <div class="quicksearch-card">
+              <img class="quicksearch-image" src="../images/toilet.jpg"/>
+              <p class="quicksearch-label">Toilet</p>
+            </div>
+            <div class="quicksearch-card">
+              <img class="quicksearch-image" src="../images/fair_price.jpg"/>
+              <p class="quicksearch-label">Supermarket</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results Section -->
+        <div id="results-section" class="results-section" style="display: none;">
+          <h2 id="results-title"></h2>
+          <div class="results-wrapper">
+            <div class="results-grid" id="results-grid"></div>
+            <div class="load-more-wrapper" id="load-more-wrapper"></div>
+          </div>
+        </div>
+    </main>
+
+    <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links" style="display:inline-block;">
+      <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
+      <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
+      <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
+      <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
+      </a>
+      <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
+        <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
+      </a>
+      </div>
+      <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <!-- <script src="../js/settings_translation.js" defer></script> -->
+    <script src="../js/browse_facility.js"></script>
+  </body>
+</html>
