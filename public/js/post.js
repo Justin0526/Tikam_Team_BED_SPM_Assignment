@@ -49,7 +49,7 @@ async function loadComments(postID, listEl) {
 // ─── Fetch & Render All Posts ────────────────────────────────────────────────
 async function loadPosts() {
   try {
-    const res   = await fetch(`${apiBaseUrl}/posts`);
+    const res = await fetch(`${apiBaseUrl}/posts`);
     if (!res.ok) throw new Error(`Posts ${res.status}`);
     const posts = await res.json();
     if (!Array.isArray(posts) || posts.length === 0) {
@@ -57,9 +57,10 @@ async function loadPosts() {
       return;
     }
 
-    // render posts shell
     postContainer.innerHTML = posts.map(p => {
       const date = toLocaleDate(p.CreatedAt);
+      const isOwner = currentUser && currentUser.userID === p.UserID;
+
       return `
         <div class="post-item" data-post-id="${p.PostID}">
           <div class="post-header">
@@ -70,17 +71,27 @@ async function loadPosts() {
             </div>
           </div>
           <div class="post-body">${p.Content}</div>
-          ${p.ImageURL ? `<div class="post-image-wrap">
-            <img src="${p.ImageURL}" class="post-image" alt="">
-          </div>` : ""}
+          ${p.ImageURL ? `<div class="post-image-wrap"><img src="${p.ImageURL}" class="post-image" alt=""></div>` : ""}
           <div class="post-actions">
             <button class="comment-toggle">💬 Comment</button>
-            <button class="post-menu-btn" aria-label="Post options">⋯</button>
+            ${isOwner ? `<button class="post-menu-btn" aria-label="Post options">⋯</button>` : ""}
           </div>
-          <div class="post-menu-dropdown" hidden>
-            <button class="post-menu-edit">✏️ Edit</button>
-            <button class="post-menu-delete">🗑️ Delete</button>
-          </div>
+          ${isOwner ? `
+            <div class="post-menu-dropdown" hidden>
+              <button class="post-menu-edit">✏️ Edit</button>
+              <button class="post-menu-delete">🗑️ Delete</button>
+            </div>
+            <div class="edit-post-form" hidden>
+              <textarea class="edit-content">${p.Content}</textarea>
+              ${p.ImageURL ? `<img src="${p.ImageURL}" class="edit-image-preview">` : ""}
+              <input type="file" class="edit-image-input" hidden>
+              <button class="change-image-btn">Change Picture</button>
+              <div class="edit-btn-row">
+                <button class="cancel-edit-btn">Cancel</button>
+                <button class="save-edit-btn">Save Changes</button>
+              </div>
+            </div>
+          ` : ""}
           <div class="comments-section" hidden>
             <div class="comment-list"></div>
             <textarea class="new-comment" placeholder="Write a comment..."></textarea>
@@ -90,9 +101,105 @@ async function loadPosts() {
       `;
     }).join("");
 
-    // wire up each post’s comments
     postContainer.querySelectorAll(".post-item").forEach(item => {
       const postID = item.dataset.postId;
+      const menuBtn = item.querySelector(".post-menu-btn");
+      const dropdown = item.querySelector(".post-menu-dropdown");
+      const delBtn = item.querySelector(".post-menu-delete");
+      const editBtn = item.querySelector(".post-menu-edit");
+
+      const editForm = item.querySelector(".edit-post-form");
+      const editContent = item.querySelector(".edit-content");
+      const editPreview = item.querySelector(".edit-image-preview");
+      const editInput = item.querySelector(".edit-image-input");
+      const changeBtn = item.querySelector(".change-image-btn");
+      const cancelBtn = item.querySelector(".cancel-edit-btn");
+      const saveBtn = item.querySelector(".save-edit-btn");
+
+      let newImageURL = editPreview?.src || null;
+
+      if (menuBtn && dropdown && delBtn && editBtn && editForm) {
+        menuBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          document.querySelectorAll(".post-menu-dropdown").forEach(d => d.hidden = true);
+          dropdown.hidden = !dropdown.hidden;
+        });
+
+        document.addEventListener("click", e => {
+          if (!item.contains(e.target)) {
+            dropdown.hidden = true;
+          }
+        });
+
+        delBtn.addEventListener("click", async () => {
+          if (!confirm("Delete this post?")) return;
+          const res = await fetch(`${apiBaseUrl}/posts/${postID}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            return alert(err.error || "Couldn’t delete");
+          }
+          item.remove();
+        });
+
+        editBtn.addEventListener("click", () => {
+          editForm.hidden = !editForm.hidden;
+        });
+
+        changeBtn.addEventListener("click", () => editInput.click());
+
+        editInput.addEventListener("change", async () => {
+          const file = editInput.files[0];
+          if (!file) return;
+
+          const form = new FormData();
+          form.append("file", file);
+
+          try {
+            const res = await fetch(`${apiBaseUrl}/api/upload`, {
+              method: "POST",
+              body: form
+            });
+            if (!res.ok) throw new Error("Upload failed");
+            const data = await res.json();
+            newImageURL = data.url;
+            if (editPreview) {
+              editPreview.src = newImageURL;
+              editPreview.style.display = "block";
+            }
+          } catch (err) {
+            alert("Image upload failed.");
+          }
+        });
+
+        cancelBtn.addEventListener("click", () => {
+          editForm.hidden = true;
+        });
+
+        saveBtn.addEventListener("click", async () => {
+          const updatedContent = editContent.value.trim();
+          if (!updatedContent) return alert("Post content cannot be empty.");
+
+          const res = await fetch(`${apiBaseUrl}/posts/${postID}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              Content: updatedContent,
+              ImageURL: newImageURL
+            })
+          });
+
+          if (!res.ok) return alert("Failed to update post.");
+          loadPosts(); // reload updated content
+        });
+      }
+
+      // Comments
       const toggle = item.querySelector(".comment-toggle");
       const section = item.querySelector(".comments-section");
       const listEl = item.querySelector(".comment-list");
@@ -100,13 +207,10 @@ async function loadPosts() {
       const submitBtn = item.querySelector(".submit-comment");
 
       toggle.addEventListener("click", () => {
-        if (section.hidden) {
-          loadComments(postID, listEl);
-        }
+        if (section.hidden) loadComments(postID, listEl);
         section.hidden = !section.hidden;
       });
 
-      // post new comment
       submitBtn.addEventListener("click", async () => {
         const text = input.value.trim();
         if (!text) return alert("Please write a comment.");
@@ -114,21 +218,22 @@ async function loadPosts() {
           alert("You must log in to comment.");
           return window.location.href = "/html/login.html";
         }
+
         const resp = await fetch(`${apiBaseUrl}/posts/${postID}/comments`, {
-          method:  "POST",
+          method: "POST",
           headers: {
-            "Content-Type":  "application/json",
+            "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify({
-            UserID:  currentUser.userID,
+            UserID: currentUser.userID,
             content: text
           })
         });
-        if (!resp.ok) {
-          return alert("Failed to post comment");
-        }
+
+        if (!resp.ok) return alert("Failed to post comment");
         const newComment = await resp.json();
+
         listEl.insertAdjacentHTML("beforeend", `
           <div class="comment-item">
             <div class="meta">
@@ -138,49 +243,16 @@ async function loadPosts() {
             <div class="body">${newComment.Content}</div>
           </div>
         `);
+
         input.value = "";
       });
     });
-
   } catch (err) {
     console.error("Error loading posts:", err);
     postContainer.innerHTML = `<p class="error">Failed to load posts.</p>`;
   }
 }
 
-postContainer.querySelectorAll(".post-item").forEach(item => {
-  const postID    = item.dataset.postId;
-  const menuBtn   = item.querySelector(".post-menu-btn");
-  const dropdown  = item.querySelector(".post-menu-dropdown");
-  const deleteBtn = item.querySelector(".post-menu-delete");
-
-  // toggle dropdown
-  menuBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    dropdown.hidden = !dropdown.hidden;
-  });
-
-  // clicking anywhere else should close it
-  document.addEventListener("click", () => {
-    dropdown.hidden = true;
-  });
-
-  // DELETE
-  deleteBtn.addEventListener("click", async () => {
-    if (!confirm("Are you sure?")) return;
-    const res = await fetch(`${apiBaseUrl}/posts/${postID}`, {
-      method: "DELETE",
-      headers: { 
-        "Authorization": `Bearer ${token}` 
-      }
-    });
-    if (!res.ok) {
-      const { error } = await res.json().catch(() => ({}));
-      return alert(error || "Could not delete post");
-    }
-    item.remove();
-  });
-});
 // ─── Image Preview Logic ──────────────────────────────────────────────────────
 imageInput.addEventListener("change", e => {
   const file = e.target.files[0];
@@ -262,8 +334,7 @@ shareBtn.addEventListener("click", async () => {
 
 // ─── Init & Auth ──────────────────────────────────────────────────────────────
 // 1) First load public posts
-document.addEventListener("DOMContentLoaded", loadPosts);
-
 window.addEventListener("load", async () => {
   currentUser = await getToken(token);
+  loadPosts(); // ✅ ensures currentUser is available before rendering
 });

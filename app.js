@@ -73,17 +73,11 @@ app.delete("/medications/:medicationID", editMedicationsController.deleteMedicat
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts);
-app.get("/posts/:id",
-  verifyJWT,
-  validatePostId,
-  postsController.getPostById
-);
-app.post( "/posts",
-  verifyJWT,
-  validatePost,
-  postsController.createPost
-);
+app.get("/posts/:id", verifyJWT, validatePostId, postsController.getPostById);
+app.post( "/posts", verifyJWT, validatePost, postsController.createPost);
 app.post("/api/upload", uploadImage);
+app.delete("/posts/:id", verifyJWT, postsController.deletePost)
+app.put("/posts/:id", verifyJWT, postsController.updatePost)
 
 // Comments CRUD
 app.get(
