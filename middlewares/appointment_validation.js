@@ -38,8 +38,34 @@ function validateAppointment(req, res, next) {
         return res.status(400).json({ error: errorMessage });
     }
 
+
+    const {appointmentDate, appointmentTime, reminderDate} = req.body;
+    
+    //Combine date and time into a single Date object
+    const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+    const now = new Date();
+
+    if(appointmentDateTime < now) {
+        return res.status(400).json({
+            error: "Appointment date and time cannot be in the past."
+        });
+    }
+
+    //Check if reminderDate is in the past
+    if(reminderDate) {
+        const reminderDateOnly = new Date(reminderDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Ignore time
+
+        if(reminderDateOnly < today){
+            return res.status(400).json({
+                error: "Reminder date cannot be in the past."
+            });
+        }
+        
+    }
+    
     //Ensure reminderDate is not after appointmentDate
-    const {appointmentDate, reminderDate} = req.body;
     if(reminderDate){
         const appointment = new Date(appointmentDate);
         const reminder = new Date(reminderDate);
@@ -62,7 +88,23 @@ function validateAppointmentId(req, res, next) {
     next();
 }
 
+function validateSearchQuery(req, res, next) {
+    const searchTerm = req.query.searchTerm || "";
+    const appointmentDate = req.query.appointmentDate || null;
+
+    if(!searchTerm && !appointmentDate) {
+        return res.status(400).json({ message: "Please provide any keywords or appointment date to search." });
+    }
+
+    //check if appointmenDate is in YYYY-MM-DD format
+    if(appointmentDate && !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate)) {
+        return res.status(400).json({ error: "Appointment date must be in YYYY-MM-DD format." });
+    }
+    next();
+}
+
 module.exports = {
     validateAppointment,
     validateAppointmentId,
+    validateSearchQuery,
 };

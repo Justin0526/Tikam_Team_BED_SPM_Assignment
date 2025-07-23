@@ -12,10 +12,12 @@ const weatherController = require("./controllers/weather_controller");
 const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
+const editMedicationsController = require('./controllers/edit_medication_controller');
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
-const profileController = require('./controllers/profileController');
+const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
+const mealController = require('./controllers/meal_controller');
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -26,7 +28,7 @@ const {verifyJWT} = require("./middlewares/authMiddleware");
 const {validateUserProfile} = require('./middlewares/userProfile_validation');
 const { validateRegistration } = require('./middlewares/registration_validation');
 const { validateLogin } = require('./middlewares/login_validation');
-
+const mealValidator =require("./middlewares/meal_validation");
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -58,12 +60,25 @@ app.delete("/favouriteOutfit/:favouriteOutfitID", verifyJWT, favouriteOutfitCont
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
+app.delete("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointmentId, appointmentController.deleteAppointment);
+app.get("/appointments/search", verifyJWT, appointmentValidator.validateSearchQuery, appointmentController.searchAppointments);
+
+// Meal routes
+app.get("/meals/me", verifyJWT, mealController.getMealsByUserIDAndMealDate);
+app.post("/meals", verifyJWT, mealValidator.validateMeal, mealController.createMealLog);
+app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.validateMealId, mealController.updateMealLogByMealID);
+app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
 
 // Medication routes
 app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
 app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
 app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
 app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+
+// Edit medication routes
+app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
+app.put("/medications/:medicationID", editMedicationsController.updateMedication);
+app.delete("/medications/:medicationID", editMedicationsController.deleteMedication);
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts);
