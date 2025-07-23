@@ -73,9 +73,49 @@ async function updateAppointmentByAppointmentID(req, res){
   }
 };
 
+//delete appointment
+async function deleteAppointment(req, res) {
+    try{
+        const appointmentID = parseInt(req.params.appointmentID);
+        const deleted = await appointmentModel.deleteAppointment(appointmentID);
+
+        if(!deleted){
+            return res.status(404).json({error: "Appointment not found or already deleted"});
+        }
+
+        res.json({message: "Appointment deleted successfully"});
+    }
+    catch(error){
+        console.error("Controller error:", error);
+        res.status(500).json({error: "Error deleting Appointment"});
+    } 
+}
+
+//Search Appointments
+async function searchAppointments(req, res) {
+    //Notice this part
+    const searchTerm = req.query.searchTerm || "";
+    const userID = req.user.userID; //Extract from decoded JWT
+    const appointmentDate = req.query.appointmentDate || null; //Optional date filter
+    try{
+        const appointments = await appointmentModel.searchAppointments(searchTerm, userID, appointmentDate);
+        //If no appointments found, return an empty array with a message
+        if(appointments.length === 0){
+            return res.status(200).json({message: "No matching appointments", data: []});
+        }
+        res.json(appointments);
+    }
+    catch(error){
+        console.error("Controller error in searchAppointments:", error);
+        res.status(500).json({message: "Error searching appointments"});
+    }
+}
+
 module.exports = {
     getAllAppointments,
     getAppointmentsByUserID,
     createAppointment,
     updateAppointmentByAppointmentID,
+    deleteAppointment,
+    searchAppointments,
 };

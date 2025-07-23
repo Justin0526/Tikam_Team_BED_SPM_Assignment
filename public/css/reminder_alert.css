@@ -1,0 +1,38 @@
+
+/* === Reminder Banner Styles === */
+/* Base styles for the reminder banner */
+#reminderBanner {
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  background-color: #F9FFDE;
+  color: #2A3B20;
+  font-weight: 600;
+  text-align: center;
+  padding: 15px 40px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  z-index: 9999;
+  border-bottom: 2px solid #A4D038;
+  transition: top 0.4s ease-in-out;
+  box-sizing: border-box;
+}
+
+/* Slide in when active */
+#reminderBanner.active {
+  top: 0;
+}
+
+#reminderBanner .close-banner {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #2A3B20;
+  background: none;
+  border: none;
+  line-height: 1;
+}

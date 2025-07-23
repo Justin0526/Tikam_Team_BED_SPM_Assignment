@@ -30,12 +30,12 @@
 
    <div class="welcome">Welcome to HealthyLah!</div>
 
-  <section class="weather-section">
+   <section class="weather-section">
     <h2>Today's Weather</h2>
     <div class="weather-box">
-      <p><strong>Temperature:</strong> 31°C</p>
-      <p><strong>UV Index:</strong> Moderate (4)</p>
-      <p><strong>Condition:</strong> Partly Cloudy</p>
+      <p><strong>Temperature:</strong> <span id="summary-temperature">--</span></p>
+      <p><strong>UV Index:</strong> <span id="summary-uv">--</span></p>
+      <p><strong>Condition:</strong> <span id="summary-condition">--</span></p>
       <a href="weather.html#recommendation" class="btn-weather">See Outfit Suggestion</a>
     </div>
   </section>
@@ -65,7 +65,7 @@
 
   <!-- Second Row -->
   <div class="quick-buttons-row">
-    <a href="meals.html" class="card">
+    <a href="meal_logging.html" class="card">
       <div class="icon-box"><img src="../images/meals.jpg" alt="Meals"></div>
       <div>Meal Logging</div>
     </a>
@@ -114,6 +114,7 @@
   <script src="../js/auth.js"></script>
   <script src="../js/google_translate_loader.js" defer></script>
   <script src="../js/settings_translation.js" defer></script>
-  <script src="../js/index.js"></script>
+  <script src="../js/reminder_alert.js" defer></script>
+  <script src="../js/index.js" defer></script>
 </body>
 </html>
