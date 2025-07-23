@@ -11,6 +11,7 @@ const userController = require("./controllers/user_controller");
 const weatherController = require("./controllers/weather_controller");
 const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
+const { getUserHealthProfile } = require('./controllers/health_controller');
 const medicationsController = require("./controllers/medications_controller");
 const editMedicationsController = require('./controllers/edit_medication_controller');
 const { translateText } = require("./controllers/translation_controller");
@@ -59,6 +60,9 @@ app.delete("/favouriteOutfit/:favouriteOutfitID", verifyJWT, favouriteOutfitCont
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
+
+// Health page route
+app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
 
 // Medication routes
 app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
