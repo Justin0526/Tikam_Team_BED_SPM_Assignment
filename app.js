@@ -16,6 +16,7 @@ const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const profileController = require('./controllers/profileController');
 const { uploadImage } = require('./controllers/upload_controller')
+const mealController = require('./controllers/meal_controller');
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -26,7 +27,7 @@ const {verifyJWT} = require("./middlewares/authMiddleware");
 const {validateUserProfile} = require('./middlewares/userProfile_validation');
 const { validateRegistration } = require('./middlewares/registration_validation');
 const { validateLogin } = require('./middlewares/login_validation');
-
+const mealValidator =require("./middlewares/meal_validation");
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -58,6 +59,14 @@ app.delete("/favouriteOutfit/:favouriteOutfitID", verifyJWT, favouriteOutfitCont
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
+app.delete("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointmentId, appointmentController.deleteAppointment);
+app.get("/appointments/search", verifyJWT, appointmentValidator.validateSearchQuery, appointmentController.searchAppointments);
+
+// Meal routes
+app.get("/meals/me", verifyJWT, mealController.getMealsByUserIDAndMealDate);
+app.post("/meals", verifyJWT, mealValidator.validateMeal, mealController.createMealLog);
+app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.validateMealId, mealController.updateMealLogByMealID);
+app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
 
 // Medication routes
 app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
