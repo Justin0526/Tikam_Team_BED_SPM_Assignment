@@ -1,6 +1,3 @@
-const apiBaseUrl = "http://localhost:3000";
-let currentUser   = null;
-
 console.log("settings_translation.js loaded");
 
 const sel = document.getElementById("languageSelect");
