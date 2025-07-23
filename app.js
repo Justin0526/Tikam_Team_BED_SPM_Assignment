@@ -14,7 +14,7 @@ const appointmentController = require("./controllers/appointment_controller");
 const medicationsController = require("./controllers/medications_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
-const profileController = require('./controllers/profileController');
+const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
