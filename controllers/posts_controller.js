@@ -119,6 +119,41 @@ async function updatePost(req, res) {
   }
 }
 
+async function updateComment(req, res) {
+  const { commentID } = req.params;
+  const { content } = req.body;
+  const userID = req.user.userID;
+
+  try {
+    // Ensure comment belongs to user before updating
+    const existing = await postModel.getCommentByID(commentID);
+    if (!existing) return res.status(404).json({ error: "Comment not found" });
+    if (existing.UserID !== userID) return res.status(403).json({ error: "Not authorised" });
+
+    await postModel.updateComment(commentID, content);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Update comment error:", err);
+    res.status(500).json({ error: "Failed to update comment" });
+  }
+}
+
+async function deleteComment(req, res) {
+  const { postID, commentID } = req.params;
+  const userID = req.user.userID; 
+
+  try {
+    const deleted = await postModel.deleteComment(postID, commentID, userID);
+    if (!deleted) {
+      return res.status(403).json({ error: "Not allowed or comment not found" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Delete comment error:", err);
+    res.status(500).json({ error: "Server error while deleting comment" });
+  }
+}
+
 module.exports = {
   getAllPosts,
   getPostById,
@@ -126,5 +161,7 @@ module.exports = {
   getCommentsForPost,
   createCommentForPost,
   deletePost,
-  updatePost
+  updatePost,
+  updateComment,
+  deleteComment
 };

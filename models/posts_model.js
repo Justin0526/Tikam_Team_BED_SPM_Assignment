@@ -162,6 +162,36 @@ async function updatePostById(postID, userID, content, imageURL) {
   }
 }
 
+async function updateComment(commentID, content) {
+  const pool = await sql.connect(dbConfig);
+  const result = await pool.request()
+    .input("CommentID", sql.Int, commentID)
+    .input("Content", sql.NVarChar, content)
+    .query(`
+      UPDATE Comments
+      SET Content = @Content
+      WHERE CommentID = @CommentID
+    `);
+  return result.rowsAffected[0];
+}
+
+async function deleteComment(postID, commentID, userID) {
+  try {
+    const pool = await sql.connect(dbConfig); 
+    const result = await pool.request()
+      .input("CommentID", sql.Int, commentID)
+      .input("PostID", sql.Int, postID)
+      .input("UserID", sql.Int, userID)
+      .query(`
+        DELETE FROM Comments
+        WHERE CommentID = @CommentID AND PostID = @PostID AND UserID = @UserID
+      `);
+
+    return result.rowsAffected[0] > 0;
+  } catch (err) {
+    throw err;
+  }
+}
 module.exports = {
   getAllPosts,
   getPostById,
@@ -171,6 +201,8 @@ module.exports = {
   getCommentsByPostID,
   createComment,
   deletePostById,
-  updatePostById
+  updatePostById,
+  updateComment,
+  deleteComment
 };
 

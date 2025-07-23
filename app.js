@@ -89,20 +89,15 @@ app.delete("/posts/:id", verifyJWT, postsController.deletePost)
 app.put("/posts/:id", verifyJWT, postsController.updatePost)
 
 // Comments CRUD
-app.get(
-  "/posts/:postID/comments",
-  verifyJWT,
-  postsController.getCommentsForPost
-);
-app.post(
-  "/posts/:postID/comments",
-  verifyJWT,
-  postsController.createCommentForPost
-);  
+app.get( "/posts/:postID/comments", verifyJWT, postsController.getCommentsForPost);
+app.post("/posts/:postID/comments", verifyJWT, postsController.createCommentForPost);  
+app.put("/posts/:postID/comments/:commentID", verifyJWT, postsController.updateComment);
+app.delete("/posts/:postID/comments/:commentID", verifyJWT, postsController.deleteComment);
 
 // Translation
 app.post("/translate", translateText );
 
+//node start
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 }).on('error', (err) => {

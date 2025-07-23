@@ -31,17 +31,95 @@ async function loadComments(postID, listEl) {
     const comments = await res.json();
     if (!Array.isArray(comments)) throw new Error("Bad comments payload");
 
-    listEl.innerHTML = comments.map(c => `
-      <div class="comment-item">
+    listEl.innerHTML = "";
+
+    comments.forEach(comment => {
+      const commentItem = document.createElement("div");
+      commentItem.classList.add("comment-item");
+
+      const isOwner = currentUser && currentUser.userID === comment.UserID;
+
+      commentItem.innerHTML = `
         <div class="meta">
-          <strong class="author">${c.userName}</strong>
-          <span class="date">${toLocaleDate(c.createdAt)}</span>
+          <strong class="author">${comment.userName}</strong>
+          <span class="date">${toLocaleDate(comment.createdAt)}</span>
         </div>
-        <div class="body">${c.Content}</div>
-      </div>
-    `).join("");
+        <div class="body">${comment.Content}</div>
+        ${isOwner ? `
+        <div class="comment-owner-actions">
+          <button class="edit-comment-btn">✏️</button>
+          <button class="delete-comment-btn">🗑️</button>
+        </div>
+        <div class="edit-comment-form" hidden>
+          <textarea class="edit-comment-content">${comment.Content}</textarea>
+          <button class="save-comment-edit">Save</button>
+          <button class="cancel-comment-edit">Cancel</button>
+        </div>
+      ` : ""}
+      `;
+
+      listEl.appendChild(commentItem);
+
+      // Attach edit handlers if user owns the comment
+      if (isOwner) {
+        const editBtn = commentItem.querySelector(".edit-comment-btn");
+        const editForm = commentItem.querySelector(".edit-comment-form");
+        const contentInput = commentItem.querySelector(".edit-comment-content");
+        const saveBtn = commentItem.querySelector(".save-comment-edit");
+        const cancelBtn = commentItem.querySelector(".cancel-comment-edit");
+        const deleteBtn = commentItem.querySelector(".delete-comment-btn");
+
+        editBtn.addEventListener("click", () => {
+          editForm.hidden = false;
+          editBtn.hidden = true;
+        });
+
+        cancelBtn.addEventListener("click", () => {
+          editForm.hidden = true;
+          editBtn.hidden = false;
+        });
+
+        deleteBtn.addEventListener("click", async () => {
+          if (!confirm("Delete this comment?")) return;
+
+          const res = await fetch(`${apiBaseUrl}/posts/${postID}/comments/${comment.CommentID}`, {
+            method: "DELETE",
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          });
+
+          if (!res.ok) {
+            alert("Failed to delete comment.");
+            return;
+          }
+
+          await loadComments(postID, listEl); // Reload comments after deletion
+        });
+
+        saveBtn.addEventListener("click", async () => {
+          const updated = contentInput.value.trim();
+          if (!updated) return alert("Comment cannot be empty.");
+
+          const res = await fetch(`${apiBaseUrl}/posts/${postID}/comments/${comment.CommentID}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ content: updated })
+          });
+
+          if (!res.ok) {
+            return alert("Failed to update comment.");
+          }
+
+          loadComments(postID, listEl);
+        });
+      }
+    });
   } catch (err) {
-    console.warn(`Failed to load comments for post ${postID}:`, err);
+    console.error("Error loading comments:", err);
     listEl.innerHTML = `<p class="error">Unable to load comments</p>`;
   }
 }
@@ -62,28 +140,42 @@ async function loadPosts() {
       const isOwner = currentUser && currentUser.userID === p.UserID;
 
       return `
-        <div class="post-item" data-post-id="${p.PostID}">
-          <div class="post-header">
-            <div class="avatar"></div>
-            <div class="meta">
-              <strong class="author">${p.Author}</strong>
-              <span class="date">${date}</span>
-            </div>
+      <div class="post-item" data-post-id="${p.PostID}">
+        <div class="post-header">
+          <div class="avatar"></div>
+          <div class="meta">
+            <strong class="author">${p.Author}</strong>
+            <span class="date">${date}</span>
           </div>
-          <div class="post-body">${p.Content}</div>
-          ${p.ImageURL ? `<div class="post-image-wrap"><img src="${p.ImageURL}" class="post-image" alt=""></div>` : ""}
-          <div class="post-actions">
-            <button class="comment-toggle">💬 Comment</button>
-            ${isOwner ? `<button class="post-menu-btn" aria-label="Post options">⋯</button>` : ""}
-          </div>
-          ${isOwner ? `
-            <div class="post-menu-dropdown" hidden>
-              <button class="post-menu-edit">✏️ Edit</button>
-              <button class="post-menu-delete">🗑️ Delete</button>
-            </div>
+        </div>
+        <div class="post-body">${p.Content}</div>
+        ${p.ImageURL ? `<div class="post-image-wrap"><img src="${p.ImageURL}" class="post-image" alt=""></div>` : ""}
+        <div class="post-actions">
+          <button class="comment-toggle">💬 Comment</button>
+          ${
+            isOwner
+              ? `
+              <div class="post-menu-wrapper">
+                <button class="post-menu-btn" aria-label="Post options">⋯</button>
+                <div class="post-menu-dropdown" hidden>
+                  <button class="post-menu-edit">✏️ Edit</button>
+                  <button class="post-menu-delete">🗑️ Delete</button>
+                </div>
+              </div>
+            `
+              : ""
+          }
+        </div>
+        ${
+          isOwner
+            ? `
             <div class="edit-post-form" hidden>
               <textarea class="edit-content">${p.Content}</textarea>
-              ${p.ImageURL ? `<img src="${p.ImageURL}" class="edit-image-preview">` : ""}
+              ${
+                p.ImageURL
+                  ? `<img src="${p.ImageURL}" class="edit-image-preview">`
+                  : ""
+              }
               <input type="file" class="edit-image-input" hidden>
               <button class="change-image-btn">Change Picture</button>
               <div class="edit-btn-row">
@@ -91,14 +183,16 @@ async function loadPosts() {
                 <button class="save-edit-btn">Save Changes</button>
               </div>
             </div>
-          ` : ""}
-          <div class="comments-section" hidden>
-            <div class="comment-list"></div>
-            <textarea class="new-comment" placeholder="Write a comment..."></textarea>
-            <button class="submit-comment">Post Comment</button>
-          </div>
+          `
+            : ""
+        }
+        <div class="comments-section" hidden>
+          <div class="comment-list"></div>
+          <textarea class="new-comment" placeholder="Write a comment..."></textarea>
+          <button class="submit-comment">Post Comment</button>
         </div>
-      `;
+      </div>
+    `;
     }).join("");
 
     postContainer.querySelectorAll(".post-item").forEach(item => {
@@ -145,7 +239,9 @@ async function loadPosts() {
         });
 
         editBtn.addEventListener("click", () => {
-          editForm.hidden = !editForm.hidden;
+        dropdown.hidden = true;
+        document.querySelectorAll(".edit-post-form").forEach(f => f.hidden = true);
+        editForm.hidden = false;
         });
 
         changeBtn.addEventListener("click", () => editInput.click());
@@ -153,6 +249,15 @@ async function loadPosts() {
         editInput.addEventListener("change", async () => {
           const file = editInput.files[0];
           if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = evt => {
+            if (editPreview) {
+              editPreview.src = evt.target.result;
+              editPreview.style.display = "block";
+            }
+          };
+          reader.readAsDataURL(file);
 
           const form = new FormData();
           form.append("file", file);
@@ -165,10 +270,6 @@ async function loadPosts() {
             if (!res.ok) throw new Error("Upload failed");
             const data = await res.json();
             newImageURL = data.url;
-            if (editPreview) {
-              editPreview.src = newImageURL;
-              editPreview.style.display = "block";
-            }
           } catch (err) {
             alert("Image upload failed.");
           }
@@ -212,12 +313,20 @@ async function loadPosts() {
       });
 
       submitBtn.addEventListener("click", async () => {
+        if (submitBtn.disabled) return;
+
         const text = input.value.trim();
-        if (!text) return alert("Please write a comment.");
+        if (!text) {
+          alert("Please write a comment.");
+          return;
+        }
+
         if (!currentUser) {
           alert("You must log in to comment.");
           return window.location.href = "/html/login.html";
         }
+
+        submitBtn.disabled = true;
 
         const resp = await fetch(`${apiBaseUrl}/posts/${postID}/comments`, {
           method: "POST",
@@ -231,20 +340,15 @@ async function loadPosts() {
           })
         });
 
-        if (!resp.ok) return alert("Failed to post comment");
-        const newComment = await resp.json();
-
-        listEl.insertAdjacentHTML("beforeend", `
-          <div class="comment-item">
-            <div class="meta">
-              <strong class="author">${currentUser.username}</strong>
-              <span class="date">just now</span>
-            </div>
-            <div class="body">${newComment.Content}</div>
-          </div>
-        `);
+        if (!resp.ok) {
+          alert("Failed to post comment");
+          submitBtn.disabled = false;
+          return;
+        }
 
         input.value = "";
+        await loadComments(postID, listEl);
+        submitBtn.disabled = false;
       });
     });
   } catch (err) {
@@ -276,16 +380,21 @@ removeBtn.addEventListener("click", () => {
 
 // ─── Share Post Handler (login required) ─────────────────────────────────────
 shareBtn.addEventListener("click", async () => {
+  shareBtn.disabled = true; // disable immediately
+
   const content = contentEl.value.trim();
   if (!content) {
-    return alert("Please write something before sharing.");
+    alert("Please write something before sharing.");
+    shareBtn.disabled = false;
+    return;
   }
+
   if (!currentUser) {
     alert("Please log in to share a post.");
+    shareBtn.disabled = false;
     return window.location.href = "/html/login.html";
   }
 
-  // 1) Upload the file to your new /api/upload endpoint (if any)
   let imageURL = null;
   const file = imageInput.files[0];
   if (file) {
@@ -294,23 +403,23 @@ shareBtn.addEventListener("click", async () => {
     try {
       const uplRes = await fetch(`${apiBaseUrl}/api/upload`, {
         method: "POST",
-        body:   form
+        body: form
       });
       if (!uplRes.ok) throw new Error("Upload failed");
       const { url } = await uplRes.json();
       imageURL = url;
     } catch (err) {
       console.error("Upload error:", err);
-      return alert("Image upload failed.");
+      alert("Image upload failed.");
+      shareBtn.disabled = false;
+      return;
     }
   }
 
-  // 2) Create the post, sending your JWT & userID
-  const userID = currentUser.userID || currentUser.sub;
   const res = await fetch(`${apiBaseUrl}/posts`, {
     method: "POST",
     headers: {
-      "Content-Type":  "application/json",
+      "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify({
@@ -322,19 +431,23 @@ shareBtn.addEventListener("click", async () => {
 
   if (!res.ok) {
     const err = await res.json();
-    return alert(err.error || "Failed to share post");
+    alert(err.error || "Failed to share post");
+    shareBtn.disabled = false;
+    return;
   }
 
-  // 3) On success clear & reload
   contentEl.value = "";
   imageInput.value = "";
   preview.style.display = removeBtn.style.display = "none";
-  loadPosts();
+  await loadPosts();
+
+  shareBtn.disabled = false; // re-enable after success
 });
+
 
 // ─── Init & Auth ──────────────────────────────────────────────────────────────
 // 1) First load public posts
 window.addEventListener("load", async () => {
   currentUser = await getToken(token);
-  loadPosts(); // ✅ ensures currentUser is available before rendering
+  loadPosts(); 
 });
