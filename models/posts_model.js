@@ -6,6 +6,7 @@ async function getAllPosts() {
   const result = await pool.request().query(`
     SELECT 
       p.PostID,
+      p.UserID, 
       u.FullName AS Author,
       p.Content,
       p.ImageURL,
@@ -24,6 +25,7 @@ async function getPostById(id) {
     .query(`
       SELECT
         p.PostID,
+        p.UserID,
         u.FullName AS Author,
         p.Content,
         p.ImageURL,
@@ -125,6 +127,71 @@ async function createComment({ PostID, UserID, Content }) {
   return recordset[0];
 }
 
+//delete post model
+async function deletePostById(postID) {
+  try {
+    const pool = await sql.connect(dbConfig); 
+    const result = await pool
+      .request()
+      .input("postID", sql.Int, postID)
+      .query("DELETE FROM Posts WHERE PostID = @postID");
+    return result.rowsAffected[0]; // 1 if deleted, 0 if not found
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function updatePostById(postID, userID, content, imageURL) {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request()
+      .input("PostID", sql.Int, postID)
+      .input("UserID", sql.Int, userID)
+      .input("Content", sql.VarChar(500), content)
+      .input("ImageURL", sql.VarChar(500), imageURL || null)
+      .query(`
+        UPDATE Posts
+        SET Content = @Content, ImageURL = @ImageURL
+        WHERE PostID = @PostID AND UserID = @UserID
+      `);
+
+    return result.rowsAffected[0] > 0;
+  } catch (err) {
+    console.error("Model: updatePostById error", err);
+    throw err;
+  }
+}
+
+async function updateComment(commentID, content) {
+  const pool = await sql.connect(dbConfig);
+  const result = await pool.request()
+    .input("CommentID", sql.Int, commentID)
+    .input("Content", sql.NVarChar, content)
+    .query(`
+      UPDATE Comments
+      SET Content = @Content
+      WHERE CommentID = @CommentID
+    `);
+  return result.rowsAffected[0];
+}
+
+async function deleteComment(postID, commentID, userID) {
+  try {
+    const pool = await sql.connect(dbConfig); 
+    const result = await pool.request()
+      .input("CommentID", sql.Int, commentID)
+      .input("PostID", sql.Int, postID)
+      .input("UserID", sql.Int, userID)
+      .query(`
+        DELETE FROM Comments
+        WHERE CommentID = @CommentID AND PostID = @PostID AND UserID = @UserID
+      `);
+
+    return result.rowsAffected[0] > 0;
+  } catch (err) {
+    throw err;
+  }
+}
 module.exports = {
   getAllPosts,
   getPostById,
@@ -132,6 +199,10 @@ module.exports = {
   getAllComments,
   getCommentByID,
   getCommentsByPostID,
-  createComment
+  createComment,
+  deletePostById,
+  updatePostById,
+  updateComment,
+  deleteComment
 };
 

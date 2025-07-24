@@ -83,7 +83,7 @@ async function loginUser(req, res){
         };
 
         console.log(user);
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "3600s"}) // Expire in 1 hour
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "28000s"}) // Expire in 8 hourS
 
         return res.status(200).json({token});
     }catch(error){

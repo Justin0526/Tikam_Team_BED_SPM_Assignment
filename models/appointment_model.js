@@ -168,9 +168,100 @@ async function updateAppointmentByAppointmentID(appointmentID, userID, appointme
   }
 }
 
+//Delete Appointment
+async function deleteAppointment(appointmentID) {
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = `
+            DELETE FROM Appointments WHERE appointmentID = @appointmentID;
+        `;
+        const request = connection.request();
+        request.input("appointmentID", sql.Int, appointmentID);
+        const result = await request.query(query);
+        if(result.rowsAffected[0] === 0){
+            return false;
+        }
+        return true;
+    }
+    catch(error){
+        console.error("Database error:", error);
+        throw error;
+    }
+    finally{
+        if(connection){
+            try{
+                await connection.close();
+            }
+            catch(error){
+                console.error("Error closing connection:",error);
+            }
+        }
+    }
+}
+
+//Search Appointments with a search term
+async function searchAppointments(searchTerm, userID, appointmentDate){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        let query = `
+            SELECT 
+                appointmentID,
+                userID,
+                doctorName,
+                clinicName,
+                appointmentDate,
+                CAST(appointmentTime AS VARCHAR(5)) AS appointmentTime,
+                purpose,
+                reminderDate
+            FROM Appointments
+            WHERE userID = @userID AND (
+                doctorName LIKE '%' + @searchTerm + '%'
+                OR clinicName LIKE '%' + @searchTerm + '%'
+                OR purpose LIKE '%' + @searchTerm + '%'
+            )
+        `;
+
+        if(appointmentDate){
+            query += `AND appointmentDate = @appointmentDate`;
+        }
+        const request = connection.request();
+        request.input("searchTerm", sql.NVarChar, searchTerm);
+        request.input("userID", sql.Int, userID);
+        if(appointmentDate){
+            request.input("appointmentDate", sql.Date, appointmentDate);
+        }
+        const result = await request.query(query);
+
+         //Format time and date form properly
+        return result.recordset.map(row => ({
+            ...row,
+            appointmentTime: row.appointmentTime,
+            appointmentDate: row.appointmentDate?.toISOString().split('T')[0],
+            reminderDate: row.reminderDate?.toISOString().split('T')[0]
+        }));
+    }
+    catch(error){
+        console.error("Database error in searchAppointments:", error);
+        throw error;
+    }
+    finally{
+        if(connection){
+            try{
+                await connection.close();
+            }catch(error){
+                console.error("Error closing connection after searchAppointments:", err);
+            }
+        }
+    }
+}
+
 module.exports = {
     getAllAppointments,
     getAppointmentsByUserID,
     createAppointment,
     updateAppointmentByAppointmentID,
+    deleteAppointment,
+    searchAppointments,
 };

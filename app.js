@@ -18,6 +18,7 @@ const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
+const mealController = require('./controllers/meal_controller');
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -28,7 +29,7 @@ const {verifyJWT} = require("./middlewares/authMiddleware");
 const {validateUserProfile} = require('./middlewares/userProfile_validation');
 const { validateRegistration } = require('./middlewares/registration_validation');
 const { validateLogin } = require('./middlewares/login_validation');
-
+const mealValidator =require("./middlewares/meal_validation");
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -60,6 +61,14 @@ app.delete("/favouriteOutfit/:favouriteOutfitID", verifyJWT, favouriteOutfitCont
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);
 app.post("/appointments", verifyJWT, appointmentValidator.validateAppointment, appointmentController.createAppointment);
 app.put("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointment, appointmentValidator.validateAppointmentId, appointmentController.updateAppointmentByAppointmentID);
+app.delete("/appointments/:appointmentID", verifyJWT, appointmentValidator.validateAppointmentId, appointmentController.deleteAppointment);
+app.get("/appointments/search", verifyJWT, appointmentValidator.validateSearchQuery, appointmentController.searchAppointments);
+
+// Meal routes
+app.get("/meals/me", verifyJWT, mealController.getMealsByUserIDAndMealDate);
+app.post("/meals", verifyJWT, mealValidator.validateMeal, mealController.createMealLog);
+app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.validateMealId, mealController.updateMealLogByMealID);
+app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
 
 // Health page route
 app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
@@ -77,33 +86,22 @@ app.delete("/medications/:medicationID", editMedicationsController.deleteMedicat
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts);
-app.get("/posts/:id",
-  verifyJWT,
-  validatePostId,
-  postsController.getPostById
-);
-app.post( "/posts",
-  verifyJWT,
-  validatePost,
-  postsController.createPost
-);
+app.get("/posts/:id", verifyJWT, validatePostId, postsController.getPostById);
+app.post( "/posts", verifyJWT, validatePost, postsController.createPost);
 app.post("/api/upload", uploadImage);
+app.delete("/posts/:id", verifyJWT, postsController.deletePost)
+app.put("/posts/:id", verifyJWT, postsController.updatePost)
 
 // Comments CRUD
-app.get(
-  "/posts/:postID/comments",
-  verifyJWT,
-  postsController.getCommentsForPost
-);
-app.post(
-  "/posts/:postID/comments",
-  verifyJWT,
-  postsController.createCommentForPost
-);  
+app.get( "/posts/:postID/comments", verifyJWT, postsController.getCommentsForPost);
+app.post("/posts/:postID/comments", verifyJWT, postsController.createCommentForPost);  
+app.put("/posts/:postID/comments/:commentID", verifyJWT, postsController.updateComment);
+app.delete("/posts/:postID/comments/:commentID", verifyJWT, postsController.deleteComment);
 
 // Translation
 app.post("/translate", translateText );
 
+//node start
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 }).on('error', (err) => {
