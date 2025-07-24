@@ -275,6 +275,7 @@ async function loadPosts() {
           }
         });
 
+
         cancelBtn.addEventListener("click", () => {
           editForm.hidden = true;
         });
