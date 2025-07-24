@@ -6,6 +6,7 @@
   <title>My Profile – HealthyLah!</title>
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/profile.css" />
+  <link rel="stylesheet" href="../css/reminder_alert.css">
 </head>
 <body>
   <header class="top-bar">
@@ -56,25 +57,23 @@
         <option value="Prefer not to say">Prefer not to say</option>
       </select>
 
-      <label for="allergies">Allergies</label>
-      <select id="allergies" name="allergies">
-        <option value="">-- Select --</option>
-        <option value="Peanuts">Peanuts</option>
-        <option value="Seafood">Seafood</option>
-        <option value="Lactose">Lactose</option>
-        <option value="Others">Others</option>
-      </select>
-      <input type="text" id="other-allergy" name="other-allergy" placeholder="Please specify" style="display: none;">
+      <label>Allergies</label>
+      <div id="allergy-options">
+        <label><input type="checkbox" value="Peanuts"> Peanuts</label>
+        <label><input type="checkbox" value="Seafood"> Seafood</label>
+        <label><input type="checkbox" value="Lactose"> Lactose</label>
+        <label><input type="checkbox" value="Others" id="allergy-other-check"> Others</label>
+        <input type="text" id="other-allergy" placeholder="Please specify" style="display:none;" />
+      </div>
 
-      <label for="conditions">Chronic Medical Conditions</label>
-      <select id="conditions" name="conditions">
-        <option value="">-- Select --</option>
-        <option value="Diabetes">Diabetes</option>
-        <option value="Hypertension">Hypertension</option>
-        <option value="Asthma">Asthma</option>
-        <option value="Others">Others</option>
-      </select>
-      <input type="text" id="other-conditions" name="other-conditions" placeholder="Please specify" style="display: none;">
+      <label>Chronic Conditions</label>
+      <div id="condition-options">
+        <label><input type="checkbox" value="Diabetes"> Diabetes</label>
+        <label><input type="checkbox" value="Hypertension"> Hypertension</label>
+        <label><input type="checkbox" value="Asthma"> Asthma</label>
+        <label><input type="checkbox" value="Others" id="condition-other-check"> Others</label>
+        <input type="text" id="other-conditions" placeholder="Please specify" style="display:none;" />
+      </div>
 
       <label for="emergencyName">Emergency Contact Name</label>
       <input type="text" id="emergencyName" name="emergencyName">
@@ -115,5 +114,6 @@
   <script src="../js/auth.js"></script>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
   <script src="../js/profile.js" defer></script>
+  <script src="../js/reminder_alert.js" defer></script>
 </body>
 </html>
