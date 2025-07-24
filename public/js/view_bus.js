@@ -6,6 +6,7 @@ window.addEventListener('load', async() =>{
     const nearbyBusStops = await getBusStops(location);
     const allBusStopCode = await getBusStopCode(nearbyBusStops);
     const busArrivals = await getBusArrival(allBusStopCode)
+    const displayBus = await renderBusArrival(busArrivals);
 })
 
 // This function gets the user's current location (latitude and longitude)
@@ -44,7 +45,7 @@ async function getBusStops(location){
         locationRestriction: {
             circle: {
                 center: location,
-                radius: 5000
+                radius: 2000
             }
         }
     }
@@ -69,7 +70,6 @@ async function getBusStops(location){
         }
 
         const data = await response.json();
-        console.log(data);
         return data.places;
     }catch(error){
         console.error("Error fetching bus stops: ", error);
@@ -255,7 +255,6 @@ async function getBusArrival(busStops){
             console.error("Error getting bus arrival for", busStopCode, error.message);
         }
     }
-    console.log(allBusArrivals);
     return allBusArrivals;
 }
 
@@ -265,7 +264,6 @@ async function renderBusArrival(busStops){
         const busServices = busStop.arrivals.Services;
         const busStopBlock = document.createElement("div");
         busStopBlock.classList.add("bus-stop-block");
-
         busStopBlock.innerHTML = `
             <div class="bus-stop-header">
               <strong>${busStop.busStopName}</strong>
@@ -274,11 +272,11 @@ async function renderBusArrival(busStops){
             <div class="bus-cards"> </div>
             <div class="actions">
               <a href="#">See picture &gt;&gt;</a>
-              <a href="${busStop.googleMapsLinks}" class="take-me-there-btn" target="_blank">Take me there</a>
+              <a href="${busStop.googleMapsLinks}" class="take-me-there" target="_blank">Take me there</a>
             </div>
         `
 
-        const busCards = document.getElementById("bus-cards");
+        const busCards = busStopBlock.querySelector(".bus-cards");
         let arrivals = [];
         busServices.forEach(async (service) => {
             let arrivalInfo = { busNumber: service.ServiceNo};
@@ -292,12 +290,28 @@ async function renderBusArrival(busStops){
                     const diffMs = arrivalTime - now; // This is difference in milliseconds
                     const diffMins = Math.round(diffMs / 60000); // Convert to minutes
 
-                    displayDifference = diffMins > 0 ? `${diffMins} min` : "Arriving";
+                    displayDifference = diffMins > 0 ? `${diffMins} min` : "Arrived";
                 }
 
                 arrivalInfo[`bus${idx + 1}`] = displayDifference;
-            })
+            });
+            arrivals.push(arrivalInfo);
         })
+
+        arrivals.forEach(async (arrival) => {
+            const busCard = document.createElement("div");
+            busCard.classList.add("bus-card");
+            busCard.innerHTML = `
+                Bus ${arrival.busNumber}
+                <button>${arrival.bus1}</button>
+                <button>${arrival.bus2}</button>
+                <button>${arrival.bus3}</button>
+            `
+            busCards.appendChild(busCard);
+        })
+
+        busStopSection.appendChild(busStopBlock);
+        
     })
 }
 

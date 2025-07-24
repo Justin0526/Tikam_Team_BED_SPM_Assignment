@@ -9,7 +9,7 @@ main{
   width: fit-content;
 }   
 
-.transport-btn {
+.transport-btn, .bus-transport-btn {
   padding: 0.8rem 3rem;
   border: 0.1rem solid #2b7da0;
   background-color: #fff;
@@ -17,6 +17,11 @@ main{
   font-weight: bold;
   border-radius: 0.4rem;
   cursor: pointer;
+}
+
+.bus-transport-btn{
+  background-color: #2B7DA4;
+  color: white;
 }
 
 .search-bar {
@@ -126,7 +131,8 @@ main{
   text-decoration: none;
 }
 
-.take-me-there-btn {
+.actions .take-me-there {
+  display: inline-block;       
   background-color: #2b7da0;
   color: white;
   font-weight: bold;
@@ -134,4 +140,6 @@ main{
   border-radius: 0.4rem;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  text-decoration: none;       
 }
+

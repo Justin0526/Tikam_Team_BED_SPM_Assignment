@@ -75,12 +75,12 @@ async function fetchFacilities(query, pageToken = null) {
         });
 
         if (!response.ok) {
-        const errorBody = response.headers
-            .get("content-type")
-            ?.includes("application/json")
-            ? await response.json()
-            : { message: response.statusText };
-        throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : { message: response.statusText };
+            throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
         }
 
         const data = await response.json();
@@ -91,6 +91,9 @@ async function fetchFacilities(query, pageToken = null) {
             resultsGrid.innerHTML = "";
             loadMoreWrapper.innerHTML = "";
             resultsTitle.textContent = `Results for: ${query}`;
+            if (!Array.isArray(results) || results.length === 0) {
+                resultsTitle.textContent = `No results for: ${query}`;
+            }
         }
 
         quickSearchContainer.style.display = "none";
