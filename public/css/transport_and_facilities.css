@@ -1,11 +1,4 @@
 /* transport.css */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background-color: #F9FFF4;
-  color: #000000;
-}
-
 section {
   padding: 2.5rem 1.25rem;
 }
@@ -61,7 +54,7 @@ h2 {
   box-sizing: border-box;
 }
 
-.btn.green {
+.btn:hover {
   background-color: #118433;
   color: #FFFFFF;
 }
@@ -78,7 +71,7 @@ h2 {
   justify-content: center;
   gap: 2rem;
   flex-wrap: wrap;
-  max-width: 70vw;
+  max-width: 80vw;
   margin: 0 auto;
 }
 
@@ -92,9 +85,9 @@ h2 {
   box-sizing: border-box;
 }
 
-.facility-card.highlight {
-  background-color: #118433;
-  color: #FFFFFF;
+.facility-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .facility-card p {
@@ -104,7 +97,7 @@ h2 {
   color: #000000;
 }
 
-.btn-blue, .btn-green {
+.get-directions-btn {
   text-decoration: none;
   padding: 0.625rem 1.25rem;
   font-weight: bold;
@@ -121,12 +114,10 @@ h2 {
   width: fit-content;
 }
 
-.btn-green {
-  background-color: #E1FF1F;
-  color: #000000;
+.get-directions-btn:hover {
+  background-color: #031e2e;       /* Slightly darker on hover */
 }
 
-/* transport.css */
 .transport-section {
   padding: 0;
 }
@@ -178,7 +169,7 @@ h2 {
   margin-bottom: 1rem;
 }
 
-.card {
+.transport-card {
   background-color: rgba(255, 255, 255, 0.95);
   padding: 1rem;
   border-radius: 12px;
@@ -191,13 +182,18 @@ h2 {
   align-items: flex-start;
 }
 
-.card p {
+.transport-card p {
   margin: 0.25rem 0;
   color: #000000;
   font-weight: 500;
 }
 
-.btn-yellow {
+.transport-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.view-more{
   background-color: #E1FF1F;
   color: #000000;
   padding: 0.625rem 1.25rem;
@@ -207,6 +203,11 @@ h2 {
   display: inline-block;
   width: fit-content;
   align-self: center;
+}
+
+.view-more:hover{
+  background-color: #0fbd1d;
+  color: white;
 }
 
 .see-more {
