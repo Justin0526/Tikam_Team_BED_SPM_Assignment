@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/health.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/reminder_alert.css">
     <script src="../js/settings_translation.js" defer></script>
 </head>
 <body>
@@ -37,32 +38,11 @@
         
         <div class="divider"></div>
         
+        <!-- This section will be populated by JS -->
         <section class="profile-section">
-            <h2>My Health Profile</h2>
-            <div class="profile-name">Mr Tan Choon Peng</div>
-            <div class="profile-details">
-                <div class="detail-item">
-                    <strong>Age:</strong>
-                    <span>68 years</span>
-                </div>
-                <div class="detail-item">
-                    <strong>Gender:</strong>
-                    <span>Male</span>
-                </div>
-                <div class="detail-item">
-                    <strong>Allergies:</strong>
-                    <span>Penicillin, Shellfish</span>
-                </div>
-                <div class="detail-item">
-                    <strong>Chronic Conditions:</strong>
-                    <span>Hypertension, Type 2 Diabetes</span>
-                </div>
-                <div class="detail-item">
-                    <strong>Emergency Contact:</strong>
-                    <span>Tan Wei Ling (Daughter) - +65 9123 4567</span>
-                </div>
-            </div>
+            <p>Loading profile...</p>
         </section>
+        
         <a href="" class="feature-card-link">
             <section class="features-section-grid">
             <div class="feature-card">
@@ -124,5 +104,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/index.js"></script>
+  <script src="../js/health.js" defer></script>
+  <script src="../js/reminder_alert.js" defer></script>
 </body>
 </html>

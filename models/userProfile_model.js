@@ -10,19 +10,19 @@ async function getUserProfile(userID) {
     const result = await request.query("SELECT * FROM UserProfile WHERE userID = @userID");
 
     if (result.recordset.length === 0) {
-      return null; // No profile found
+      return null;
     }
 
     return result.recordset[0];
   } catch (error) {
-    console.error("Database error (getUserProfile):", error);
+    console.error("❌ Database error (getUserProfile):", error);
     throw error;
   } finally {
     if (connection) {
       try {
         await connection.close();
       } catch (closeError) {
-        console.error("Error closing connection:", closeError);
+        console.error("⚠️ Error closing connection:", closeError);
       }
     }
   }
@@ -38,8 +38,8 @@ async function updateUserProfile(userID, data) {
     request.input('fullName', sql.VarChar(100), data.fullName);
     request.input('dob', sql.Date, data.dob);
     request.input('gender', sql.VarChar(20), data.gender);
-    request.input('allergies', sql.VarChar(100), data.allergies);
-    request.input('conditions', sql.VarChar(100), data.conditions);
+    request.input('allergies', sql.VarChar(255), data.allergies);
+    request.input('conditions', sql.VarChar(255), data.conditions);
     request.input('emergencyName', sql.VarChar(100), data.emergencyName);
     request.input('emergencyNumber', sql.VarChar(20), data.emergencyNumber);
     request.input('address', sql.VarChar(255), data.address);
@@ -60,16 +60,17 @@ async function updateUserProfile(userID, data) {
       WHERE userID = @userID
     `);
 
+    console.log("✅ DB Update result:", result.rowsAffected);
     return result;
   } catch (error) {
-    console.error("Database error (updateUserProfile):", error);
+    console.error("❌ Database error (updateUserProfile):", error);
     throw error;
   } finally {
     if (connection) {
       try {
         await connection.close();
       } catch (closeError) {
-        console.error("Error closing connection:", closeError);
+        console.error("⚠️ Error closing connection:", closeError);
       }
     }
   }
