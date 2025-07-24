@@ -18,6 +18,7 @@ const profileController = require('./controllers/profileController');
 const { uploadImage } = require('./controllers/upload_controller');
 const browseFacilityController = require('./controllers/browse_facility_controller');
 const transportAndFacilitiesController = require("./controllers/transport_and_facilities_controller");
+const viewBusController = require("./controllers/view_bus_controller");
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -63,6 +64,10 @@ app.post("/nearbyPublicTransport", transportAndFacilitiesController.getpublicTra
 // Browse Facilities routes
 app.post('/facilities', browseFacilityController.getFacilities);
 app.get('/facilities/photo', browseFacilityController.getPhoto);
+
+// View Bus routes
+app.get("/busStops", viewBusController.getBusStops);
+app.get("/busArrival", viewBusController.getBusArrival);
 
 // Appointment route
 app.get("/appointments/me", verifyJWT, appointmentController.getAppointmentsByUserID);

@@ -31,7 +31,6 @@ async function getFacilities(req, res){
                 }
             }
         );
-        console.log(response.data);
         return res.json(response.data);
     }catch(error){
         console.error("Controller error: ", error);

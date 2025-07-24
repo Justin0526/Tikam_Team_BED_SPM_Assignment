@@ -1,6 +1,5 @@
 const apiBaseUrl = "http://localhost:3000";
-// This function gets the user's current location (latitude and longitude)
-// It returns a Promise so we can use async and await with it
+
 window.addEventListener('load', async()=>{
     await getToken(token);
     const location = await getLocation();
@@ -18,6 +17,8 @@ window.addEventListener('load', async()=>{
 
 });
 
+// This function gets the user's current location (latitude and longitude)
+// It returns a Promise so we can use async and await with it
 function getLocation(){
     return new Promise((resolve) => {
         // Default to center of Singapore
