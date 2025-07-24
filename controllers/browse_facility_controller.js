@@ -4,6 +4,7 @@ const FieldMask = 'places.displayName,places.formattedAddress,places.photos,plac
 const browseFacilityURL = "https://places.googleapis.com/v1/places:searchText";
 const placePhotoURL = "https://places.googleapis.com/v1"
 
+// Function to get facilities searched by user
 async function getFacilities(req, res){
     try{
         const { textQuery, pageToken } = req.body;
@@ -38,6 +39,7 @@ async function getFacilities(req, res){
     };
 }
 
+// Function to get the photo of the facility user searched
 async function getPhoto(req, res) {
     try {
         const { photoName, maxHeightPx, maxWidthPx } = req.query;

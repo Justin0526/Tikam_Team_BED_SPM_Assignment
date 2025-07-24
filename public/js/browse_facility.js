@@ -55,6 +55,7 @@ backBtn.addEventListener("click", () => {
   quickSearchContainer.style.display = "block";
 });
 
+// get facilities user searched
 async function fetchFacilities(query, pageToken = null) {
     try {
         const reqBody = {
@@ -110,6 +111,7 @@ async function fetchFacilities(query, pageToken = null) {
     }
 }
 
+// get the photo of the facilities
 async function fetchPhoto(placePhoto) {
     try {
         const maxHeightPx = 400;
@@ -141,6 +143,7 @@ async function fetchPhoto(placePhoto) {
     }
 }
 
+// Display facilities as result
 async function renderFacilities(results) {
     const resultGrid = document.getElementById("results-grid");
 
@@ -181,6 +184,7 @@ async function renderFacilities(results) {
     });
 }
 
+// Display load more button if there are more results
 async function renderLoadMoreButton() {
     const wrapper = document.getElementById("load-more-wrapper");
     wrapper.innerHTML = ""; // clear old button
