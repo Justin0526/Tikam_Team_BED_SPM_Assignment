@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Transport and Facilities - HealthyLah</title>
   <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/view_bus.css">
 <body>
      <header class="top-bar">
         <div class="logo-bar">
@@ -24,6 +25,63 @@
         <a href="post_forum.html">Post</a>
         </nav>
     </header>
+
+    <div class="transport-toggle">
+      <button class="transport-btn">BUS</button>
+      <button class="transport-btn">MRT/LRT</button>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search by address, stop name or bus number…" />
+      <button class="go-btn">Go</button>
+    </div>
+
+    <main>
+      <h2 class="section-title">Nearby Bus Stops <a href="#" class="view-map">View Bus Map →</a></h2>
+
+      <!-- Bus Stop Block -->
+      <section class="bus-stop-section" id="bus-stop-section">
+          <div class="bus-stop-block">
+            <div class="bus-stop-header">
+              <strong>Ngee Ann Poly</strong>
+              <span class="bookmark">🔖</span>
+            </div>
+            <div class="bus-cards">
+              <div class="bus-card">Bus 74 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+              <div class="bus-card">Bus 151 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+              <div class="bus-card">Bus 154 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+              <div class="bus-card">Bus 184 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+              <div class="bus-card">Bus 75 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+              <div class="bus-card">Bus 52 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            </div>
+            <div class="actions">
+              <a href="#">See picture &gt;&gt;</a>
+              <button class="take-me-there-btn">Take me there</button>
+            </div>
+          </div>
+
+        <!-- Opposite Bus Stop -->
+        <div class="bus-stop-block">
+          <div class="bus-stop-header">
+            <strong>Opp Ngee Ann Poly</strong>
+            <span class="bookmark">🔖</span>
+          </div>
+          <div class="bus-cards">
+            <div class="bus-card">Bus 74 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            <div class="bus-card">Bus 151 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            <div class="bus-card">Bus 154 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            <div class="bus-card">Bus 184 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            <div class="bus-card">Bus 75 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            <div class="bus-card">Bus 52 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+            <div class="bus-card">Bus 128 <button>9 min</button><button>15 min</button><button>27 min</button></div>
+          </div>
+          <div class="actions">
+            <a href="#">See picture &gt;&gt;</a>
+            <button class="take-me-there-btn">Take me there</button>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <footer>
     <p>© 2025 HealthyLah – Designed with care for our seniors</p>

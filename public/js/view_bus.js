@@ -4,7 +4,8 @@ window.addEventListener('load', async() =>{
     await getToken(token);
     const location = await getLocation();
     const nearbyBusStops = await getBusStops(location);
-    const busStopCode = await getBusStopCode(nearbyBusStops);
+    const allBusStopCode = await getBusStopCode(nearbyBusStops);
+    const busArrivals = await getBusArrival(allBusStopCode)
 })
 
 // This function gets the user's current location (latitude and longitude)
@@ -68,6 +69,7 @@ async function getBusStops(location){
         }
 
         const data = await response.json();
+        console.log(data);
         return data.places;
     }catch(error){
         console.error("Error fetching bus stops: ", error);
@@ -139,37 +141,55 @@ async function getBusStopCode(nearbyBusStops){
                         const bothOpp = googleName.startsWith("opp") && ltaName.startsWith("opp");
                         const bothNotOpp = !googleName.startsWith("opp") && !ltaName.startsWith("opp");
 
-                        if (bothOpp || bothNotOpp) {
+                        if(bothOpp || bothNotOpp){
                             const NORMALIZATION_MAP = {
-                                "int": "interchange",
-                                "stn": "station",
-                                "ave": "avenue",
-                                "rd": "road",
-                                "ctr": "centre",
-                                "blk": "block"
+                                "int" : "interchange",
+                                "stn" : "station",
+                                "ave" : "avenue",
+                                "rd" : "road",
+                                "ctr" : "centre",
+                                "blk" : "block"
                             };
 
                             const COMMON_WORDS = ["opp", "bus", "stop", "station", "stn", "int", "road", "rd", "ave", "blk"];
 
                             const normalizeToken = (token) => {
+                                // Lowercase the token and strips out non-alphanumeric characters
                                 const cleaned = token.toLowerCase().replace(/[^a-z0-9]/gi, '');
+                                
+                                // Standardise abbreviations using Normalization map
                                 return NORMALIZATION_MAP[cleaned] || cleaned;
-                            };
+                            }
 
-                            const tokenize = (text) =>
-                                text
-                                    .split(/[\s/,-]+/)
-                                    .map(normalizeToken)
-                                    .filter(t => t && !COMMON_WORDS.includes(t));
+                            const tokenSize = (text) => {
+                                return text
+                                    .split(/[\s/,-]+/)    // Split on space, slash, comma, hyphen
+                                    .map(normalizeToken)    // Clean and normalise words like stn -> station
+                                    .filter(t => t && !COMMON_WORDS.includes(t));    // Remove generic and common words
+                            }
 
-                            const googleTokens = tokenize(googleName);
-                            const ltaTokens = tokenize(ltaName);
+                            const googleTokens = tokenSize(googleName);
+                            const ltaTokens = tokenSize(ltaName);
 
-                            const common = googleTokens.filter(token => ltaTokens.includes(token));
-                            const matchRatio = common.length / Math.max(googleTokens.length, ltaTokens.length);
+                            const common = googleTokens.filter(t => ltaTokens.includes(t)); // all words (tokens) that appear in both the Google Name and Lta name
+                            const hasEnoughTokens = common.length >= 2; // Return true if they share 2 or more useful tokens
 
-                            if (matchRatio >= 0.6 && common.length >= 2) {
-                                matched = true;
+                            // Safety check to prevent bad matches between places that are similar 
+                            const KEY_SUFFIXES = ["stn", "station", "ctr", "centre", "int", "interchange", "mall", "plaza"];
+
+                            // Check if both sides contain a known suffix keyword
+                            const googleSuffix = googleTokens.find(t => KEY_SUFFIXES.includes(t));
+                            const ltaSuffix = ltaTokens.find(t => KEY_SUFFIXES.includes(t));
+
+                            // If suffix are not the same, it is marked as conflict
+                            // For example, "beauty", "world", "stn" and "beauty", "world", "ctr" has good match ratio
+                            // but stn != ctr, so endsWithConflixt == true
+                            const endsWithConflict = googleSuffix && ltaSuffix && googleSuffix !== ltaSuffix;
+
+                            // Ensure the names are sufficiently similar, they don't refer to different place types
+                            // Ensure the LTA name fully includes the meaning of the google name
+                            if (hasEnoughTokens && !endsWithConflict && googleTokens.every(t => ltaTokens.includes(t))){
+                                matched = true
                             }
                         }
                     }
@@ -178,8 +198,8 @@ async function getBusStopCode(nearbyBusStops){
                         if (filteredBusStops.some(stop => stop.BusStopCode === lta.BusStopCode)) {
                             console.log("⚠️ Match found but already added:", lta.Description, lta.BusStopCode);
                         } else {
-                            console.log("✅ New match:", nearby.displayName.text, "→", lta.Description);
-                            filteredBusStops.push(lta);
+                            console.log("✅ New match:", nearby.displayName.text, "→", lta.Description, `(${lta.BusStopCode})`);
+                            filteredBusStops.push({ltaBusStops: lta, googleMapsLinks: nearby.googleMapsLinks.directionsUri});
                             remainingNearby.splice(i, 1);
                         }
                         break;
@@ -206,10 +226,78 @@ async function getBusStopCode(nearbyBusStops){
     return filteredBusStops;
 }
 
-// async function getBusArrival(busStopCode){
-//     try{
-//         for (let i = 0; i  < busStopCode.length; i++ ){
-//             const 
-//         }
-//     }
-// }
+async function getBusArrival(busStops){
+    let allBusArrivals = [];
+
+    for (let i = 0; i < busStops.length; i++) {
+        const busStopCode = busStops[i].ltaBusStops.BusStopCode;
+        try {
+            const response = await fetch(`${apiBaseUrl}/busArrival?busStopCode=${busStopCode}`, {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                const errorBody = response.headers
+                    .get("content-type")
+                    ?.includes("application/json")
+                    ? await response.json()
+                    : { message: response.statusText };
+                throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
+            }
+
+            const busArrivals = await response.json();
+            allBusArrivals.push({busStopName: busStops[i].ltaBusStops.Description, arrivals: busArrivals, googleMapsLinks: busStops[i].googleMapsLinks});
+
+        } catch (error) {
+            console.error("Error getting bus arrival for", busStopCode, error.message);
+        }
+    }
+    console.log(allBusArrivals);
+    return allBusArrivals;
+}
+
+async function renderBusArrival(busStops){
+    const busStopSection = document.getElementById("bus-stop-section")
+    busStops.forEach(async (busStop) => {
+        const busServices = busStop.arrivals.Services;
+        const busStopBlock = document.createElement("div");
+        busStopBlock.classList.add("bus-stop-block");
+
+        busStopBlock.innerHTML = `
+            <div class="bus-stop-header">
+              <strong>${busStop.busStopName}</strong>
+              <span class="bookmark">🔖</span>
+            </div>
+            <div class="bus-cards"> </div>
+            <div class="actions">
+              <a href="#">See picture &gt;&gt;</a>
+              <a href="${busStop.googleMapsLinks}" class="take-me-there-btn" target="_blank">Take me there</a>
+            </div>
+        `
+
+        const busCards = document.getElementById("bus-cards");
+        let arrivals = [];
+        busServices.forEach(async (service) => {
+            let arrivalInfo = { busNumber: service.ServiceNo};
+            ["NextBus", "NextBus2", "NextBus3"].forEach((key, idx) => {
+                const bus = service[key];
+                let displayDifference = "Not Available";
+                if(bus && bus.EstimatedArrival){
+                    const arrivalTime = new Date(bus.EstimatedArrival);
+                    const now = new Date();
+
+                    const diffMs = arrivalTime - now; // This is difference in milliseconds
+                    const diffMins = Math.round(diffMs / 60000); // Convert to minutes
+
+                    displayDifference = diffMins > 0 ? `${diffMins} min` : "Arriving";
+                }
+
+                arrivalInfo[`bus${idx + 1}`] = displayDifference;
+            })
+        })
+    })
+}
+
