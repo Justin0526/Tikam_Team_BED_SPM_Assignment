@@ -7,7 +7,7 @@ const placePhotoURL = "https://places.googleapis.com/v1"
 // Function to get facilities searched by user
 async function getFacilities(req, res){
     try{
-        const { textQuery, pageToken } = req.body;
+        const { textQuery, pageToken, includedType } = req.body;
 
         const requestBody = pageToken
         // Check if page token exists, if it exists then body contains page token
@@ -21,6 +21,10 @@ async function getFacilities(req, res){
                 textQuery: `${textQuery}, Singapore`,
                 pageSize: 3
             };
+
+        if (includedType && includedType !== "null") {
+            requestBody.includedType = includedType;
+            }
 
         const response = await axios.post(
             browseFacilityURL,
