@@ -1,3 +1,4 @@
+const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 let appointments = [];
 let isEditing = false;//For edit form
@@ -35,7 +36,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
     let response;
     if (isEditing) {
       // PUT: update appointment
-      response = await fetch(`http://localhost:3000/appointments/${appointmentID}`, {
+      response = await fetch(`${apiBaseUrl}/appointments/${appointmentID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -44,7 +45,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
       });
     } else {
       // POST: create new appointment
-      response = await fetch('http://localhost:3000/appointments', {
+      response = await fetch(`${apiBaseUrl}/appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -117,7 +118,7 @@ function renderTable() {
 // ─── Load Appointments ─────────────────────────────────────────────────────────────────────
 async function loadAppointments() {
     try {
-      const response = await fetch(`http://localhost:3000/appointments/me`,{
+      const response = await fetch(`${apiBaseUrl}/appointments/me`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -262,7 +263,7 @@ async function searchAppointments() {
   //adds keyword and date to the query string only if they exist
 
   try {
-    const response = await fetch(`http://localhost:3000/appointments/search?${queryParams.toString()}`, {
+    const response = await fetch(`${apiBaseUrl}/appointments/search?${queryParams.toString()}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -344,7 +345,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.warn("Token invalid or expired.");
       return;
     }
-    const response = await fetch("http://localhost:3000/appointments/me", {
+    const response = await fetch(`${apiBaseUrl}/appointments/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -441,7 +442,7 @@ async function updateReminderBanner() {
   try {
     if (!token) return;
 
-    const response = await fetch("http://localhost:3000/appointments/me", {
+    const response = await fetch(`${apiBaseUrl}/appointments/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

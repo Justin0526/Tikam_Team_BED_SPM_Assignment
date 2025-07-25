@@ -1,3 +1,4 @@
+const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 let meals = [];
 let isEditing = false;
@@ -49,7 +50,7 @@ document.getElementById('meal-form').addEventListener('submit', async function (
     //If editing existing meal
     if (isEditing) {
       console.log("Submitting meal:", meal);
-      response = await fetch(`http://localhost:3000/meals/${mealID}`, {
+      response = await fetch(`${apiBaseUrl}/meals/${mealID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ document.getElementById('meal-form').addEventListener('submit', async function (
     }
     //If adding new meal 
     else {
-      response = await fetch('http://localhost:3000/meals', {
+      response = await fetch(`${apiBaseUrl}/meals`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,7 +148,7 @@ async function loadMeals() {
     const query = date ? `?mealDate=${date}` : ''; // If a date is provided, builds a query string like ?mealDate=2025-07-26
     
     //Fetch meals from backend
-    const response = await fetch(`http://localhost:3000/meals/me${query}`, {
+    const response = await fetch(`${apiBaseUrl}/meals/me${query}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -215,7 +216,7 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async () =
 
   //Send DELETE request to backend
   try {
-    const response = await fetch(`http://localhost:3000/meals/${mealID}`, {
+    const response = await fetch(`${apiBaseUrl}/meals/${mealID}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
