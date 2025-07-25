@@ -1,5 +1,10 @@
 const apiBaseUrl = "http://localhost:3000";
+const goBtn = document.getElementById("go-btn");
+const textQuery = document.getElementById("textQuery");
+const sectionTitle = document.getElementById("section-title");
+const busStopSection = document.getElementById("bus-stop-section");
 
+// Load nearby bus stops and display it
 window.addEventListener('load', async() =>{
     await getToken(token);
     const location = await getLocation();
@@ -7,6 +12,17 @@ window.addEventListener('load', async() =>{
     const allBusStopCode = await getBusStopCode(nearbyBusStops);
     const busArrivals = await getBusArrival(allBusStopCode)
     const displayBus = await renderBusArrival(busArrivals);
+})
+
+// Search nearby bus stops via textbox
+goBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+    currentQuery = textQuery.value;
+
+    if (!currentQuery) return alert("Please enter a search term.");
+
+    busStopSection.innerHTML = "";
+    await searchBusStops(currentQuery);
 })
 
 // This function gets the user's current location (latitude and longitude)
@@ -36,6 +52,7 @@ function getLocation(){
     });
 };
 
+// Get all bus stops within a radius of 2000m
 async function getBusStops(location){
     console.log(location);
     const reqBody = {
@@ -77,6 +94,7 @@ async function getBusStops(location){
     }
 }
 
+// Get the bus stop codes of the bus stops we get, this is to prepare to get bus arrivals
 async function getBusStopCode(nearbyBusStops){
     let filteredBusStops = [];
     let skipAmount = 0;
@@ -226,6 +244,7 @@ async function getBusStopCode(nearbyBusStops){
     return filteredBusStops;
 }
 
+// Get bus arrivals via all bus stop code
 async function getBusArrival(busStops){
     let allBusArrivals = [];
 
@@ -258,6 +277,7 @@ async function getBusArrival(busStops){
     return allBusArrivals;
 }
 
+// Display all bus arrivals
 async function renderBusArrival(busStops){
     const busStopSection = document.getElementById("bus-stop-section")
     busStops.forEach(async (busStop) => {
@@ -267,11 +287,10 @@ async function renderBusArrival(busStops){
         busStopBlock.innerHTML = `
             <div class="bus-stop-header">
               <strong>${busStop.busStopName}</strong>
-              <span class="bookmark">🔖</span>
+              <img class="bookmark" src="../images/icons8-bookmark-50.png">
             </div>
             <div class="bus-cards"> </div>
             <div class="actions">
-              <a href="#">See picture &gt;&gt;</a>
               <a href="${busStop.googleMapsLinks}" class="take-me-there" target="_blank">Take me there</a>
             </div>
         `
@@ -315,3 +334,46 @@ async function renderBusArrival(busStops){
     })
 }
 
+// Search bus stop and display the bus arrival 
+async function searchBusStops(query){
+    try{
+        const reqBody = {
+            textQuery: query.toLowerCase().trim(),
+            includedType: "bus_stop"
+        };
+
+        const response = await fetch(`${apiBaseUrl}/facilities`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(reqBody)
+        })
+
+        if(!response.ok){
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
+        }
+
+        const data = await response.json();
+        const results = data.places;
+
+        if (!Array.isArray(results) || results.length === 0){
+            sectionTitle.textContent = `No results for: ${query}`;
+            return;
+        }
+
+        sectionTitle.textContent = `Results for: ${query}`;
+        const allBusStopCode = await getBusStopCode(results);
+        const allBusArrival = await getBusArrival(allBusStopCode);
+        await renderBusArrival(allBusArrival);
+    }catch(error){
+        console.error("Error searching bus stops", error);
+        alert("Failed to search bus stops");
+    }
+}

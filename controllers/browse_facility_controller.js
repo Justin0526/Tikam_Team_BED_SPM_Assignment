@@ -4,9 +4,10 @@ const FieldMask = 'places.displayName,places.formattedAddress,places.photos,plac
 const browseFacilityURL = "https://places.googleapis.com/v1/places:searchText";
 const placePhotoURL = "https://places.googleapis.com/v1"
 
+// Get facilities via browseFacilityURL
 async function getFacilities(req, res){
     try{
-        const { textQuery, pageToken } = req.body;
+        const { textQuery, pageToken, includedType } = req.body;
 
         const requestBody = pageToken
         // Check if page token exists, if it exists then body contains page token
@@ -20,6 +21,10 @@ async function getFacilities(req, res){
                 textQuery: `${textQuery}, Singapore`,
                 pageSize: 3
             };
+
+        if (includedType && includedType !== "null") {
+            requestBody.includedType = includedType;
+            }
 
         const response = await axios.post(
             browseFacilityURL,
@@ -38,6 +43,7 @@ async function getFacilities(req, res){
     };
 }
 
+// Get photo via placePhotoURL
 async function getPhoto(req, res) {
     try {
         const { photoName, maxHeightPx, maxWidthPx } = req.query;

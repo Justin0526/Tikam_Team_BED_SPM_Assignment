@@ -152,7 +152,7 @@ async function renderFacilities(results){
         facilityCard.innerHTML = `
             <p><strong>Name:</strong> ${result.displayName.text}</p>
             <p><strong>Address:</strong> ${result.formattedAddress}</p>
-            <p><strong>Opening Hours:</strong> ${openNow}</p>
+            <p><strong>Open Now:</strong> ${openNow}</p>
             <a href="${result.googleMapsLinks.directionsUri}" class="get-directions-btn" target="_blank">Get Directions</a>
         `;
 
