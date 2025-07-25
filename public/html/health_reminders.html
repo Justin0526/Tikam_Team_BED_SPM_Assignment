@@ -28,7 +28,95 @@
     </nav>
   </header>
 
-  
+  <main class="reminders-main">
+    <section class="page-title">
+      <h1>Set Health Reminders</h1>
+    </section>
+
+    <!-- Green container holds all reminders sections -->
+    <section class="reminders-box">
+
+      <!-- Today's Reminders -->
+      <h2 id="today-header">Your active reminders</h2>
+      <table class="reminders-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Task</th>
+            <th>Frequency</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="reminders-table-body">
+          <!-- Rows loaded dynamically -->
+        </tbody>
+      </table>
+      <div class="sync-container">
+        <button class="sync-btn"><i class="fas fa-calendar-alt"></i> Sync to Calendar</button>
+      </div>
+
+      <!-- Upcoming Reminders -->
+      <h2>Upcoming Reminders</h2>
+      <table class="reminder-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Task</th>
+            <th>Frequency</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="upcoming-reminders-body">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <!-- Add New Reminders -->
+      <form class="reminders-form">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="med-name">Reminder Name</label>
+      <input type="text" id="reminder-name" placeholder="e.g., Drink Water" required>
+    </div>
+    <div class="form-group">
+      <label for="time">Time(s)</label>
+      <input type="time" id="time" required>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="frequency">Frequency</label>
+      <select id="frequency" required>
+        <option value="">Select frequency</option>
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="As Needed">As Needed</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="start-date">Start Date</label>
+      <input type="date" id="start-date" required>
+    </div>
+    <div class="form-group">
+      <label for="end-date">End Date</label>
+      <input type="date" id="end-date">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="notes">Notes</label>
+      <input type="text" id="notes" placeholder="(Optional)" required>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="add-btn"><i class="fas fa-plus"></i> Add Reminder</button>
+  </div>
+</form>
+
+  </main>
 
   <footer>
     <p>© 2025 HealthyLah – Designed with care for our seniors</p>
