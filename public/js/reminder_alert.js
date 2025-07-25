@@ -1,5 +1,3 @@
-getToken(token);
-
 // ─── Reminder Alert Banner ─────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async function () {
   if (!token) return;
@@ -13,8 +11,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     if (!response.ok) return;
-
     const appointments = await response.json();
+    //Filter for today's reminders
     const today = new Date().toISOString().split("T")[0];
 
     const todaysReminders = appointments.filter(appt => {
@@ -23,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       return formatted === today;
     });
 
+    //Show the banner (If reminders exist)
     if (todaysReminders.length > 0) {
       showReminderAlert(todaysReminders);
     }
@@ -46,6 +45,7 @@ function showReminderAlert(reminders) {
   const alertDiv = document.createElement("div");
   alertDiv.id = "reminderBanner";
 
+  //Group reminders by appointment date
   const grouped = {};
   for (let appt of reminders) {
     const formattedDate = new Date(appt.appointmentDate).toLocaleDateString('en-GB');
@@ -53,20 +53,25 @@ function showReminderAlert(reminders) {
     grouped[formattedDate].push(appt.appointmentID);
   }
 
+  //Generate links for each date
   const links = Object.entries(grouped).map(([date, ids]) => {
     return `<a href="appointment_management.html?scrollTo=${ids.join(',')}" class="appt-link">${date}</a>`;
   }).join(", ");
 
+  //Handle plural form
   const plural = reminders.length === 1 ? "appointment" : "appointments";
 
+  //Set banner HTML
   alertDiv.innerHTML = `
     <span class="close-banner" onclick="dismissReminderBanner()">✖</span>
     🔔 <strong>Reminder:</strong> You have ${reminders.length} ${plural} for ${links}.
   `;
 
+  //Add banner to the top of the page
   document.body.prepend(alertDiv);
   document.body.style.paddingTop = "60px";
 
+  //Animate banner in
   // 👉 Trigger the slide-in after rendering
   setTimeout(() => alertDiv.classList.add("active"), 10);
 }

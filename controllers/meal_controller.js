@@ -1,11 +1,10 @@
 const mealModel = require("../models/meal_model");
 const { fetchCalories } = require("../models/calorie_service");
 
-
+//Get Meals By UserID and Meal Date
 async function getMealsByUserIDAndMealDate(req, res){
     const userID = req.user.userID;
     const mealDate = req.query.mealDate || new Date().toISOString().split('T')[0]; // Use query if available
-
     try {
         const meals = await mealModel.getMealsByUserIDAndMealDate(userID, mealDate);
         if (!meals || meals.length === 0) {
@@ -18,25 +17,7 @@ async function getMealsByUserIDAndMealDate(req, res){
     }
 }
 
-// Create meal
-// async function createMealLog(req, res){
-//     //Log the incoming request body
-//     console.log("Incoming meal:");
-//     try{
-//         const meal = {
-//             ... req.body,
-//             userID: req.user.userID
-//         }
-//         const newMeal = await mealModel.createMealLog(meal);
-
-//         res.status(201).json({message: "Meal created successfully"});
-//     }
-//     catch(error){
-//         console.error("Controller error:", error);
-//         res.status(500).json({error: "Failed to add meal"});
-//     }
-// }
-
+//Create Meal Log
 async function createMealLog(req, res){
   console.log("Incoming meal:");
   try {
@@ -76,267 +57,7 @@ async function createMealLog(req, res){
   }
 }
 
-
-// async function updateMealLogByMealID(req, res) {
-//   try {
-//     const mealID = parseInt(req.params.mealID);
-//     const userID = req.user.userID;
-//     const { foodItem, timeFrame, mealDate, calories } = req.body;
-
-//     let finalCalories = calories;
-
-//     // If calories are not provided or 0, try fetching from API
-//     if (!finalCalories || finalCalories === 0) {
-//       const fetched = await fetchCalories(foodItem);
-//       finalCalories = fetched || null;
-//     }
-
-//     // Still no calories? Ask user to input manually
-//     if (!finalCalories) {
-//       return res.status(400).json({ error: "Calories not found. Please enter them manually." });
-//     }
-
-//     const updatedMealData = {
-//       foodItem,
-//       timeFrame,
-//       mealDate,
-//       calories: finalCalories
-//     };
-
-//     const success = await mealModel.updateMealLogByMealID(mealID, userID, updatedMealData);
-//     if (!success) {
-//       return res.status(404).json({ error: "Meal not found" });
-//     }
-
-//     const updatedMeals = await mealModel.getMealsByUserIDAndMealDate(userID, mealDate);
-//     res.json({
-//       message: `Meal with ID ${mealID} updated successfully`,
-//       meal: updatedMeals,
-//     });
-
-//   } catch (error) {
-//     console.error("Controller error:", error);
-//     res.status(500).json({ error: "Error updating meal" });
-//   }
-// }
-
-
-// async function updateMealLogByMealID(req, res) {
-//   try {
-//     const mealID = parseInt(req.params.mealID);
-//     const userID = req.user.userID;
-    
-//     const { foodItem, timeFrame, mealDate, manualCalories } = req.body;
-//     let finalCalories = null;
-
-//     if (manualCalories && manualCalories.toLowerCase() === "unknown") {
-//       finalCalories = null;
-//     } 
-//     else if (manualCalories) {
-//       const parsed = parseInt(manualCalories);
-//       if (isNaN(parsed)) {
-//         return res.status(400).json({ error: "Invalid manual calorie input" });
-//       }
-//       finalCalories = parsed;
-//     } 
-//     else {
-//       // If nothing provided, keep existing calories as is (optional behavior)
-//       return res.status(400).json({ error: "Calories must be provided." });
-//     }
-
-//     const updatedMealData = {
-//       foodItem,
-//       timeFrame,
-//       mealDate,
-//       calories: finalCalories
-//     };
-
-//     const success = await mealModel.updateMealLogByMealID(mealID, userID, updatedMealData);
-//     if (!success) {
-//       return res.status(404).json({ error: "Meal not found" });
-//     }
-
-//     const updatedMeals = await mealModel.getMealsByUserIDAndMealDate(userID, mealDate);
-//     res.json({
-//       message: `Meal with ID ${mealID} updated successfully`,
-//       meal: updatedMeals,
-//     });
-
-//   } catch (error) {
-//     console.error("Controller error:", error);
-//     res.status(500).json({ error: "Error updating meal" });
-//   }
-// }
-
-// async function updateMealLogByMealID(req, res) {
-//   try {
-//     const mealID = parseInt(req.params.mealID);
-//     const userID = req.user.userID;
-
-//     const { foodItem, timeFrame, mealDate, calories, manualCalories } = req.body;
-//     let finalCalories = null;
-
-//     if (manualCalories) {
-//       if (manualCalories.toLowerCase() === "unknown") {
-//         finalCalories = null;
-//       } else {
-//         const parsed = parseInt(manualCalories);
-//         if (isNaN(parsed)) {
-//           return res.status(400).json({ error: "Invalid manual calorie input" });
-//         }
-//         finalCalories = parsed;
-//       }
-//     } else if (calories !== undefined && calories !== null) {
-//       // fallback to raw calories if sent
-//       finalCalories = parseInt(calories);
-//       if (isNaN(finalCalories)) {
-//         return res.status(400).json({ error: "Invalid calorie input" });
-//       }
-//     } else {
-//       return res.status(400).json({ error: "Calories must be provided." });
-//     }
-
-//     const updatedMealData = {
-//       foodItem,
-//       timeFrame,
-//       mealDate,
-//       calories: finalCalories
-//     };
-
-//     const success = await mealModel.updateMealLogByMealID(mealID, userID, updatedMealData);
-//     if (!success) {
-//       return res.status(404).json({ error: "Meal not found" });
-//     }
-
-//     const updatedMeals = await mealModel.getMealsByUserIDAndMealDate(userID, mealDate);
-//     res.json({
-//       message: `Meal with ID ${mealID} updated successfully`,
-//       meal: updatedMeals,
-//     });
-
-//   } catch (error) {
-//     console.error("Controller error:", error);
-//     res.status(500).json({ error: "Error updating meal" });
-//   }
-// }
-
-// async function updateMealLogByMealID(req, res) {
-//   try {
-//     const mealID = parseInt(req.params.mealID);
-//     const userID = req.user.userID;
-//     const { foodItem, timeFrame, mealDate, manualCalories } = req.body;
-
-//     let calories = null;
-
-//     if (typeof manualCalories === 'string' && manualCalories.trim() !== "") {
-//       if (manualCalories.trim().toLowerCase() === "unknown") {
-//         calories = null;
-//       } else {
-//         const parsed = parseInt(manualCalories);
-//         if (isNaN(parsed)) {
-//           return res.status(400).json({ error: "Invalid calorie input." });
-//         }
-//         calories = parsed;
-//       }
-//     } else {
-//       // Try to fetch from OpenFoodFacts
-//       const fetched = await fetchCalories(foodItem);
-//       if (fetched !== null) {
-//         calories = fetched;
-//       } else {
-//         return res.status(200).json({
-//           message: "Calorie data not found. Please enter manually.",
-//           requiresManual: true
-//         });
-//       }
-//     }
-
-//     const updatedMealData = {
-//       foodItem,
-//       timeFrame,
-//       mealDate,
-//       calories
-//     };
-
-//     const success = await mealModel.updateMealLogByMealID(mealID, userID, updatedMealData);
-//     if (!success) {
-//       return res.status(404).json({ error: "Meal not found" });
-//     }
-
-//     const updatedMeals = await mealModel.getMealsByUserIDAndMealDate(userID, mealDate);
-//     res.json({
-//       message: `Meal with ID ${mealID} updated successfully`,
-//       meal: updatedMeals,
-//     });
-
-//   } catch (error) {
-//     console.error("Controller error:", error);
-//     res.status(500).json({ error: "Error updating meal" });
-//   }
-// }
-
-// async function updateMealLogByMealID(req, res) {
-//   try {
-//     const mealID = parseInt(req.params.mealID);
-//     const userID = req.user.userID;
-
-//     // ✅ Step 1: Extract fields from request body
-//     const { foodItem, timeFrame, mealDate, manualCalories } = req.body;
-//     console.log("manualCalories received:", manualCalories);
-
-//     // ✅ Step 2: Determine the final calories value
-//     let calories = null;
-
-//     if (typeof manualCalories === 'string' && manualCalories.trim() !== "") {
-//       if (manualCalories.trim().toLowerCase() === "unknown") {
-//         calories = null;
-//       } else {
-//         const parsed = parseInt(manualCalories);
-//         if (isNaN(parsed)) {
-//           return res.status(400).json({ error: "Invalid calorie input." });
-//         }
-//         calories = parsed;
-//       }
-//     } else if (manualCalories === null) {
-//       // Try to fetch from OpenFoodFacts
-//       const fetched = await fetchCalories(foodItem);
-//       if (fetched !== null) {
-//         calories = fetched;
-//       } else {
-//         return res.status(200).json({
-//           message: "Calorie data not found. Please enter manually.",
-//           requiresManual: true
-//         });
-//       }
-//     } else {
-//       return res.status(400).json({ error: "manualCalories not supplied." });
-//     }
-
-//     // ✅ Step 3: Construct meal object for DB update
-//     const updatedMealData = {
-//       foodItem,
-//       timeFrame,
-//       mealDate,
-//       calories
-//     };
-
-//     const success = await mealModel.updateMealLogByMealID(mealID, userID, updatedMealData);
-//     if (!success) {
-//       return res.status(404).json({ error: "Meal not found" });
-//     }
-
-//     const updatedMeals = await mealModel.getMealsByUserIDAndMealDate(userID, mealDate);
-//     res.json({
-//       message: `Meal with ID ${mealID} updated successfully`,
-//       meal: updatedMeals,
-//     });
-
-//   } catch (error) {
-//     console.error("Controller error:", error);
-//     res.status(500).json({ error: "Error updating meal" });
-//   }
-// }
-
+//Update Meal logs by Meal ID
 async function updateMealLogByMealID(req, res) {
   try {
     const mealID = parseInt(req.params.mealID);
@@ -395,7 +116,6 @@ async function updateMealLogByMealID(req, res) {
     res.status(500).json({ error: "Error updating meal" });
   }
 }
-
 
 //delete meal
 async function deleteMealLogByMealID(req, res) {
