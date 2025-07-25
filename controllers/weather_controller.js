@@ -38,8 +38,9 @@ async function createFavouriteOutfit(req, res){
 
         // Get outfitID from request body(frontend must send this)
         const outfitID = req.body.outfitID;
+        const weatherCondition = req.body.weatherCondition;
 
-        const newFavouriteOutfit = await weatherModel.createFavouriteOutfit(outfitID, userID);
+        const newFavouriteOutfit = await weatherModel.createFavouriteOutfit(outfitID, userID, weatherCondition);
 
         if(newFavouriteOutfit.alreadyExists){
             return res.status(400).json({message: newFavouriteOutfit.message})
