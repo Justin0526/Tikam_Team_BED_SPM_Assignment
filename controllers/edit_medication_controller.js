@@ -37,8 +37,8 @@ async function deleteMedication(req, res) {
   const { medicationID } = req.params;
 
   try {
-    const pool = await sql.connect(db);
-    await pool
+    const connection = await sql.connect(db);
+    await connection
       .request()
       .input('medicationID', sql.Int, parseInt(medicationID))
       .query("DELETE FROM Medications WHERE medicationID = @medicationID");
