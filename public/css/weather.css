@@ -79,67 +79,78 @@
   margin-right: 10px;
 }
 
-.outfit-card .outfit-content {
+.outfit-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.outfit-card .card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.outfit-content {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Each outfit row */
+.outfit-card-item {
+  display: flex;
+  align-items: center; /* ✅ vertically center content */
   gap: 2rem;
   flex-wrap: wrap;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 2rem;
 }
 
-.outfit-card img {
-  width: auto;
-  height: 20vw;
+/* Outfit image */
+.outfit-card-item img {
+  width: 20vw;
+  min-width: 180px;
+  max-width: 240px;
+  height: auto;
   border: 2px solid #AEAEAE;
-  display: block;
   border-radius: 0.5rem;
+  object-fit: cover;
 }
 
+/* Outfit text and buttons */
 .outfit-text {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: center;  /* Center vertically */
+  gap: 1rem;
 }
 
-.outfit-tags {
-  display: flex;
-  gap: 10px;
-  margin: 10px 0;
-  flex-wrap: wrap;
-}
-
-.tag {
-  background-color: #E4EFDA;
-  border: 1px solid #AEAEAE;
-  border-radius: 30px;
-  padding: 5px 15px;
-  font-weight: bold;
-  font-size: 0.9em;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.outfit-description {
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .button-group {
-  margin-top: 10px;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.button {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  margin-right: 10px;
-  text-decoration: none;
-}
-
-.btn-yellow {
+.button.btn-yellow {
   background-color: #A4D038;
-  color: #FFFFFF;
+  color: white;
+  padding: 0.5rem 1.25rem;
+  text-decoration: none;
+  border-radius: 0.4rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
 
-.btn-yellow:hover {
-  background-color: #2B7DA4;
+.button.btn-yellow:hover {
+  background-color: #6b9a1a;
 }
 
 .forecast-list {

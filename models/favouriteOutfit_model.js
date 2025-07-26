@@ -1,6 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
+// Function to get favourite outfit via the userID
 async function getFavouriteOutfit(userID){
     let connection;
     try{
@@ -14,7 +15,8 @@ async function getFavouriteOutfit(userID){
                             so.outfitTypeID,
                             fo.favouriteOutfitID,
                             fo.userID,
-                            fo.favouriteDateTime
+                            fo.favouriteDateTime,
+                            fo.weatherCondition
                         FROM SuggestedOutfit so
                         INNER JOIN FavouriteOutfit fo
                         ON so.outfitID = fo.outfitID
@@ -39,6 +41,7 @@ async function getFavouriteOutfit(userID){
     }
 }
 
+// Function to delete favourited outfit the user choose, delete via favouriteOutfitID
 async function deleteFavouriteOutfit(favouriteOutfitID){
     let connection;
     try{

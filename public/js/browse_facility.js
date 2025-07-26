@@ -2,8 +2,9 @@ const apiBaseUrl = "http://localhost:3000";
 let currentQuery = "";
 let nextPageToken = null;
 
+// get user token 
 window.addEventListener('load', async () => {
-  currentUser = await getToken(token);
+  await getToken(token);
 });
 
 const goBtn = document.getElementById("go-btn");
@@ -15,6 +16,7 @@ const resultsTitle = document.getElementById("results-title");
 const resultsGrid = document.getElementById("results-grid");
 const loadMoreWrapper = document.getElementById("load-more-wrapper");
 
+// event listener for go button
 goBtn.addEventListener('click', async (event) => {
     event.preventDefault();
     currentQuery = textQuery.value;
@@ -31,6 +33,7 @@ goBtn.addEventListener('click', async (event) => {
     await fetchFacilities(currentQuery);
 });
 
+// search facilities via quicksearch card
 document.querySelectorAll('.quicksearch-card').forEach(card => {
     card.addEventListener('click', async () => {
         const query = card.querySelector('.quicksearch-label')?.textContent?.trim();
@@ -50,15 +53,12 @@ document.querySelectorAll('.quicksearch-card').forEach(card => {
     });
 });
 
-backBtn.addEventListener("click", () => {
-  resultsSection.style.display = "none";
-  quickSearchContainer.style.display = "block";
-});
-
+// fetch facilities through user's query
 async function fetchFacilities(query, pageToken = null) {
     try {
         const reqBody = {
-            textQuery: query.toLowerCase().trim()
+            textQuery: query.toLowerCase().trim(),
+            includedType: null
         };
 
         if (pageToken) {
@@ -75,12 +75,12 @@ async function fetchFacilities(query, pageToken = null) {
         });
 
         if (!response.ok) {
-        const errorBody = response.headers
-            .get("content-type")
-            ?.includes("application/json")
-            ? await response.json()
-            : { message: response.statusText };
-        throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : { message: response.statusText };
+            throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
         }
 
         const data = await response.json();
@@ -91,6 +91,9 @@ async function fetchFacilities(query, pageToken = null) {
             resultsGrid.innerHTML = "";
             loadMoreWrapper.innerHTML = "";
             resultsTitle.textContent = `Results for: ${query}`;
+            if (!Array.isArray(results) || results.length === 0) {
+                resultsTitle.textContent = `No results for: ${query}`;
+            }
         }
 
         quickSearchContainer.style.display = "none";
@@ -110,6 +113,7 @@ async function fetchFacilities(query, pageToken = null) {
     }
 }
 
+// Get the photo of the facility
 async function fetchPhoto(placePhoto) {
     try {
         const maxHeightPx = 400;
@@ -141,6 +145,7 @@ async function fetchPhoto(placePhoto) {
     }
 }
 
+// Display all facilites returned from the search results
 async function renderFacilities(results) {
     const resultGrid = document.getElementById("results-grid");
 
@@ -181,6 +186,7 @@ async function renderFacilities(results) {
     });
 }
 
+// Display load more button if there are more results
 async function renderLoadMoreButton() {
     const wrapper = document.getElementById("load-more-wrapper");
     wrapper.innerHTML = ""; // clear old button

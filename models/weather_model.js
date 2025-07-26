@@ -5,7 +5,7 @@ async function getSuggestedOutfit(condition){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT TOP 1 * 
+        const query = `SELECT TOP 2 * 
                         FROM SuggestedOutfit 
                         WHERE outfitTypeID IN (
                             SELECT outfitTypeID 
@@ -40,7 +40,7 @@ async function getSuggestedOutfit(condition){
 }
 
 // Favourite an outfit
-async function createFavouriteOutfit(outfitID, userID){
+async function createFavouriteOutfit(outfitID, userID, weatherCondition){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
@@ -58,10 +58,11 @@ async function createFavouriteOutfit(outfitID, userID){
             };
         };
 
-        const query = `INSERT INTO FavouriteOutfit (outfitID, userID) VALUES (@outfitID, @userID);`
+        const query = `INSERT INTO FavouriteOutfit (outfitID, userID, weatherCondition) VALUES (@outfitID, @userID, @weatherCondition);`
         const request = connection.request();
         request.input("outfitID", outfitID);
         request.input("userID", userID);
+        request.input("weatherCondition", weatherCondition);
         const result = await request.query(query);
 
         return result;
