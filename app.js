@@ -22,7 +22,9 @@ const viewBusController = require("./controllers/view_bus_controller");
 const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
 const mealController = require('./controllers/meal_controller');
-
+const bookmarkController = require("./controllers/bookmark_controller");
+const categoriesController = require("./controllers/category_controller");
+const bookmarkCategoryController = require("./controllers/bookmark_category_controller");
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -48,6 +50,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ─── Routes ─────────────────────────────────────────────────────────────────────
+// Bookmark routes
+app.get("/bookmarks", verifyJWT, bookmarkController.getAllBookmarks);
+app.post("/bookmark", verifyJWT, bookmarkController.createBookmark);
+
+// Category routes
+app.get("/categories", verifyJWT, categoriesController.getAllCategories)
+app.post("/category", verifyJWT, categoriesController.createCategory);
+app.put("/category", verifyJWT, categoriesController.updateCategoryName);
+
+// Bookmark category routes
+app.get("/bookmarks/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);
+app.post("/assign-bookmark", verifyJWT, bookmarkCategoryController.assignBookmarkToCategory);
+
 // User routes
 app.get( "/users", userController.getAllUsers );
 app.post("/register", validateRegistration, userController.registerUser );
