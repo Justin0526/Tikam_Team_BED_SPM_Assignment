@@ -80,6 +80,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle">Detailed Logs</h2>
+            <button class="add-log-btn" onclick="showAddForm()">+ Add New Log</button>
             <table id="logsTable">
                 <thead>
                     <tr>
@@ -92,8 +93,8 @@
                 <tbody></tbody>
             </table>
 
-            <!-- EDIT FORM -->
-            <h3>Edit Log</h3>
+            <!-- ADD/EDIT FORM -->
+            <h3 id="formTitle">Add/Edit Log</h3>
             <form id="editForm" onsubmit="saveLog(event)">
                 <input type="hidden" id="recordID">
                 <input type="hidden" id="recordType">
@@ -103,7 +104,8 @@
                 <input type="number" id="value1" required>
                 <label for="value2">Value 2 (optional):</label>
                 <input type="number" id="value2">
-                <button type="submit">Update Log</button>
+                <button type="submit">Save</button>
+                <button type="button" onclick="resetForm()">Cancel</button>
             </form>
         </div>
     </div>
@@ -119,7 +121,7 @@
     <!-- FOOTER -->
     <footer>
         <p>© 2025 HealthyLah – Designed with care for our seniors</p>
-        <div class="social-links" style="display:inline-block;">
+        <div class="social-links">
             <a href="https://www.facebook.com/"><img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;"></a>
             <a href="https://www.twitter.com/"><img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;"></a>
             <a href="https://www.instagram.com/"><img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;"></a>

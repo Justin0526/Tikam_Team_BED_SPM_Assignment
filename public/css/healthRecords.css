@@ -224,3 +224,21 @@
     background-color: #A4D038;
     color: #000;
 }
+
+.add-log-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 10px 0;
+    font-size: 1em;
+}
+.add-log-btn:hover {
+    background-color: #45a049;
+}
+
+#editForm button {
+    margin-top: 10px;
+}

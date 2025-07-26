@@ -109,10 +109,11 @@ app.listen(3000, () => {
 app.get('/api/profile/:userID', profileController.getProfile);
 app.post('/api/profile/update', validateUserProfile, profileController.updateProfile);
 
-// Health Records Routes
-app.get("/api/healthRecords/:userID", healthRecordsController.getHealthRecords);
-app.post("/api/healthRecords", healthRecordsController.addOrUpdateRecord);
-app.delete("/api/healthRecords/:recordID", healthRecordsController.deleteRecord);
+// Health Records routes
+app.get("/api/healthRecords/:userID", healthRecordsController.getHealthRecords); // Read
+app.post("/api/healthRecords", healthRecordsController.addRecord);               // Create
+app.put("/api/healthRecords/:recordID", healthRecordsController.updateRecord);   // Update
+app.delete("/api/healthRecords/:recordID", healthRecordsController.deleteRecord); // Delete
 
 // Reset medication route
 require('./models/reset_medication_status');
