@@ -7,6 +7,7 @@ const outfitGrid = document.getElementById("outfit-grid");
 const popup = document.getElementById("popup");
 const closePopup = document.getElementById("close-btn");
 
+// Get user's favourite outfits
 async function getFavouriteOutfits(){
     try{
         outfitGrid.innerHTML = "Loading outfits...";
@@ -49,6 +50,7 @@ async function getFavouriteOutfits(){
         }
         else{
             outfits.forEach((outfit)=>{
+                console.log(outfit);
                 const outfitCard = document.createElement("div");
                 outfitCard.classList.add("outfit-card");
                 // Use data attributes or similar to store ID on the element if needed later
@@ -91,7 +93,7 @@ async function getFavouriteOutfits(){
                             <img class="popup-image" src="${outfitImage}" alt="image">
                             <div class="popup-text">
                                 <p>${outfit.outfitDesc}</p>
-                                <p class="popup-date">Favourited on: ${formattedDate}</p>
+                                <p class="popup-date">Favourited on: ${formattedDate} where weather condition was <strong>${outfit.weatherCondition}</strong></p>
                                 <button class="unlike-btn" data-id="${outfit.favouriteOutfitID}">💔 Unlike outfit</button>
                             </div>
                         </div>
