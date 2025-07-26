@@ -110,10 +110,15 @@ app.delete("/posts/:id", verifyJWT, postsController.deletePost)
 app.put("/posts/:id", verifyJWT, postsController.updatePost)
 
 // Comments CRUD
-app.get( "/posts/:postID/comments", verifyJWT, postsController.getCommentsForPost);
+app.get("/posts/:postID/comments", verifyJWT, postsController.getCommentsForPost);
 app.post("/posts/:postID/comments", verifyJWT, postsController.createCommentForPost);  
 app.put("/posts/:postID/comments/:commentID", verifyJWT, postsController.updateComment);
 app.delete("/posts/:postID/comments/:commentID", verifyJWT, postsController.deleteComment);
+
+// Likes CRUD
+app.post("/posts/:postID/like", verifyJWT, postsController.likePost)
+app.delete("/posts/:postID/unlike", verifyJWT, postsController.unlikePost)
+app.get("/posts/:postID/likes", verifyJWT, postsController.getLikes);
 
 // Translation
 app.post("/translate", translateText );

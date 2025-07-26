@@ -192,6 +192,49 @@ async function deleteComment(postID, commentID, userID) {
     throw err;
   }
 }
+
+async function removeLike(postID, userID) {
+  const pool = await sql.connect(dbConfig);
+  const result = await pool.request()
+    .input("PostID", sql.Int, postID)
+    .input("UserID", sql.Int, userID)
+    .query(`
+      DELETE FROM Likes
+      WHERE PostID = @PostID AND UserID = @UserID
+    `);
+
+  console.log("🧹 Rows deleted:", result.rowsAffected[0]);  // Debug line
+  return result.rowsAffected[0];
+}
+
+// Add a like
+async function addLike(postID, userID) {
+  const pool = await sql.connect(dbConfig);
+  await pool.request()
+    .input("PostID", sql.Int, postID)
+    .input("UserID", sql.Int, userID)
+    .query(`
+      INSERT INTO Likes (PostID, UserID)
+      VALUES (@PostID, @UserID)
+    `);
+}
+
+// Get like count and whether user liked the post
+async function getLikes(postID, userID) {
+  const pool = await sql.connect(dbConfig);
+
+  const result = await pool.request()
+    .input("postID", sql.Int, postID)
+    .input("userID", sql.Int, userID)
+    .query(`
+      SELECT 
+        (SELECT COUNT(*) FROM Likes WHERE PostID = @postID) AS LikeCount,
+        (SELECT COUNT(*) FROM Likes WHERE PostID = @postID AND UserID = @userID) AS Liked
+    `);
+
+  return result.recordset[0];
+}
+
 module.exports = {
   getAllPosts,
   getPostById,
@@ -203,6 +246,9 @@ module.exports = {
   deletePostById,
   updatePostById,
   updateComment,
-  deleteComment
+  deleteComment,
+  addLike,
+  removeLike,
+  getLikes
 };
 

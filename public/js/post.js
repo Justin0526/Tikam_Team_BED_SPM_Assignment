@@ -1,4 +1,3 @@
-// Set base API URL and initialise current user
 const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 
@@ -19,6 +18,22 @@ function toLocaleDate(iso) {
     hour: "2-digit",
     minute: "2-digit"
   });
+}
+//refreshes like everytime a post is liked to keep data up to date
+async function updateLikeStatus(postID, likeBtn, likeCountEl) {
+  try {
+    const res = await fetch(`${apiBaseUrl}/posts/${postID}/likes`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (likeCountEl) likeCountEl.textContent = data.LikeCount;
+    if (likeBtn) likeBtn.classList.toggle("liked", data.Liked === 1);
+
+    console.log(`Post ${postID} → Likes:`, data); // 
+  } catch (err) {
+    console.warn("Failed to fetch like status:", err);
+  }
 }
 
 // Load and display all comments for a specific post
@@ -148,14 +163,17 @@ async function loadPosts() {
         ${p.ImageURL ? `<div class="post-image-wrap"><img src="${p.ImageURL}" class="post-image" alt=""></div>` : ""}
         <div class="post-actions">
           <button class="comment-toggle">💬 Comment</button>
+          <button class="like-btn">❤️</button>
+          <span class="like-count">0</span>
           ${isOwner ? `
-          <div class="post-menu-wrapper">
-            <button class="post-menu-btn" aria-label="Post options">⋯</button>
-            <div class="post-menu-dropdown" hidden>
-              <button class="post-menu-edit">✏️ Edit</button>
-              <button class="post-menu-delete">🗑️ Delete</button>
+            <div class="post-menu-wrapper">
+              <button class="post-menu-btn" aria-label="Post options">⋯</button>
+              <div class="post-menu-dropdown" hidden>
+                <button class="post-menu-edit">✏️ Edit</button>
+                <button class="post-menu-delete">🗑️ Delete</button>
+              </div>
             </div>
-          </div>` : ""}
+          ` : ""}
         </div>
         ${isOwner ? `
         <div class="edit-post-form" hidden>
@@ -192,10 +210,61 @@ async function loadPosts() {
       const changeBtn = item.querySelector(".change-image-btn");
       const cancelBtn = item.querySelector(".cancel-edit-btn");
       const saveBtn = item.querySelector(".save-edit-btn");
+      const likeBtn = item.querySelector(".like-btn")
+      const likeCountEl = item.querySelector(".like-count");
 
       let newImageURL = editPreview?.src || null;
+      updateLikeStatus(postID, likeBtn, likeCountEl);
 
-      // Toggle post menu
+      //Handle like toggling
+      if (likeBtn) {
+      likeBtn.addEventListener("click", async () => {
+      if (!currentUser) {
+        alert("Login to like posts.");
+        return window.location.href = "/html/login.html";
+      }
+
+      // Get latest like status before decision
+      let alreadyLiked = false;
+      try {
+        const likeRes = await fetch(`${apiBaseUrl}/posts/${postID}/likes`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await likeRes.json();
+        alreadyLiked = data.Liked === 1;
+      } catch (e) {
+        console.warn("Could not fetch like status:", e);
+      }
+
+      const method = alreadyLiked ? "DELETE" : "POST";
+      const endpoint = alreadyLiked ? "unlike" : "like";
+
+      try {
+        const response = await fetch(`${apiBaseUrl}/posts/${postID}/${endpoint}`, {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ userID: currentUser.userID }) // fallback for controller logic
+        });
+
+        if (!response.ok) {
+          const errorMsg = await response.text();
+          console.error(`Toggle like failed (${method}):`, errorMsg);
+          return alert("Like/unlike failed.");
+        }
+
+        await updateLikeStatus(postID, likeBtn, likeCountEl);
+        console.log(`${alreadyLiked ? "Unliked" : "Liked"} post ${postID}`);
+      } catch (err) {
+        console.error("Error toggling like:", err);
+        alert("An error occurred while toggling like.");
+      }
+    });
+    }
+
+      //Toggle post menu
       if (menuBtn && dropdown && delBtn && editBtn && editForm) {
         menuBtn.addEventListener("click", e => {
           e.stopPropagation();
@@ -351,7 +420,7 @@ async function loadPosts() {
           body: JSON.stringify({
             UserID: currentUser.userID,
             content: text
-          })
+          })  
         });
 
         if (!resp.ok) {
