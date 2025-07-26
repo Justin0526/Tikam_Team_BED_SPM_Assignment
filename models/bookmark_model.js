@@ -6,7 +6,10 @@ async function getAllBookmarks(userID){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT * FROM Bookmarks WHERE userID = @userID`;
+        const query = `SELECT b.*, c.categoryName FROM Bookmarks b 
+                       LEFT JOIN BookmarkCategories bc ON b.bookmarkID = bc.bookmarkID
+                       LEFT JOIN Categories c ON c.categoryID = bc.categoryID 
+                       WHERE b.userID = @userID`;
         const request = connection.request();
         request.input("userID", userID);
         const result = await request.query(query);
@@ -90,7 +93,33 @@ async function createNewBookmark(userID, placeID){
     }
 }
 
+// Delete entire bookmark
+async function deleteBookmark(userID, bookmarkID){
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = "DELETE FROM Bookmarks WHERE bookmarkID = @bookmarkID AND userID = @userID";
+        const request = connection.request();
+        request.input("bookmarkID", bookmarkID);
+        request.input("userID", userID);
+        const result = await request.query(query);
+
+        return result.rowsAffected > 0;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if (connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing connection: ", closeError);
+            } 
+        }
+    }
+}
+
 module.exports = {
     getAllBookmarks,
     createNewBookmark,
+    deleteBookmark,
 }

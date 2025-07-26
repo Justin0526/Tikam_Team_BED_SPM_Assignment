@@ -53,6 +53,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Bookmark routes
 app.get("/bookmarks", verifyJWT, bookmarkController.getAllBookmarks);
 app.post("/bookmark", verifyJWT, bookmarkController.createBookmark);
+app.delete("/bookmark", verifyJWT, bookmarkController.deleteBookmark);
 
 // Category routes
 app.get("/categories", verifyJWT, categoriesController.getAllCategories)
@@ -60,8 +61,11 @@ app.post("/category", verifyJWT, categoriesController.createCategory);
 app.put("/category", verifyJWT, categoriesController.updateCategoryName);
 
 // Bookmark category routes
-app.get("/bookmarks/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);
-app.post("/assign-bookmark", verifyJWT, bookmarkCategoryController.assignBookmarkToCategory);
+app.get("/bookmark-category/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);
+app.post("/bookmark-category", verifyJWT, bookmarkCategoryController.assignBookmarkToCategory);
+app.put("/bookmark-category", verifyJWT, bookmarkCategoryController.updateBookmarkCategory);
+app.delete("/bookmark-category", verifyJWT, bookmarkCategoryController.deleteBookmarkFromCategory);
+app.delete("/bookmarks/and/category", verifyJWT, bookmarkCategoryController.deleteBookmarksInCategory);
 
 // User routes
 app.get( "/users", userController.getAllUsers );

@@ -6,7 +6,7 @@ async function getBookmarksByCategory(userID, categoryID){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT c.categoryName, b.placeID, b.bookmarkedAt, bc.createdAt
+        const query = `SELECT c.categoryName,b.bookmarkID, b.placeID, b.bookmarkedAt, bc.createdAt
                        FROM BookmarkCategories bc
                        INNER JOIN Categories c ON bc.categoryID = c.categoryID
                        INNER JOIN Bookmarks b ON bc.bookmarkID = b.bookmarkID
@@ -31,10 +31,56 @@ async function getBookmarksByCategory(userID, categoryID){
     }
 }
 
-// Assign bookmark to a category;
+// Get bookmarkCategoryID to check if it the bookmark exists in the category
+async function getBookmarkCategoryID(userID, bookmarkID, categoryID){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = `
+            SELECT *
+            FROM BookmarkCategories
+            WHERE userID = @userID AND bookmarkID = @bookmarkID AND categoryID = @categoryID;
+        `;
+
+        const request = connection.request();
+        request.input("userID", userID);
+        request.input("bookmarkID", bookmarkID);
+        request.input("categoryID", categoryID);
+        const result = await request.query(query);
+
+        if(result.recordset.length > 0){
+            return result.recordset[0];
+        }
+
+        return null;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if(connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing database connection: ", closeError);
+            }
+        }
+    }
+}
+
+// Assign bookmark to a category
 async function assignBookmarkToCategory(userID, bookmarkID, categoryID){
     let connection;
     try{
+
+        // Check if bookmark in category first
+        const bookmarkCategoryID = await getBookmarkCategoryID(userID, bookmarkID, categoryID);
+        if (bookmarkCategoryID){
+            const error = new Error("Bookmark already exists in category")
+            error.statusCode = 409; // Conflict
+            throw error;
+        }
+
+        // If not in bookmark category then add it
         connection = await sql.connect(dbConfig);
         const query = `INSERT INTO BookmarkCategories (userID, bookmarkID, categoryID) VALUES (@userID, @bookmarkID, @categoryID)`;
         const request = connection.request();
@@ -45,12 +91,9 @@ async function assignBookmarkToCategory(userID, bookmarkID, categoryID){
 
         return result;
     }catch(error){
-        if (error.number === 2627){
-            const errorPK = new Error("Bookmark is already in this category");
-            errorPK.statusCode = 409; // conflict
-            throw errorPK;
+        if(error.statusCode !== 409){
+            console.error("Database error: ", error);
         }
-        console.error("Database error: ", error);
         throw error;
     }finally{
         if (connection){
@@ -63,7 +106,149 @@ async function assignBookmarkToCategory(userID, bookmarkID, categoryID){
     }
 }
 
+// Function to update bookmark's category
+async function updateBookmarkCategory(userID, bookmarkID, originalCategoryID, newCategoryID){
+    let connection;
+    try{
+
+        // Check if the category are the same
+        if(originalCategoryID === newCategoryID){
+            const error = new Error("The bookmark is already in this category");
+            error.statusCode = 409; // Conflict
+            throw error;
+        }
+        
+        // Check if there is this bookmarkCategory
+        const checkBookmarkCategory = await getBookmarkCategoryID(userID, bookmarkID, originalCategoryID);
+
+        // If there is no bookmarkCategory
+        if (!checkBookmarkCategory){
+            const error = new Error("The bookmark is not in the original category");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const bookmarkCategoryID = checkBookmarkCategory.bookmarkCategoryID;
+        // If there is bookmarkCategoryID
+        connection = await sql.connect(dbConfig);
+        const query = `UPDATE BookmarkCategories SET categoryID = @categoryID WHERE bookmarkCategoryID = @bookmarkCategoryID`;
+        const request = connection.request();
+        request.input("categoryID", newCategoryID);
+        request.input("bookmarkCategoryID", bookmarkCategoryID);
+        const result = await request.query(query);
+
+        return result.rowsAffected > 0;
+    }catch(error){
+        if(error.statusCode !== 409 && error.statusCode !== 404){
+            console.error("Database error: ", error);
+        }
+        throw error;
+    }finally{
+        if(connection){
+            try{
+                await connection.close();
+            }
+            catch(closeError){
+                console.error("Error closing connection: ", closeError);
+            }
+        }
+    }
+}
+
+// Function to delete bookmark from category
+async function deleteBookmarkFromCategory(userID, bookmarkID, categoryID){
+    let connection;
+    try{
+        // Check if bookmark exists in this category
+        const exists = await getBookmarkCategoryID(userID, bookmarkID, categoryID);
+
+        if(!exists){
+            const error = new Error("The bookmark is not in this category");
+            error.statusCode = 404;
+            throw error
+        }
+        
+        const bookmarkCategoryID = exists.bookmarkCategoryID;
+        connection = await sql.connect(dbConfig);
+        const query = "DELETE FROM BookmarkCategories WHERE bookmarkCategoryID = @bookmarkCategoryID";
+        const request = connection.request();
+        request.input("bookmarkCategoryID", bookmarkCategoryID);
+        const result = await request.query(query);
+
+        return result.rowsAffected > 0;
+    }catch(error){
+        if(error.statusCode !== 404){
+            console.error("Database error: ", error);
+        }
+        throw error;
+    }finally{
+        if(connection){
+            try{
+                await connection.close();
+            }
+            catch(closeError){
+                console.error("Error closing connection: ", closeError);
+            }
+        }
+    }
+}
+
+// Function to delete bookmarks in a category when a category is deleted of a user
+async function detachAllBookmarksFromCategory(userID, categoryID){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = "DELETE FROM BookmarkCategories WHERE categoryID = @categoryID AND userID = @userID";
+        const request = connection.request();
+        request.input("categoryID", categoryID);
+        request.input("userID", userID);
+        const result = await request.query(query);
+
+        return result.rowsAffected > 0;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if (connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing connection: ", closeError);
+            } 
+        }
+    }
+}
+
+// Function to count the categories the bookmark belongs to
+async function countCategoriesForBookmark(userID, bookmarkID){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = `SELECT COUNT(*) AS count FROM BookmarkCategories WHERE userID = @userID AND bookmarkID = @bookmarkID;`;
+        const request = connection.request();
+        request.input("userID", userID);
+        request.input("bookmarkID", bookmarkID);
+        const result = await request.query(query)
+
+        return result.recordset[0].count;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if(connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing database connection: ", closeError);
+            }
+        }
+    }
+}
 module.exports = {
     getBookmarksByCategory,
     assignBookmarkToCategory,
+    updateBookmarkCategory,
+    deleteBookmarkFromCategory,
+    detachAllBookmarksFromCategory,
+    countCategoriesForBookmark,
 }

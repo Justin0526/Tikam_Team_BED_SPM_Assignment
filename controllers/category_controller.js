@@ -1,10 +1,10 @@
-const categorymodel = require("../models/category_model");
+const categoryModel = require("../models/category_model");
 
 // Function to get all the user's category
 async function getAllCategories(req, res){
     try{
         const userID = req.user.userID;
-        const categories = await categorymodel.getAllCategories(userID);
+        const categories = await categoryModel.getAllCategories(userID);
 
         return res.status(200).json(categories);
     }catch(error){
@@ -19,7 +19,7 @@ async function createCategory(req, res){
         const userID = req.user.userID;
         const categoryName = req.body.categoryName;
 
-        const newCategory = await categorymodel.createCategory(userID, categoryName);
+        const newCategory = await categoryModel.createCategory(userID, categoryName);
         return res.status(201).json(newCategory);
     }catch(error){
         if (error.statusCode === 409){
@@ -37,7 +37,7 @@ async function updateCategoryName(req, res){
         const categoryName = req.body.categoryName;
         const categoryID = req.body.categoryID;
 
-        const newCategoryName = await categorymodel.updateCategoryName(userID, categoryName, categoryID);
+        const newCategoryName = await categoryModel.updateCategoryName(userID, categoryName, categoryID);
 
         return res.status(200).json({message: `Category successfully updated`})
     }catch(error){
@@ -48,9 +48,26 @@ async function updateCategoryName(req, res){
     }
 }
 
+// Function to delete category by categoryID
+async function deleteCategory(req, res){
+    try{
+        const userID = req.user.userID;
+        const categoryID = req.body.categoryID;
+
+        const success = await categoryModel.deleteCategory(userID, categoryID);
+        if (!success){
+            return res.status(404).json({error: "Category not found!"});
+        }
+        return res.status(200).json({error: "Category successfully deleted"});
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({error: "Error deleting category"});
+    }
+}
 
 module.exports = {
     getAllCategories,
     createCategory,
     updateCategoryName,
+    deleteCategory,
 }

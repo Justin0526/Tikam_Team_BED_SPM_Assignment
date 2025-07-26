@@ -123,8 +123,35 @@ async function updateCategoryName(userID, categoryName, categoryID){
     }
 }
 
+// Delete category by categoryID
+async function deleteCategory(userID, categoryID){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = "DELETE FROM Categories WHERE categoryID = @categoryID AND userID = @userID";
+        const request = connection.request();
+        request.input("categoryID", categoryID);
+        request.input("userID", userID);
+        const result = await request.query(query);
+
+        return result.rowsAffected > 0;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if (connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing connection: ", closeError);
+            } 
+        }
+    }
+}
+
 module.exports = {
     getAllCategories,
     createCategory,
     updateCategoryName,
+    deleteCategory,
 }

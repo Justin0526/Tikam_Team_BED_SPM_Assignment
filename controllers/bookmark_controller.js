@@ -30,8 +30,25 @@ async function createBookmark(req, res){
     }
 }
 
+// Function to delete bookmark
+async function deleteBookmark(req, res){
+    try{
+        const userID = req.user.userID;
+        const bookmarkID = req.body.bookmarkID;
+
+        const success = await bookmarkModel.deleteBookmark(userID, bookmarkID);
+        if(!success){
+            return res.status(404).json({error: "Bookmark not found!"});
+        }
+        return res.status(200).json({message: "Bookmark successfully deleted"});
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({error: "Error deleting bookmark"});
+    }
+}
+
 module.exports = {
     getAllBookmarks,
     createBookmark,
-
+    deleteBookmark,
 }
