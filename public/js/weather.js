@@ -5,10 +5,6 @@ const hourlyWeatherForecastListDiv = document.getElementById("hourly-forecast-li
 const sevenDayWeatherForecastListDiv = document.getElementById("seven-day-forecast-list");
 
 let outfitData = null;
-const outfitImg = document.getElementById("outfit-image");
-const outfitDesc = document.getElementById("outfit-description");
-const outfitMsg = document.getElementById("outfit-message");
-const favOutfitBtn = document.getElementById("fav-outfit-btn");
 
 const definitionToggles = document.querySelectorAll(".toggle-definition");
 
@@ -38,8 +34,6 @@ async function fetchAllData(){
         }
         sevenDayWeatherForecastListDiv.innerHTML = "Loading Seven Day Forecast...";
         hourlyWeatherForecastListDiv.innerHTML = "Loading Hourly Forecast...";
-        outfitDesc.textContent = "Loading outfit image and description ";
-        outfitMsg.innerHTML = "";
 
         // Parse the JSON response
         const Alldata = await response.json();
@@ -49,7 +43,7 @@ async function fetchAllData(){
         displayWeatherSummary(weatherData);
         displayHourlyForecast(weatherData);
         displaySevenDayForecast(weatherData);
-        displaySuggestedOutfit(outfitData);
+        displaySuggestedOutfit(outfitData, weatherData);
 
     }catch(error){
         console.error("Error fetching weather information", error);
@@ -57,6 +51,7 @@ async function fetchAllData(){
     }
 }
 async function displayWeatherSummary(weatherData){
+    const currentWeatherSummary = document.getElementById("current-weather-summary");
     const temperature = document.getElementById("weather-temperature");
     const feelsLike = document.getElementById("weather-feels-like");
     const uvIndex = document.getElementById("weather-uv-index");
@@ -70,6 +65,14 @@ async function displayWeatherSummary(weatherData){
     const currentWeather = weatherData.current;
     const astroToday = weatherData.forecast.forecastday[0].astro;
 
+    const now = new Date();
+    const formattedDate = `${String(now.getMonth() + 1).padStart(2, '0')}/` + 
+                            `${String(now.getDate()).padStart(2, '0')}/` +
+                            `${now.getFullYear()} ` +  
+                            `${String(now.getHours()).padStart(2, '0')}:` + 
+                            `${String(now.getMinutes()).padStart(2, '0')}`; 
+
+    currentWeatherSummary.textContent = `🌞 Current Weather Summary (${formattedDate})`;
     temperature.textContent = `Temperature: ${currentWeather.temp_c}°C`;
     feelsLike.textContent = `Feels Like: ${currentWeather.feelslike_c}°C`;
     uvIndex.textContent = `UV Index: ${currentWeather.uv}`;
@@ -137,75 +140,83 @@ async function displaySevenDayForecast(weatherData){
 }
 
 // Function to display suggested outfit
-async function displaySuggestedOutfit(outfitData){
+async function displaySuggestedOutfit(outfitData, weatherData) {
+    const outfitContent = document.getElementById("outfit-content");
+    outfitContent.innerHTML = ""; // Clear existing content
 
-    // Clear loading message;
-    console.log(outfitData);
-    outfitDesc.textContent = outfitData[0].outfitDesc;
-    outfitImg.src = outfitData[0].outfitImageURL;
-}
+    console.log("Outfit Data", outfitData);
 
-favOutfitBtn.addEventListener("click", async(event) => {
-    event.preventDefault(); // Prevent page jump
+    outfitData.forEach(outfit => {
+        const outfitContentCard = document.createElement("div");
+        outfitContentCard.classList.add("outfit-card-item");
+        outfitContentCard.innerHTML = `
+            <img alt="Outfit Picture" src="${outfit.outfitImageURL}">
+            <div class="outfit-text">
+                <p class="outfit-description">${outfit.outfitDesc}</p>
+                <p class="outfit-message"></p>
+                <div class="button-group">
+                    <a href="#" class="button btn-yellow fav-outfit-btn">💖 Like this Outfit</a>
+                    <a href="../html/favourite_outfit.html" class="button btn-yellow">💖 View My Favourite Outfits</a>
+                </div>
+            </div>
+        `;
 
-    console.log(currentUser);
+        outfitContent.appendChild(outfitContentCard);
 
-    if(!currentUser || currentUser == null){
-        outfitMsg.innerHTML=`<a href="login.html">Please log in to favourite an outfit.</a>`;
-        return;
-    }
+        // Select elements from the current card only
+        const likeBtn = outfitContentCard.querySelector(".fav-outfit-btn");
+        const outfitMsg = outfitContentCard.querySelector(".outfit-message");
 
-    const outfitID = outfitData[0].outfitID;
+        likeBtn.addEventListener("click", async (event) => {
+            event.preventDefault();
 
-    const favouriteOutfit = {
-        outfitID: outfitID,
-    }
+            if (!currentUser) {
+                outfitMsg.innerHTML = `<a href="login.html">Please log in to favourite an outfit.</a>`;
+                outfitMsg.style.color = "red";
+                return;
+            }
 
-    try{
-        const response = await fetch(`${apiBaseUrl}/weather`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(favouriteOutfit),
+            console.log(weatherData);
+            const favouriteOutfit = {
+                outfitID: outfit.outfitID,
+                weatherCondition: weatherData.current.condition.text
+            };
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/weather`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(favouriteOutfit),
+                });
+
+                const responseBody = response.headers
+                    .get("content-type")
+                    ?.includes("application/json")
+                    ? await response.json()
+                    : { message: response.statusText };
+
+                if (response.status === 201) {
+                    outfitMsg.textContent = "Successfully favourited outfit!";
+                    outfitMsg.style.color = "green";
+                    setTimeout(() => {
+                        outfitMsg.textContent = "";
+                    }, 2000);
+                } else if (response.status === 400) {
+                    outfitMsg.textContent = `Error: ${responseBody.message}`;
+                    outfitMsg.style.color = 'red';
+                } else {
+                    throw new Error(`API error! status: ${response.status}, message: ${responseBody.message}`);
+                }
+            } catch (error) {
+                outfitMsg.textContent = `Failed to favourite outfit: ${error.message}`;
+                outfitMsg.style.color = 'red';
+            }
         });
-
-        // Check for API response status (201, 400, 500)
-        const responseBody = response.headers
-          .get("content-type")
-          ?. includes("application/json")
-          ? await response.json()
-          : {message: response.statusText};
-
-        if(response.status === 201){
-            outfitMsg.textContent = "Successfully favourited outfit!";
-            outfitMsg.style.color = "green";
-            console.log("Favourited outfit: ", responseBody);
-
-            // Show for 2 seconds
-            setTimeout(() => {
-                outfitMsg.textContent = "";
-            }, 2000);
-        }
-        else if (response.status === 400){
-            // Handle validation errors from API
-            outfitMsg.textContent = `Error: ${responseBody.message}`;
-            outfitMsg.style.color = 'red';
-            console.error("Validation error: ", responseBody);
-        }
-        else{
-            // Handle other potential API errors (e.g. 500 from error handling middleware)
-            throw new Error (
-                `API error! status: ${response.status}, message: ${responseBody.message}`
-            )
-        }
-    }catch(error){
-        console.error("Error favouriting outfit: ", error);
-        outfitMsg.textContent = `Failed to favourite outfit ${error.message}`;
-        outfitMsg.style.color = 'red';
-    }
-})
+    });
+}
 
 definitionToggles.forEach((definition)=> {
     definition.addEventListener("click", ()=> {

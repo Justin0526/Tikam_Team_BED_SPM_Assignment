@@ -112,7 +112,9 @@ async function updatePost(req, res) {
       return res.status(403).json({ error: "Not allowed to edit this post." });
     }
 
-    res.status(200).json({ message: "Post updated successfully" });
+    const updatedPost = await postModel.getPostById(postID);
+    res.status(200).json(updatedPost);
+
   } catch (err) {
     console.error("Update Post Error:", err);
     res.status(500).json({ error: "Failed to update post" });

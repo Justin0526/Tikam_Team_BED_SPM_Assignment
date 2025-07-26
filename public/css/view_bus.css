@@ -1,0 +1,163 @@
+/* Ensure html and body take full height */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Flex container to push footer down */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main content takes up available space */
+.body-section {
+  flex: 1;
+}
+
+main{
+  padding: 0rem 5rem 2rem 5rem;
+}
+
+.transport-toggle {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem auto;
+  width: fit-content;
+}   
+
+.transport-btn, .bus-transport-btn {
+  padding: 0.8rem 3rem;
+  border: 0.1rem solid #2b7da0;
+  background-color: #fff;
+  color: #2b7da0;
+  font-weight: bold;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.bus-transport-btn{
+  background-color: #2B7DA4;
+  color: white;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+.search-bar input {
+  width: 50vw;
+  padding: 1rem 1.5rem;
+  border-radius: 0.625rem 0 0 0.625rem;
+  border: none;
+  background-color: #D9D9D9;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.search-bar button {
+  background-color: #070A40;
+  color: #4BFD5A;
+  border: none;
+  border-radius: 0 0.625rem 0.625rem 0;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.view-map {
+  font-size: 0.9rem;
+  color: #2b7da0;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.bus-stop-block {
+  border: 0.1rem solid #c4e86c;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  background-color: #ffffff;
+}
+
+.bus-stop-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.bookmark {
+  font-size: 1.3rem;
+}
+
+.bus-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.bus-card {
+  border: 0.05rem solid #ccc;
+  border-radius: 0.4rem;
+  padding: 1rem;
+  background-color: #fff;
+  width: 6.5rem;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 0.1rem 0.2rem rgba(0,0,0,0.1);
+}
+
+.bus-card button {
+  display: block;
+  width: 100%;
+  background-color: #247c9c;
+  color: white;
+  border: none;
+  border-radius: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  align-items: center;
+}
+
+.actions a {
+  font-size: 0.9rem;
+  color: #2b7da0;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.actions .take-me-there {
+  display: inline-block;       
+  background-color: #2b7da0;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  text-decoration: none;       
+}
+

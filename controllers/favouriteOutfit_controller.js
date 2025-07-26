@@ -1,5 +1,6 @@
 const outfitModel = require("../models/favouriteOutfit_model");
 
+// Function to get the favourited outfit for the user 
 async function getFavouriteOutfit(req, res){
     try{
         const userID = req.user.userID; 
@@ -12,6 +13,7 @@ async function getFavouriteOutfit(req, res){
     }
 }
 
+// Function to remove favourited outfit of the user
 async function deleteFavouriteOutfit(req, res){
     try{
         const favouriteOutfitID = parseInt(req.params.favouriteOutfitID);
