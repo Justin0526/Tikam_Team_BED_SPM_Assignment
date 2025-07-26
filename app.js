@@ -22,6 +22,7 @@ const viewBusController = require("./controllers/view_bus_controller");
 const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
 const mealController = require('./controllers/meal_controller');
+const healthRecordsController = require("./controllers/healthRecords_controller");
 
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
@@ -127,6 +128,12 @@ app.listen(3000, () => {
 // Profile-related routes
 app.get('/api/profile/:userID', verifyJWT, profileController.getProfile);
 app.post('/api/profile/update', verifyJWT, validateUserProfile, profileController.updateProfile);
+
+// Health Records routes
+app.get("/api/healthRecords/:userID", healthRecordsController.getHealthRecords); // Read
+app.post("/api/healthRecords", healthRecordsController.addRecord);               // Create
+app.put("/api/healthRecords/:recordID", healthRecordsController.updateRecord);   // Update
+app.delete("/api/healthRecords/:recordID", healthRecordsController.deleteRecord); // Delete
 
 // Reset medication route
 require('./models/reset_medication_status');

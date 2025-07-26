@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Health Records - HealthyLah</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/healthRecords.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="top-bar">
+        <div class="logo-bar">
+            <div class="logo-container">
+                <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+            </div>
+            <div class="profile" id="user-profile">
+                <a href="login.html" id="login-link">Login here</a>
+            </div>
+        </div>
+        <nav class="nav-bar">
+            <a href="index.html">Home</a>
+            <a href="about_us.html">About us</a>
+            <a href="weather.html">Weather</a>
+            <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+            <a href="health.html" class="active">Health</a>
+            <a href="post_forum.html">Post</a>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <h1 class="page-title">Your Health Records</h1>
+
+        <!-- CHARTS -->
+        <section class="chart-section">
+            <div class="chart-card" id="bpCard">
+                <h2>Blood Pressure</h2>
+                <canvas id="bpChart" class="enlarge-chart"></canvas>
+                <div class="chart-actions">
+                    <button onclick="openModal('blood_pressure')">View Details</button>
+                </div>
+            </div>
+            <div class="chart-card" id="sugarCard">
+                <h2>Blood Sugar</h2>
+                <canvas id="sugarChart" class="enlarge-chart"></canvas>
+                <div class="chart-actions">
+                    <button onclick="openModal('sugar')">View Details</button>
+                </div>
+            </div>
+            <div class="chart-card" id="weightCard">
+                <h2>Weight</h2>
+                <canvas id="weightChart" class="enlarge-chart"></canvas>
+                <div class="chart-actions">
+                    <button onclick="openModal('weight')">View Details</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- BMI CALCULATOR -->
+        <section class="bmi-section">
+            <h2>BMI Calculator</h2>
+            <div class="bmi-card">
+                <div class="bmi-inputs">
+                    <label for="bmiWeight">Weight (kg):</label>
+                    <input type="number" id="bmiWeight" placeholder="e.g., 70">
+
+                    <label for="bmiHeight">Height (m):</label>
+                    <input type="number" id="bmiHeight" step="0.01" placeholder="e.g., 1.70">
+                </div>
+                <button class="bmi-btn" onclick="calculateBMI()">Calculate BMI</button>
+                <p id="bmiResult" class="bmi-result">Enter your details to calculate BMI.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL FOR LOG TABLE -->
+    <div id="logsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Detailed Logs</h2>
+            <button class="add-log-btn" onclick="showAddForm()">+ Add New Log</button>
+            <table id="logsTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Value 1</th>
+                        <th>Value 2</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- ADD/EDIT FORM -->
+            <h3 id="formTitle">Add/Edit Log</h3>
+            <form id="editForm" onsubmit="saveLog(event)">
+                <input type="hidden" id="recordID">
+                <input type="hidden" id="recordType">
+                <label for="logDate">Date:</label>
+                <input type="date" id="logDate" required>
+                <label for="value1">Value 1:</label>
+                <input type="number" id="value1" required>
+                <label for="value2">Value 2 (optional):</label>
+                <input type="number" id="value2">
+                <button type="submit">Save</button>
+                <button type="button" onclick="resetForm()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FOR ENLARGED CHART -->
+    <div id="chartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeChartModal()">&times;</span>
+            <canvas id="enlargedChart"></canvas>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com/"><img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;"></a>
+            <a href="https://www.twitter.com/"><img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;"></a>
+            <a href="https://www.instagram.com/"><img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;"></a>
+            <a href="mailto:info@healthy-lah.com"><img src="../images/icons8-email-48.png" alt="Email" style="height:30px;"></a>
+        </div>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/healthRecords.js"></script>
+</body>
+</html>
