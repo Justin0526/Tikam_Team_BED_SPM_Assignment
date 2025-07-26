@@ -30,7 +30,7 @@ const medicationValidator  = require("./middlewares/medication_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
 const { verify } = require("crypto");
 const {verifyJWT} = require("./middlewares/authMiddleware");
-const {validateUserProfile} = require('./middlewares/userProfile_validation');
+const validateUserProfile = require('./middlewares/userProfile_validation');
 const { validateRegistration } = require('./middlewares/registration_validation');
 const { validateLogin } = require('./middlewares/login_validation');
 const mealValidator =require("./middlewares/meal_validation");
@@ -125,8 +125,8 @@ app.listen(3000, () => {
 });
 
 // Profile-related routes
-app.get('/api/profile/:userID', profileController.getProfile);
-app.post('/api/profile/update', validateUserProfile, profileController.updateProfile);
+app.get('/api/profile/:userID', verifyJWT, profileController.getProfile);
+app.post('/api/profile/update', verifyJWT, validateUserProfile, profileController.updateProfile);
 
 // Reset medication route
 require('./models/reset_medication_status');
