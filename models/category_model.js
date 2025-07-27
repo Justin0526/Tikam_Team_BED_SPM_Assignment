@@ -31,21 +31,15 @@ async function getCategoryByName(userID, categoryName){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = `SELECT COUNT(*) as count FROM Categories WHERE userID = @userID AND categoryName = @categoryName`;
+        const query = `SELECT * FROM Categories WHERE userID = @userID AND categoryName = @categoryName`;
         const request = connection.request();
         request.input("userID", userID);
         request.input("categoryName", categoryName);
         const result = await request.query(query);
 
-        if(result.recordset[0].count > 0){
-            const error = new Error("Category name already exists for this user.");
-            error.statusCode = 409; // conflict
-            throw error;
-        }
+        return result.recordset;
     }catch(error){
-        if(error.statusCode !== 409){
-            console.error("Database error: ", error);
-        }
+        console.error("Database error: ", error);
         throw error;
     }finally{
         if(connection){

@@ -20,8 +20,7 @@ async function createCategory(req, res){
         const categoryName = req.body.categoryName;
 
         const existing = await categoryModel.getCategoryByName(userID, categoryName);
-        console.log(existing);
-        if(existing || existing.length > 0){
+        if(existing && existing.length > 0){
             return res.status(409).json({error: "Category already exists", category: existing})
         }
 

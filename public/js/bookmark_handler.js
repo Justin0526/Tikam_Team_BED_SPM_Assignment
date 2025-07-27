@@ -81,7 +81,7 @@ async function createCategoryIfNotExists(categoryName){
         const data = await response.json();
 
         if (response.status === 201) {
-            return data[0];
+            return data.category[0];
         } else if (response.status === 409) {
             // Already exists, so fetch it
             const categories = await fetchCategories();
@@ -126,31 +126,26 @@ async function fetchCategories(){
 
 async function assignBookmarkToCategory(bookmarkID, categoryID){
     try{
-        console.log("BookmarkID", bookmarkID);
-        console.log("CategoryID", categoryID);
         const response = await fetch(`${apiBaseURL}/bookmark-category`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify({bookmarkID, categoryID})
         })
 
-        const responseBody = response.headers
-          .get("content-type")
-          ?.includes("application/json")
-          ? await response.json()
-          : {message: response.statusText};
-
-        if (response.status === 201){
-            console.log("successfully assigned")
-        } else if (response.status === 409){
-            console.log("Bookmark already assigned to this category!")
-        } else{
-            throw new Error(`API error! status: ${response.status}, message: ${responseBody.message}`);
+        if(!response.ok){
+            // Handle HTTP errors (e.g. 404, 500)
+            // Attempt to read erroro body if available, otherwise use status text
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(
+                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
+            );
         }
 
-        if(response.ok){
-            return true;
-        }
+        return true;
 
     }catch(error){
         console.error("Error assigning bookmark to category");
@@ -161,19 +156,17 @@ async function assignBookmarkToCategory(bookmarkID, categoryID){
 window.handleBookmarkClick = async function (placeID, placeName){
     const bookmark = await createBookmarkIfNotExists(placeID);
     const bookmarkID = bookmark.bookmarkID;
-    console.log("BookmarkID", bookmarkID);
     if(!bookmarkID) return;
 
     // Ask for existing category selection or new category
     const categories = await fetchCategories();
-    console.log("CategoryID", categories);
-    console.log("About to show modal...");
     showCategoryModal(categories, async(selectedIDs, newCategoryName) => {
         const categoryIDs = [...selectedIDs];
 
         if(newCategoryName){
-            const newID = await createCategoryIfNotExists(newCategoryName);
-            if(newID) categoryIDs.push(newID);
+            const newCategory= await createCategoryIfNotExists(newCategoryName);
+            const newCategoryID = newCategory.categoryID;
+            if(newCategoryID) categoryIDs.push(newCategoryID);
         }
 
         // Assign bookmark to all selected categories
@@ -205,7 +198,6 @@ window.updateBookmarkIcon = function(placeID, isBookmarked) {
 };
 
 function showCategoryModal(categories, onSubmit){
-    console.log("Modal found and displaying...");
     const modal = document.getElementById("categoryModal");
     const form = document.getElementById("categoryForm");
     const checkboxesDiv = document.getElementById("categoryCheckboxes");
@@ -246,18 +238,20 @@ function showCategoryModal(categories, onSubmit){
     const addBtn = document.createElement("button");
     addBtn.textContent = "Add";
     addBtn.type = "button";
+    addBtn.classList.add("add-category-btn");
     addBtn.style.marignLeft = "0.5rem";
     newCategoryInput.parentNode.insertBefore(addBtn, newCategoryInput.nextSibling);
 
     addBtn.onclick = handleNewCategory;
 
     async function handleNewCategory(){
-        const newCategory = newCategoryInput.value.trim();
-        if(!newCategory) return;
+        const newCategoryName = newCategoryInput.value.trim();
+        if(!newCategoryName) return;
 
-        const newID = await createCategoryIfNotExists(newCategory);
-        if(newID){
-            categories.push({categoryID: newID, categoryName: newCategory});
+        const newCategory = await createCategoryIfNotExists(newCategoryName);
+        const newCategoryID = newCategory.categoryID
+        if(newCategoryID){
+            categories.push({categoryID: newCategoryID, categoryName: newCategoryName});
             renderCheckboxes(categories); // Refresh with new checkbox
             newCategoryInput.value = "";
         }else{

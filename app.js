@@ -152,9 +152,9 @@ app.post('/api/profile/update', validateUserProfile, profileController.updatePro
 require('./models/reset_medication_status');
 
 process.on("SIGINT", async () => {
-  console.log("Server is gracefully shutting down");
-  await sql.close();
-  console.log("Database connection closed");
-  process.exit(0);
+    console.log("Server is gracefully shutting down");
+    await sql.close();
+    console.log("Database connection closed");
+    process.exit(0);
 });
 

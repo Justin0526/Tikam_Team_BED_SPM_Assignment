@@ -240,6 +240,11 @@ main {
   overflow-y: auto;
   margin-bottom: 1rem;
 }
+
+.modal .message{
+  padding-top: 0.8rem;
+}
+
 .modal-buttons {
   display: flex;
   justify-content: space-between;
