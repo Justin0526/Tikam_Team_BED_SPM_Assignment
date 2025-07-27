@@ -124,6 +124,36 @@ async function fetchCategories(){
     }
 }
 
+// Get the photo of the facility
+window.fetchPhoto = async function fetchPhoto(placePhoto, maxHeightPx, maxWidthPx) {
+    try {
+        const urlQuery = `photoName=${placePhoto.name}&maxHeightPx=${maxHeightPx}&maxWidthPx=${maxWidthPx}`;
+
+        const response = await fetch(`${apiBaseUrl}/facilities/photo?${urlQuery}`, {
+            method: 'GET',
+        });
+
+        if (!response.ok) {
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : { message: response.statusText };
+
+            throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
+        }
+
+        // Blob = Binary Large Object. It represents raw binary data like images, videos, pdf files...
+        // In the browser, a Blob is a wrapper for binary data so JavaScript can handle it like a normal object
+        const blob = await response.blob();
+        return URL.createObjectURL(blob); // this is your <img src>
+        
+    } catch (error) {
+        console.error("Error fetching photo", error);
+        alert("Failed to load photo");
+    }
+}
+
 window.assignBookmarkToCategory = async function assignBookmarkToCategory(bookmarkID, categoryID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark-category`, {

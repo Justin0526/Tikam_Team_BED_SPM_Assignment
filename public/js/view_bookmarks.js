@@ -2,7 +2,7 @@ window.addEventListener("load", async() => {
     await renderCategories();
     const allBookmarks = await getAllBookmarks();
     const bookmarkDetails = await getBookmarkDetails(allBookmarks);
-    console.log(bookmarkDetails);
+    renderBookmarks(bookmarkDetails);
 })
 
 getAuthHeaders = function getAuthHeaders(){
@@ -59,7 +59,6 @@ async function getBookmarkDetails(bookmarks){
 
     for (const bookmark of bookmarks){
         const placeID = bookmark.placeID;
-        const bookmarkID = bookmark.bookmarkID;
 
         try{
             // Fetch Google Place Details
@@ -80,16 +79,8 @@ async function getBookmarkDetails(bookmarks){
             }
 
             const googleData = await googleResponse.json();
-            const categoriesData = await getCategoriesOfBookmark(bookmarkID);
-            let categories = [];
-            if(categoriesData.length > 0){
-                for (const category of categoriesData){
-                    categories.push(category.categoryName)
-                }
-            }else{
-                categories = "No category"
-            }
-            const detailed = convertToDetailedBookmark(bookmark, googleData, categories);
+            console.log(googleData)
+            const detailed = await convertToDetailedBookmark(bookmark, googleData);
             detailedBookmarks.push(detailed);
         } catch(error){
             console.error(`Error fetching details for placeID ${placeID}: `, error)
@@ -99,31 +90,32 @@ async function getBookmarkDetails(bookmarks){
     
 }
 
-// Function to get all category of the bookmark
-async function getCategoriesOfBookmark(bookmarkID){
-    try{
-        const response = await fetch(`${apiBaseUrl}/bookmark-category/bookmark/${bookmarkID}`, {
-            method: "GET",
-            headers: getAuthHeaders(),
-        })
+// // Function to display all bookmarks
+async function renderBookmarks(bookmarks){
+    const bookmarkGrid = document.getElementById("bookmark-grid");
+    console.log(bookmarks);
 
-        if(!response.ok){
-            // Handle HTTP errors (e.g. 404, 500)
-            // Attempt to read erroro body if available, otherwise use status text
-            const errorBody = response.headers
-                .get("content-type")
-                ?.includes("application/json")
-                ? await response.json()
-                : {message: response.statusText};
-            throw new Error(
-                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
-            );
-        }
+    for (const bookmark of bookmarks){
+        const bookmarkCard = document.createElement("div");
+        bookmarkCard.classList.add("bookmark-card");
 
-        const categories = await response.json();
-        return categories;
-    }catch(error){
-        console.error(`Error getting categories for ${bookmarkID}`);
+        bookmarkCard.innerHTML = `
+            <span class="close-btn">❌</span>
+            <div class="bookmark-img">
+                ${bookmark.photo}
+            </div>
+            <div class="bookmark-content">
+                <h3 class="bookmark-title">${bookmark.name}</h3>
+                <p><strong>Address:</strong> ${bookmark.address}</p>
+                <p><strong>Open Now:</strong> ${bookmark.openNow}</p>
+                <p class="category-line"><strong>Category:</strong> ${bookmark.category}</p>
+                <p><strong>Bookmarked Date:</strong> ${bookmark.bookmarkedDate}</p>
+                <div class="bookmark-footer">
+                    <a href="${bookmark.mapsLink}" class="bookmark-link" target="_blank">Take me there➤</a>
+                </div>
+            </div>
+        `
+        bookmarkGrid.appendChild(bookmarkCard);
     }
 }
 
@@ -145,18 +137,31 @@ function interpretAccessibility(options) {
 }
 
 // Functino to merge all data into one bookmark
-function convertToDetailedBookmark(bookmark, placeData, categories) {
+async function convertToDetailedBookmark(bookmark, placeData) {
+    let category = bookmark.categories;
+    if(!category){
+        category = "Uncategorised"
+    }
+    const placePhoto = placeData.photos;
+    let placePhotoHTML = "No Picture Available";
+    if(placePhoto){
+        try{
+            const imageURL = await window.fetchPhoto(placePhoto[0], 400, 300);
+            placePhotoHTML = `<img src="${imageURL}" alt="Picture">`
+        }catch(error){
+            console.warn("Photo fetch failed, showing original.");
+        }
+    }
     return {
         bookmarkID: bookmark.bookmarkID,
-        category: categories,
+        category: category,
         bookmarkedDate: formatDate(bookmark.bookmarkedAt),
         name: placeData.displayName?.text || "Unknown",
         address: placeData.formattedAddress || "No address available",
         openNow: placeData.currentOpeningHours?.openNow ? "Open" : "Closed",
         accessibility: interpretAccessibility(placeData.accessibilityOptions),
-        mapsLink: placeData.googleMapsLinks?.placeUri || "#"
+        mapsLink: placeData.googleMapsLinks?.placeUri || "#",
+        photo: placePhotoHTML
     };
 }
-// async function renderBookmarks(){
-    
-// }
+

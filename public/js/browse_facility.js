@@ -108,38 +108,6 @@ async function fetchFacilities(query, pageToken = null) {
     }
 }
 
-// Get the photo of the facility
-async function fetchPhoto(placePhoto) {
-    try {
-        const maxHeightPx = 400;
-        const maxWidthPx = 300;
-        const urlQuery = `photoName=${placePhoto.name}&maxHeightPx=${maxHeightPx}&maxWidthPx=${maxWidthPx}`;
-
-        const response = await fetch(`${apiBaseUrl}/facilities/photo?${urlQuery}`, {
-            method: 'GET',
-        });
-
-        if (!response.ok) {
-            const errorBody = response.headers
-                .get("content-type")
-                ?.includes("application/json")
-                ? await response.json()
-                : { message: response.statusText };
-
-            throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
-        }
-
-        // Blob = Binary Large Object. It represents raw binary data like images, videos, pdf files...
-        // In the browser, a Blob is a wrapper for binary data so JavaScript can handle it like a normal object
-        const blob = await response.blob();
-        return URL.createObjectURL(blob); // this is your <img src>
-        
-    } catch (error) {
-        console.error("Error fetching photo", error);
-        alert("Failed to load photo");
-    }
-}
-
 // Display all facilites returned from the search results
 async function renderFacilities(results) {
     const resultGrid = document.getElementById("results-grid");
@@ -157,7 +125,7 @@ async function renderFacilities(results) {
         let photoHTML = `<div class="picture-placeholder">No Picture Available</div>`;
         if (result.photos && result.photos.length > 0) {
             try {
-                const imageURL = await fetchPhoto(result.photos[0]);
+                const imageURL = await fetchPhoto(result.photos[0], 400, 300);
                 photoHTML = `<img class="picture-placeholder" src="${imageURL}">`;
             } catch (e) {
                 console.warn("Photo fetch failed, showing placeholder.");
