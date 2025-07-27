@@ -14,6 +14,8 @@ const appointmentController = require("./controllers/appointment_controller");
 const { getUserHealthProfile } = require('./controllers/health_controller');
 const medicationsController = require("./controllers/medications_controller");
 const editMedicationsController = require('./controllers/edit_medication_controller');
+const healthRemindersController = require("./controllers/health_reminders_controller");
+const editRemindersController = require("./controllers/edit_reminders_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const profileController = require('./controllers/userProfile_controller');
@@ -74,6 +76,17 @@ app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMed
 app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
 app.put("/medications/:medicationID", editMedicationsController.updateMedication);
 app.delete("/medications/:medicationID", editMedicationsController.deleteMedication);
+
+// Health Reminders routes
+app.get("/reminders", verifyJWT, healthRemindersController.getReminders);
+app.put("/reminders/:id/mark-taken", verifyJWT, healthRemindersController.markReminderTaken);
+app.post("/reminders", verifyJWT, healthRemindersController.createReminder);
+
+// Edit medication routes
+app.get("/reminders/:id", verifyJWT, editRemindersController.getReminderById);
+app.put("/reminders/:id", verifyJWT, editRemindersController.updateReminder);
+app.delete("/reminders/:id", verifyJWT, editRemindersController.deleteReminder);
+
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts);
