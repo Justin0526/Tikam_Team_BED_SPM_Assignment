@@ -71,16 +71,6 @@ async function getBookmarkCategoryID(userID, bookmarkID, categoryID){
 async function assignBookmarkToCategory(userID, bookmarkID, categoryID){
     let connection;
     try{
-
-        // Check if bookmark in category first
-        const bookmarkCategoryID = await getBookmarkCategoryID(userID, bookmarkID, categoryID);
-        if (bookmarkCategoryID){
-            const error = new Error("Bookmark already exists in category")
-            error.statusCode = 409; // Conflict
-            throw error;
-        }
-
-        // If not in bookmark category then add it
         connection = await sql.connect(dbConfig);
         const query = `INSERT INTO BookmarkCategories (userID, bookmarkID, categoryID) VALUES (@userID, @bookmarkID, @categoryID)`;
         const request = connection.request();
@@ -107,29 +97,9 @@ async function assignBookmarkToCategory(userID, bookmarkID, categoryID){
 }
 
 // Function to update bookmark's category
-async function updateBookmarkCategory(userID, bookmarkID, originalCategoryID, newCategoryID){
+async function updateBookmarkCategory(bookmarkCategoryID, newCategoryID){
     let connection;
     try{
-
-        // Check if the category are the same
-        if(originalCategoryID === newCategoryID){
-            const error = new Error("The bookmark is already in this category");
-            error.statusCode = 409; // Conflict
-            throw error;
-        }
-        
-        // Check if there is this bookmarkCategory
-        const checkBookmarkCategory = await getBookmarkCategoryID(userID, bookmarkID, originalCategoryID);
-
-        // If there is no bookmarkCategory
-        if (!checkBookmarkCategory){
-            const error = new Error("The bookmark is not in the original category");
-            error.statusCode = 404;
-            throw error;
-        }
-
-        const bookmarkCategoryID = checkBookmarkCategory.bookmarkCategoryID;
-        // If there is bookmarkCategoryID
         connection = await sql.connect(dbConfig);
         const query = `UPDATE BookmarkCategories SET categoryID = @categoryID WHERE bookmarkCategoryID = @bookmarkCategoryID`;
         const request = connection.request();
@@ -156,19 +126,9 @@ async function updateBookmarkCategory(userID, bookmarkID, originalCategoryID, ne
 }
 
 // Function to delete bookmark from category
-async function deleteBookmarkFromCategory(userID, bookmarkID, categoryID){
+async function deleteBookmarkFromCategory(bookmarkCategoryID){
     let connection;
     try{
-        // Check if bookmark exists in this category
-        const exists = await getBookmarkCategoryID(userID, bookmarkID, categoryID);
-
-        if(!exists){
-            const error = new Error("The bookmark is not in this category");
-            error.statusCode = 404;
-            throw error
-        }
-        
-        const bookmarkCategoryID = exists.bookmarkCategoryID;
         connection = await sql.connect(dbConfig);
         const query = "DELETE FROM BookmarkCategories WHERE bookmarkCategoryID = @bookmarkCategoryID";
         const request = connection.request();
@@ -246,6 +206,7 @@ async function countCategoriesForBookmark(userID, bookmarkID){
 }
 module.exports = {
     getBookmarksByCategory,
+    getBookmarkCategoryID,
     assignBookmarkToCategory,
     updateBookmarkCategory,
     deleteBookmarkFromCategory,

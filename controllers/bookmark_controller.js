@@ -13,18 +13,39 @@ async function getAllBookmarks(req, res){
     }
 }
 
+// Function to getBookmarkByPlaceID 
+async function getBookmarkByPlaceID(req, res){
+    try{
+        const userID = req.user.userID;
+        const placeID = req.params.placeID;
+        const bookmark = await bookmarkModel.getBookmarkByPlaceID(userID, placeID);
+        
+        if(bookmark && bookmark.length > 0){
+            return res.status(200).json(bookmark);
+        }else{
+            return res.status(404).json({message: "Bookmark not found"});
+        }
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({error: "Error creating bookmark"});
+    }
+}
+
 // Function to create bookmark
 async function createBookmark(req, res){
     try{
         const userID = req.user.userID;
         const placeID = req.body.placeID;
 
-        const newBookmark = await bookmarkModel.createNewBookmark(userID, placeID);
+        const exists = await bookmarkModel.getBookmarkByPlaceID(userID, placeID);
+        if(exists && exists.length > 0){
+            return res.status(200).json(exists); // Already exists
+        }
+
+        await bookmarkModel.createNewBookmark(userID, placeID);
+        const  newBookmark = await bookmarkModel.getBookmarkByPlaceID(userID, placeID);
         return res.status(201).json(newBookmark);
     }catch(error){
-        if (error.statusCode === 409){
-            return res.status(409).json({error: error.message});
-        }
         console.error("Controller error: ", error);
         res.status(500).json({error: "Error creating bookmark"});
     }
@@ -49,6 +70,7 @@ async function deleteBookmark(req, res){
 
 module.exports = {
     getAllBookmarks,
+    getBookmarkByPlaceID,
     createBookmark,
     deleteBookmark,
 }

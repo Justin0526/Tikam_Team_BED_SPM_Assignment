@@ -19,12 +19,16 @@ async function createCategory(req, res){
         const userID = req.user.userID;
         const categoryName = req.body.categoryName;
 
-        const newCategory = await categoryModel.createCategory(userID, categoryName);
-        return res.status(201).json(newCategory);
-    }catch(error){
-        if (error.statusCode === 409){
-            return res.status(409).json({error: error.message});
+        const existing = await categoryModel.getCategoryByName(userID, categoryName);
+        console.log(existing);
+        if(existing || existing.length > 0){
+            return res.status(409).json({error: "Category already exists", category: existing})
         }
+
+        await categoryModel.createCategory(userID, categoryName);
+        const newCategory = await categoryModel.getCategoryByName(userID, categoryName)
+        return res.status(201).json({category: newCategory});
+    }catch(error){
         console.error("Controller error: ", error);
         res.status(500).json({error: "Error creating category"})
     }
@@ -37,13 +41,20 @@ async function updateCategoryName(req, res){
         const categoryName = req.body.categoryName;
         const categoryID = req.body.categoryID;
 
-        const newCategoryName = await categoryModel.updateCategoryName(userID, categoryName, categoryID);
-
-        return res.status(200).json({message: `Category successfully updated`})
-    }catch(error){
-        if (error.statusCode === 409){
-            return res.status(409).json({error: error.message});
+        const existing = await categoryModel.findCategoryByName(userID, categoryName);
+        if (existing) {
+            return res.status(409).json({ error: "Another category with this name already exists" });
         }
+
+        const success = await categoryModel.updateCategoryName(userID, categoryID, categoryName);
+        if (!success) {
+            return res.status(404).json({ error: "Category not found or no change" });
+        }
+
+        return res.status(200).json({ message: "Category updated" });
+
+    }catch(error){
+        console.error("Controller error: ", error);
         res.status(500).json({error: "Error updating category name"});
     }
 }

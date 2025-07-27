@@ -52,6 +52,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // ─── Routes ─────────────────────────────────────────────────────────────────────
 // Bookmark routes
 app.get("/bookmarks", verifyJWT, bookmarkController.getAllBookmarks);
+app.get("/bookmark/:placeID", verifyJWT, bookmarkController.getBookmarkByPlaceID);
 app.post("/bookmark", verifyJWT, bookmarkController.createBookmark);
 app.delete("/bookmark", verifyJWT, bookmarkController.deleteBookmark);
 

@@ -1,6 +1,6 @@
 const axios = require("axios");
 const APIKEY = process.env.BROWSE_FACILITY_API_KEY;
-const FieldMask = 'places.displayName,places.formattedAddress,places.photos,places.googleMapsLinks,places.currentOpeningHours,places.accessibilityOptions,nextPageToken';
+const FieldMask = 'places.id,places.displayName,places.formattedAddress,places.photos,places.googleMapsLinks,places.currentOpeningHours,places.accessibilityOptions,nextPageToken';
 const browseFacilityURL = "https://places.googleapis.com/v1/places:searchText";
 const placePhotoURL = "https://places.googleapis.com/v1"
 

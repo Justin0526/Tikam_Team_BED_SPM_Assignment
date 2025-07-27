@@ -2,11 +2,6 @@ const apiBaseUrl = "http://localhost:3000";
 let currentQuery = "";
 let nextPageToken = null;
 
-// get user token 
-window.addEventListener('load', async () => {
-  await getToken(token);
-});
-
 const goBtn = document.getElementById("go-btn");
 const backBtn = document.getElementById("back-to-search");
 const textQuery = document.getElementById("textQuery");
@@ -168,19 +163,43 @@ async function renderFacilities(results) {
                 console.warn("Photo fetch failed, showing placeholder.");
             }
         }
-            resultCard.innerHTML = `
-                <div class="result-card-content">
-                    ${photoHTML}
-                    <img width="50" height="50" src="../images/icons8-bookmark-50.png" class="bookmark-icon" />
-                    <div class="facility-details">
-                    <p class="facility-name">${result.displayName.text}</p>
-                    <p><strong>Address:</strong> ${result.formattedAddress}</p>
-                    <p><strong>Currently Open:</strong> ${openNow}</p>
-                    <p><strong>Accessibility:</strong> ${accessibility}</p>
-                    </div>
+        resultCard.innerHTML = `
+            <div class="result-card-content">
+                ${photoHTML}
+                <img width="50" height="50" src="../images/unfilled-bookmark-icon.png" class="bookmark-icon" data-place-id="${result.id}"/>
+                <div class="facility-details">
+                <p class="facility-name">${result.displayName.text}</p>
+                <p><strong>Address:</strong> ${result.formattedAddress}</p>
+                <p><strong>Currently Open:</strong> ${openNow}</p>
+                <p><strong>Accessibility:</strong> ${accessibility}</p>
                 </div>
-                <a href="${result.googleMapsLinks.directionsUri}" class="take-me-btn" target="_blank" rel="noopener noreferrer">Take me there &gt;</a>
-            `;
+            </div>
+            <a href="${result.googleMapsLinks.directionsUri}" class="take-me-btn" target="_blank" rel="noopener noreferrer">Take me there &gt;</a>
+        `;
+
+        const bookmarkImg = resultCard.querySelector(".bookmark-icon");
+
+        // Check if already bookmarked
+        isFacilityBookmarked(result.id).then(bookmarked => {
+            bookmarkImg.src = bookmarked ? window.filledIcon : window.unfilledIcon;
+            bookmarkImg.setAttribute("data-bookmarked", bookmarked);
+
+            bookmarkImg.addEventListener("mouseenter", () => {
+                if (bookmarkImg.getAttribute("data-bookmarked") === "false") {
+                    bookmarkImg.src = window.filledIcon;
+                }
+            });
+
+            bookmarkImg.addEventListener("mouseleave", () => {
+                if (bookmarkImg.getAttribute("data-bookmarked") === "false") {
+                    bookmarkImg.src = window.unfilledIcon;
+                }
+            });
+        });
+
+        bookmarkImg.addEventListener("click", async () => {
+            await window.handleBookmarkClick(result.id, result.displayName.text);
+        });
 
         resultGrid.appendChild(resultCard);
     });

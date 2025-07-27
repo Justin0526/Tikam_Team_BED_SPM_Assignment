@@ -20,28 +20,19 @@ async function getBookmarksByCategory(req, res){
 async function assignBookmarkToCategory(req, res){
     try{
         const userID = req.user.userID;
-        const bookmarkID = req.body.bookmarkID;
-        const categoryID = req.body.categoryID;
+        const bookmarkID = parseInt(req.body.bookmarkID);
+        const categoryID = parseInt(req.body.categoryID);
 
-        const allCategories = await categoryModel.getAllCategories(userID);
-        // Check if categoryID exists in user's categories
-        const categoryExists = allCategories.some(cat => cat.categoryID === categoryID);
-
-        const allBoookmarks = await bookmarkModel.getAllBookmarks(userID);
-        // Check if bookmarkID exists in user's bookmarks
-        const bookmarkExists = allBoookmarks.some(bookmark => bookmark.bookmarkID === bookmarkID);
-
-        if(!bookmarkExists || !categoryExists){
-            return res.status(404).json({ error: "Bookmark or category not found for this user." });
+        const existing = await bookmarkCategoryModel.getBookmarkCategoryID(userID, bookmarkID, categoryID);
+        if (existing){
+            return res.status(409).json({message: "Bookmark already exists in this category."});
         }
 
         const assignSuccess = await bookmarkCategoryModel.assignBookmarkToCategory(userID, bookmarkID, categoryID);
-        return res.status(201).json(assignSuccess);
-    }catch(error){
-        if (error.statusCode === 409){
-            return res.status(409).json({error: error.message});
-        }
 
+        const BookmarkCategoryID = await bookmarkCategoryModel.getBookmarkCategoryID(userID, bookmarkID, categoryID);
+        return res.status(201).json(BookmarkCategoryID);
+    }catch(error){
         console.error("Controller error: ", error);
         res.status(500).json({error: "Error assigining bookmark to category"});
     }
@@ -55,14 +46,15 @@ async function updateBookmarkCategory(req, res){
         const originalCategoryID = req.body.originalCategoryID;
         const newCategoryID = req.body.newCategoryID;
 
-        const newBookmarkCategory = await bookmarkCategoryModel.updateBookmarkCategory(userID, bookmarkID, originalCategoryID, newCategoryID);
+        if (originalCategoryID == newCategoryID){
+            return res.status(409).json({message: "No change in category."});
+        }
+
+        const bookmarkCategoryID = await bookmarkCategoryModel.getBookmarkCategoryID(userID, bookmarkID, originalCategoryID);
+        await bookmarkCategoryModel.updateBookmarkCategory(bookmarkCategoryID, newCategoryID);
         return res.status(200).json({message: "Bookmark successfully updated to new category"});
     }catch(error){
-        if(error.statusCode === 409){
-            return res.status(409).json({error: error.message});
-        } else if (error.statusCode === 404){
-            return res.status(404).json({error: error.message});
-        }
+        console.error("Controller error: ", error)
         res.status(500).json({error: "Error updating bookmark's new category"});
     }
 }
@@ -74,10 +66,12 @@ async function deleteBookmarkFromCategory(req, res){
         const bookmarkID = req.body.bookmarkID;
         const categoryID = req.body.categoryID;
 
-        const success = await bookmarkCategoryModel.deleteBookmarkFromCategory(userID, bookmarkID, categoryID);
-        if(!success){
-            return res.status(404).json({error: "Bookmark not found in category!"});
+        const existing = await bookmarkCategoryModel.getBookmarkCategoryID(userID, bookmarkID, categoryID);
+        if(!existing){
+            return res.status(404).json({message: "Bookmark not found in this category"});
         }
+
+        await bookmarkCategoryModel.deleteBookmarkFromCategory(userID, bookmarkID, categoryID);
         return res.status(200).json({message: "Bookmarks successfully deleted from category"});
     } catch(error){
         if(error.statusCode === 404){
