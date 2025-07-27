@@ -16,6 +16,20 @@ async function getBookmarksByCategory(req, res){
     }
 }
 
+// Funciton to get category by bookmark
+async function getCategoriesByBookmarkID(req, res){
+    try{
+        const userID = req.user.userID;
+        const bookmarkID = parseInt(req.params.bookmarkID);
+
+        const categoryByBookmark = await bookmarkCategoryModel.getCategoriesByBookmarkID(userID, bookmarkID);
+        return res.status(200).json(categoryByBookmark);
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({error: "Error getting bookmarks by category"});
+    }
+}
+
 // Function to assign bookmark to category
 async function assignBookmarkToCategory(req, res){
     try{
@@ -120,6 +134,7 @@ async function deleteBookmarksInCategory(req, res){
 }
 module.exports = {
     getBookmarksByCategory,
+    getCategoriesByBookmarkID,
     assignBookmarkToCategory,
     updateBookmarkCategory,
     deleteBookmarkFromCategory,

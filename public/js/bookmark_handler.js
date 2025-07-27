@@ -6,7 +6,7 @@ window.addEventListener('load', async()=>{
     currentUser = await getToken(token);
 })
 
-function getAuthHeaders(){
+getAuthHeaders = function getAuthHeaders(){
     if(!token) throw new Error("User not authenticated. ");
     return{
         "Authorization": `Bearer ${token}`,
@@ -70,7 +70,7 @@ async function createBookmarkIfNotExists(placeID){
     }
 }
 
-async function createCategoryIfNotExists(categoryName){
+window.createCategoryIfNotExists = async function createCategoryIfNotExists(categoryName){
     try{
         const response = await fetch(`${apiBaseUrl}/category`, {
             method: "POST",
@@ -124,7 +124,7 @@ async function fetchCategories(){
     }
 }
 
-async function assignBookmarkToCategory(bookmarkID, categoryID){
+window.assignBookmarkToCategory = async function assignBookmarkToCategory(bookmarkID, categoryID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark-category`, {
             method: "POST",
@@ -153,7 +153,7 @@ async function assignBookmarkToCategory(bookmarkID, categoryID){
     }
 }
 
-async function deleteBookmark(bookmarkID){
+window.deleteBookmark = async function deleteBookmark(bookmarkID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark`, {
             method: "DELETE",
@@ -315,12 +315,12 @@ function showCategoryModal(categories, onSubmit){
         const newCategoryID = newCategory.categoryID
         if(newCategoryID){
             categories.push({categoryID: newCategoryID, categoryName: newCategoryName});
+            renderCheckboxes(categories); // Refresh with new checkbox
             messageDiv.textContent = `Category "${newCategoryName}" added successfully!`
             messageDiv.style.color = "green";
             setTimeout(() => {
                 messageDiv.textContent = "";
             }, 2000);
-            renderCheckboxes(categories); // Refresh with new checkbox
             newCategoryInput.value = "";
         }else{
             messageDiv.textContent = `Category "${newCategoryName}" has already been created!`

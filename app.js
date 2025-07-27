@@ -62,7 +62,8 @@ app.post("/category", verifyJWT, categoriesController.createCategory);
 app.put("/category", verifyJWT, categoriesController.updateCategoryName);
 
 // Bookmark category routes
-app.get("/bookmark-category/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);
+app.get("/bookmark-category/category/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);
+app.get("/bookmark-category/bookmark/:bookmarkID", verifyJWT, bookmarkCategoryController.getCategoriesByBookmarkID);
 app.post("/bookmark-category", verifyJWT, bookmarkCategoryController.assignBookmarkToCategory);
 app.put("/bookmark-category", verifyJWT, bookmarkCategoryController.updateBookmarkCategory);
 app.delete("/bookmark-category", verifyJWT, bookmarkCategoryController.deleteBookmarkFromCategory);
@@ -88,6 +89,7 @@ app.post("/nearbyPublicTransport", transportAndFacilitiesController.getpublicTra
 // Browse Facilities routes
 app.post('/facilities', browseFacilityController.getFacilities);
 app.get('/facilities/photo', browseFacilityController.getPhoto);
+app.get('/facilities/:placeID', browseFacilityController.getFacilitiesByPlaceID);
 
 // View Bus routes
 app.get("/busStops", viewBusController.getBusStops);

@@ -36,21 +36,14 @@
 
         <section class="category-section">
             <h2>Categories</h2>
-            <div class="category-grid">
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button>
-                <button class="category-btn">Category 1</button> 
+            <div class="category-grid" id="category-grid">
+                <!-- Categories inserted dynamically -->
             </div>
         </section>
 
         <section class="bookmark-section">
             <h2>All Bookmarks (Starting from most recent)</h2>
-            <div class="bookmark-grid">
+            <div class="bookmark-grid" id="bookmark-grid">
                 <div class="bookmark-card">
                     <span class="close-btn">❌</span>
                     <div class="bookmark-img">
@@ -162,6 +155,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/bookmark_handler.js"></script>
+    <script src="../js/view_bookmarks.js"></script>
     <!-- <script src="../js/settings_translation.js" defer></script> -->
   </body>
 </html>

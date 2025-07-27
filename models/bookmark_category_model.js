@@ -31,6 +31,35 @@ async function getBookmarksByCategory(userID, categoryID){
     }
 }
 
+// Get all category of the bookmark by bookmarkID
+async function getCategoriesByBookmarkID(userID, bookmarkID){
+    let connection;
+    try{
+        connection = await sql.connect(dbConfig);
+        const query = `SELECT b.bookmarkID, b.placeID, b.bookmarkedAt, c.categoryName, bc.createdAt 
+                       FROM BookmarkCategories bc
+                       INNER JOIN Categories c ON bc.categoryID = c.categoryID
+                       INNER JOIN Bookmarks b ON bc.bookmarkID = b.bookmarkID
+                       WHERE bc.userID = @userID AND bc.bookmarkID = @bookmarkID`;
+        const request = connection.request();
+        request.input("userID", userID);
+        request.input("bookmarkID", bookmarkID);
+        const result = await request.query(query);
+        return result.recordset;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }finally{
+        if(connection){
+            try{
+                await connection.close();
+            }catch(closeError){
+                console.error("Error closing connection: ", closeError);
+            }
+        }
+    }
+}
+
 // Get bookmarkCategoryID to check if it the bookmark exists in the category
 async function getBookmarkCategoryID(userID, bookmarkID, categoryID){
     let connection;
@@ -207,6 +236,7 @@ async function countCategoriesForBookmark(userID, bookmarkID){
 module.exports = {
     getBookmarksByCategory,
     getBookmarkCategoryID,
+    getCategoriesByBookmarkID,
     assignBookmarkToCategory,
     updateBookmarkCategory,
     deleteBookmarkFromCategory,

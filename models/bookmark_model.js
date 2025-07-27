@@ -5,10 +5,18 @@ async function getAllBookmarks(userID){
     let connection;
     try{
         connection = await poolPromise;
-        const query = `SELECT b.*, c.categoryName FROM Bookmarks b 
-                       LEFT JOIN BookmarkCategories bc ON b.bookmarkID = bc.bookmarkID
-                       LEFT JOIN Categories c ON c.categoryID = bc.categoryID 
-                       WHERE b.userID = @userID`;
+        const query = `SELECT 
+                        b.bookmarkID,
+                        b.placeID,
+                        b.bookmarkedAt,
+                        STRING_AGG(c.categoryName, ', ') AS categories
+                        FROM Bookmarks b
+                        LEFT JOIN BookmarkCategories bc ON b.bookmarkID = bc.bookmarkID
+                        LEFT JOIN Categories c ON bc.categoryID = c.categoryID
+                        WHERE b.userID = @userID
+                        GROUP BY b.bookmarkID, b.placeID, b.bookmarkedAt
+                        ORDER BY b.bookmarkedAt DESC
+                        `;
         const request = connection.request();
         request.input("userID", userID);
         const result = await request.query(query);
