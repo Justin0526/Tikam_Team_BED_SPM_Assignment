@@ -1,4 +1,4 @@
-const apiBaseUrl = "http://localhost:3000";
+// const apiBaseUrl = "http://localhost:3000";
 let currentQuery = "";
 let nextPageToken = null;
 

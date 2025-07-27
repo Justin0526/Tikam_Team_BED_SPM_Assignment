@@ -1,4 +1,4 @@
-const apiBaseURL = "http://localhost:3000";
+const apiBaseUrl = "http://localhost:3000";
 window.filledIcon = "../images/filled-bookmark-icon.png";
 window.unfilledIcon = "../images/unfilled-bookmark-icon.png";
 let currentUser = null;
@@ -16,7 +16,7 @@ function getAuthHeaders(){
 
 async function isFacilityBookmarked(placeID){
     try{
-        const response = await fetch(`${apiBaseURL}/bookmark/${placeID}`, {
+        const response = await fetch(`${apiBaseUrl}/bookmark/${placeID}`, {
             method: "GET",
             headers: getAuthHeaders(),
         });
@@ -38,7 +38,7 @@ async function isFacilityBookmarked(placeID){
             return false;
         }
         const data = await response.json();
-        return Array.isArray(data) && data.length > 0;
+        return data[0];
     }catch(error){
         if(!error.message.includes("404")){
             console.error("Error checking if facility is bookmarked: ", error);
@@ -49,7 +49,7 @@ async function isFacilityBookmarked(placeID){
 
 async function createBookmarkIfNotExists(placeID){
     try{
-        const response = await fetch(`${apiBaseURL}/bookmark`, {
+        const response = await fetch(`${apiBaseUrl}/bookmark`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify({placeID})
@@ -72,7 +72,7 @@ async function createBookmarkIfNotExists(placeID){
 
 async function createCategoryIfNotExists(categoryName){
     try{
-        const response = await fetch(`${apiBaseURL}/category`, {
+        const response = await fetch(`${apiBaseUrl}/category`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify({categoryName})
@@ -99,7 +99,7 @@ async function createCategoryIfNotExists(categoryName){
 
 async function fetchCategories(){
     try{
-        const response = await fetch(`${apiBaseURL}/categories`, {
+        const response = await fetch(`${apiBaseUrl}/categories`, {
             method: "GET",
             headers: getAuthHeaders()
         });
@@ -126,7 +126,7 @@ async function fetchCategories(){
 
 async function assignBookmarkToCategory(bookmarkID, categoryID){
     try{
-        const response = await fetch(`${apiBaseURL}/bookmark-category`, {
+        const response = await fetch(`${apiBaseUrl}/bookmark-category`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify({bookmarkID, categoryID})
@@ -153,7 +153,47 @@ async function assignBookmarkToCategory(bookmarkID, categoryID){
     }
 }
 
+async function deleteBookmark(bookmarkID){
+    try{
+        const response = await fetch(`${apiBaseUrl}/bookmark`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({bookmarkID})
+        });
+
+        if (!response.ok){
+            const errorBody = await response.json();
+            throw new Error(errorBody.message || response.statusText);
+        }
+
+        return true;
+    }catch(error){
+        console.error("Error deleting bookmark: ", error);
+        return false;
+    }
+}
+
 window.handleBookmarkClick = async function (placeID, placeName){
+    const messageDiv = document.getElementById("message");
+
+    // Check if already bookmarked
+    const isBookmarked = await isFacilityBookmarked(placeID);
+    if(isBookmarked){
+        const bookmarkID = isBookmarked.bookmarkID;
+        const confirmDelete = confirm(`"${placeName}" is already bookmarked.\nDo you want to remove it?`);
+        if (!confirmDelete) return;
+
+        const success = await deleteBookmark(bookmarkID);
+        if(success){
+            alert(`"${placeName}" bookmark removed.`);
+            updateBookmarkIcon(placeID, false);
+        }else{
+            alert("Failed to remove bookmark");
+        }
+        return
+    }
+
+    // Not bookmarked yet
     const bookmark = await createBookmarkIfNotExists(placeID);
     const bookmarkID = bookmark.bookmarkID;
     if(!bookmarkID) return;
@@ -166,24 +206,44 @@ window.handleBookmarkClick = async function (placeID, placeName){
         if(newCategoryName){
             const newCategory= await createCategoryIfNotExists(newCategoryName);
             const newCategoryID = newCategory.categoryID;
-            if(newCategoryID) categoryIDs.push(newCategoryID);
+            if(newCategoryID){
+                categoryIDs.push(newCategoryID);
+                messageDiv.textContent = `Successfully created category: ${newCategoryName}`;
+                messageDiv.style.color = "green";
+                setTimeout(() => {
+                    messageDiv.textContent = "";
+                }, 2000);
+            }else{
+                messageDiv.textContent = "You cannot create an existing category!";
+                messageDiv.style.color = "red";
+                setTimeout(() => {
+                    messageDiv.textContent = "";
+                }, 2000);
+            } 
         }
 
         // Assign bookmark to all selected categories
-        let allSuccess = true;
-        for (const categoryID of categoryIDs){
+        let assignedCount = 0;
+        for (const categoryID of categoryIDs) {
             const success = await assignBookmarkToCategory(bookmarkID, categoryID);
-            if(!success){
-                allSuccess = false;
+            if (success) assignedCount++;
+        }
+        if (assignedCount > 0) {
+            let category = "categories";
+            if (assignedCount === 1){
+                category = "category";
             }
+            messageDiv.textContent = `Bookmarked "${placeName}" into ${assignedCount} new ${category}.`;
+            messageDiv.style.color = "green";
+            updateBookmarkIcon(placeID, true);
+        } else {
+            messageDiv.textContent = `This bookmark was already in all selected categories.`;
+            messageDiv.style.color = "red";
         }
 
-        if(allSuccess){
-            alert(`Bookmarked "${placeName}" into ${categoryIDs.length} categories.`);
-            updateBookmarkIcon(placeID, true);
-        } else{
-            alert("Some categories failed to assign.");
-        }
+        setTimeout(() => {
+            messageDiv.textContent = "";
+        }, 2000);
     })
 }
 
@@ -203,6 +263,9 @@ function showCategoryModal(categories, onSubmit){
     const checkboxesDiv = document.getElementById("categoryCheckboxes");
     const newCategoryInput = document.getElementById("newCategory");
     const cancelBtn = document.getElementById("cancelModal");
+    const messageDiv = document.getElementById("message");
+
+    messageDiv.textContent = "";
 
     // Helper to render category checkboxes
     function renderCheckboxes(categoryList) {
@@ -252,10 +315,19 @@ function showCategoryModal(categories, onSubmit){
         const newCategoryID = newCategory.categoryID
         if(newCategoryID){
             categories.push({categoryID: newCategoryID, categoryName: newCategoryName});
+            messageDiv.textContent = `Category "${newCategoryName}" added successfully!`
+            messageDiv.style.color = "green";
+            setTimeout(() => {
+                messageDiv.textContent = "";
+            }, 2000);
             renderCheckboxes(categories); // Refresh with new checkbox
             newCategoryInput.value = "";
         }else{
-            alert("Failed to create category.");
+            messageDiv.textContent = `Category "${newCategoryName}" has already been created!`
+            messageDiv.style.color = "red";
+            setTimeout(() => {
+                messageDiv.textContent = "";
+            }, 2000);
         }
     }
 
@@ -265,14 +337,17 @@ function showCategoryModal(categories, onSubmit){
         const selectedIDs = Array.from(checkboxesDiv.querySelectorAll("input:checked"))
                             .map(input => parseInt(input.value));
         const newCategory = newCategoryInput.value.trim();
-        modal.style.display = "none";
-        form.reset();
-        onSubmit(selectedIDs, newCategory);
-    };
+        // Delay modal closing to allow message to show
+        setTimeout(() => {
+            modal.style.display = "none";
+            form.reset();
+        }, 2200); // Just after message timeout
+            onSubmit(selectedIDs, newCategory);
+        };
 
-    cancelBtn.onclick = () => {
-        modal.style.display = "none";
-        form.reset();
+        cancelBtn.onclick = () => {
+            modal.style.display = "none";
+            form.reset();
     }
 
     modal.style.display = "flex";
