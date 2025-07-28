@@ -138,6 +138,19 @@ async function loadAppointments() {
       if (!response.ok) {
           throw new Error(data.error || "Failed to load appointments");
       }
+      // ✅ Treat empty appointments as valid
+      appointments = Array.isArray(data) ? data : [];
+
+      if (appointments.length === 0) {
+        document.getElementById('appointmentsBody').innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align:center; color: #777; font-style: italic;">
+              No appointments added yet.
+            </td>
+          </tr>`;
+        return;
+      }
+      
       appointments = data;
       // Clear table body
       renderTable();
