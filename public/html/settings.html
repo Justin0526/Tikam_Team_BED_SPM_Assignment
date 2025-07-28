@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>HealthyLah – Settings</title>
   <link rel="stylesheet" href="../css/settings.css" />
+  <link rel="stylesheet" href="../css/reminder_alert.css">
   <script src="../js/settings_translation.js" defer></script>
 </head>
 <body>
@@ -40,7 +41,7 @@
         <a href="./settings.html" data-i18n="sidebar_language">Language</a>
       </li>
       <li data-i18n="sidebar_logout">
-        <a href="./login.html" data-i18n="sidebar_logout">Logout</a>
+        <a href="#" id="logoutLink" data-i18n="sidebar_logout">Logout</a>
       </li>
     </ul>
   </aside>
@@ -81,6 +82,9 @@
         </div>
         <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
-
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/reminder_alert.js" defer></script>
 </body>
 </html>
