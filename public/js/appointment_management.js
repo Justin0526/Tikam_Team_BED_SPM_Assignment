@@ -138,7 +138,7 @@ async function loadAppointments() {
       if (!response.ok) {
           throw new Error(data.error || "Failed to load appointments");
       }
-      // ✅ Treat empty appointments as valid
+      //Treat empty appointments as valid
       appointments = Array.isArray(data) ? data : [];
 
       if (appointments.length === 0) {
@@ -150,8 +150,6 @@ async function loadAppointments() {
           </tr>`;
         return;
       }
-      
-      appointments = data;
       // Clear table body
       renderTable();
       
