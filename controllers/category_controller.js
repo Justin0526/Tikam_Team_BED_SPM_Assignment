@@ -37,20 +37,22 @@ async function createCategory(req, res){
 async function updateCategoryName(req, res){
     try{
         const userID = req.user.userID;
-        const categoryName = req.body.categoryName;
+        let newCategoryName = req.body.newCategoryName;
         const categoryID = req.body.categoryID;
 
-        const existing = await categoryModel.findCategoryByName(userID, categoryName);
-        if (existing) {
+        const existing = await categoryModel.getCategoryByName(userID, newCategoryName);
+        if (existing.length > 0) {
             return res.status(409).json({ error: "Another category with this name already exists" });
         }
 
-        const success = await categoryModel.updateCategoryName(userID, categoryID, categoryName);
+        const success = await categoryModel.updateCategoryName(userID, newCategoryName, categoryID);
         if (!success) {
             return res.status(404).json({ error: "Category not found or no change" });
         }
 
-        return res.status(200).json({ message: "Category updated" });
+        newCategoryName = await categoryModel.getCategoryByName(userID, newCategoryName);
+        console.log(newCategoryName);
+        return res.status(200).json(newCategoryName);
 
     }catch(error){
         console.error("Controller error: ", error);

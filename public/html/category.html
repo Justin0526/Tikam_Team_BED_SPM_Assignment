@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>HealthyLah - View Bookmarks</title>
+    <title>HealthyLah - View Categories</title>
     <link rel="stylesheet" href="../css/layout.css">
-    <link rel="stylesheet" href="../css/view_bookmarks.css">
+    <link rel="stylesheet" href="../css/cateory.css">
   </head>
   <body>
     <div class="page-wrapper">
@@ -39,56 +39,38 @@
 
           <section class="category-section" id="category-section" style="display: none">
               <div class="category-header">
-                <h2>Categories</h2>
+                <h2 id="category-h2">Categories</h2>
                 <button id="edit-category-btn" class="edit-btn">
                   ✏️ Edit
                 </button>
               </div>
               <div id="category-message"></div>
-              <div class="category-grid" id="category-grid">
-                  <!-- Categories inserted dynamically -->
-              </div>
           </section>
 
           <section class="bookmark-section" id="bookmark-section" style="display: none">
-              <h2>All Bookmarks (Starting from most recent)</h2>
+              <h2 id="bookmark-section-header">All Bookmarks (Starting from most recent)</h2>
               <div id="bookmark-message"></div>
               <div class="bookmark-grid" id="bookmark-grid">
                   <!-- Bookmarks inserted dynamically -->
               </div>
           </section>
 
-          <!-- Delete Popup -->
-          <div class="popup-overlay" id="delete-popup" style="display: none">
-            <div class="popup-box">
-              <p class="popup-message">
-                <!-- Message will be inserted dynamically -->
-              </p>
-              <div class="popup-actions">
-                <button class="popup-btn yes-btn">Yes</button>
-                <button class="popup-btn no-btn" style="display: none">No</button> 
-                <button class="popup-btn cancel-btn">Cancel</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Create Popup -->
-          <div id="categoryModal" class="modal-overlay" style="display:none">
-            <div class="modal">
-              <h3 class="modal-title">Create New Category</h3>
-              <form id="categoryForm">
-                <div class="input-group">
-                  <label for="newCategory" class="modal-label">Add New Category:</label>
-                  <input type="text" id="newCategory" placeholder="e.g. Favourite Clinics" />
+          
+            <!-- Update Category Name Modal -->
+            <div id="updateCategoryModal" class="modal-overlay" style="display: none">
+                <div class="modal">
+                    <h3>Update Category</h3>
+                    <form id="updateCategoryForm">
+                    <label for="updatedCategory">New Category Name:</label>
+                    <input type="text" id="updatedCategory" placeholder="e.g. Favourite Clinics" />
+                    <div id="updateModalMessage" class="message"></div>
+                    <div class="modal-buttons">
+                        <button type="submit" id="confirmUpdate" class="btn confirm-btn">Confirm</button>
+                        <button type="button" id="cancelUpdate" class="btn cancel-btn">Cancel</button>
+                    </div>
+                    </form>
                 </div>
-                <div class="modalMessage" id="modalMessage"></div>
-                <div class="modal-buttons">
-                  <button type="submit" id="confirmModal">Confirm</button>
-                  <button type="button" id="cancelModal">Cancel</button>
-                </div>
-              </form>
             </div>
-          </div>
       </main>
 
       <footer>
@@ -114,7 +96,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/bookmark_handler.js"></script>
-    <script src="../js/view_bookmarks.js"></script>
+    <script src="../js/category.js"></script>
     <!-- <script src="../js/settings_translation.js" defer></script> -->
   </body>
 </html>

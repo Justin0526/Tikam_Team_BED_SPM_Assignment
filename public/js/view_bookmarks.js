@@ -134,6 +134,17 @@ function createCategoryCard(category, isEditing) {
     const btn = document.createElement("button");
     btn.classList.add("category-btn");
     btn.textContent = category.categoryName;
+
+    btn.setAttribute("data-category-id", category.categoryID);
+    btn.setAttribute("data-category-name", category.categoryName);
+
+    btn.addEventListener("click", () => {
+        const categoryID = btn.getAttribute("data-category-id");
+        const categoryName = btn.getAttribute("data-category-name");
+
+        window.location.href = `category.html?categoryID=${categoryID}&categoryName=${encodeURIComponent(categoryName)}`;
+    });
+
     card.appendChild(btn);
 
     if (isEditing) {
@@ -601,6 +612,7 @@ function interpretAccessibility(options) {
 
 // Functino to merge all data into one bookmark
 async function convertToDetailedBookmark(bookmark, placeData) {
+    console.log(bookmark)
     let category = bookmark.categories;
     if(!category){
         category = "Uncategorised"
