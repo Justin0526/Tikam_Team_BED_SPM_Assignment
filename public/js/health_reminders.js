@@ -33,6 +33,12 @@ function formatTime(time) {
 
 async function loadReminders(token) {
   try {
+    // Set today's date beside "Your active reminders"
+    const todayHeader = document.getElementById("today-header");
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    todayHeader.textContent = `Today's Reminders - ${today.toLocaleDateString('en-GB', options)}`;
+
     const res = await fetch(`${apiBaseUrl}/reminders`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
