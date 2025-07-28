@@ -1,4 +1,17 @@
 window.addEventListener("load", async() => {
+    const authMessage = document.getElementById("authenticate-message");
+    const categorySection = document.getElementById("category-section");
+    const bookmarkSection = document.getElementById("bookmark-section");
+    authMessage.innerHTML = ""
+    if(!currentUser){
+        authMessage.innerHTML = `<a href="login.HTML">Login to view your bookmarks! </a>`
+        return;
+    }
+    categorySection.style.display = "block";
+    bookmarkSection.style.display = "block";
+    
+    const bookmarkMessage = document.getElementById("bookmark-message");
+    bookmarkMessage.textContent = "Loading Bookmarks...";
     await renderCategories();
     const allBookmarks = await getAllBookmarks();
     const bookmarkDetails = await getBookmarkDetails(allBookmarks);
@@ -17,14 +30,20 @@ getAuthHeaders = function getAuthHeaders(){
 
 async function renderCategories(){
     const categoryGrid = document.getElementById("category-grid");
+    const categoryMessage = document.getElementById("category-message");
 
     const categories = await fetchCategories();
+    if (categories.length == 0){
+        categoryMessage.textContent = `You currently have 0 categories`
+    }
+    categoryMessage.textContent = "Loading Categories..."
     categories.forEach(category => {
         const categoryBtn = document.createElement("button");
         categoryBtn.classList.add("category-btn");
         categoryBtn.textContent = category.categoryName;
         categoryGrid.appendChild(categoryBtn);
     })
+    categoryMessage.textContent = `You currently have ${categories.length} categories`
 }
 
 // Get all bookmarks
@@ -86,15 +105,20 @@ async function getBookmarkDetails(bookmarks){
             console.error(`Error fetching details for placeID ${placeID}: `, error)
         }
     }
-    return detailedBookmarks;
+    return detailedBookmarks;   
     
 }
 
-// // Function to display all bookmarks
+// Function to display all bookmarks
 async function renderBookmarks(bookmarks){
     const bookmarkGrid = document.getElementById("bookmark-grid");
-    console.log(bookmarks);
+    const bookmarkMessage = document.getElementById("bookmark-message");
 
+    bookmarkMessage.textContent = "Loading Bookmarks...";
+    if(bookmarks.length == 0){
+        bookmarkMessage.textContent = `You currently have 0 bookmarks`;
+        return;
+    }
     for (const bookmark of bookmarks){
         const bookmarkCard = document.createElement("div");
         bookmarkCard.classList.add("bookmark-card");
@@ -117,6 +141,7 @@ async function renderBookmarks(bookmarks){
         `
         bookmarkGrid.appendChild(bookmarkCard);
     }
+    bookmarkMessage.textContent = `You currently have ${bookmarks.length} bookmarks`;
 }
 
 // Fucntion to formateDate
