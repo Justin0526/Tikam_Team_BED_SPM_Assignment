@@ -70,6 +70,8 @@ function resetPopupButtons() {
 async function renderCategories(isEditing) {
     const categoryGrid = document.getElementById("category-grid");
     const categoryMessage = document.getElementById("category-message");
+    const categoryModal = document.getElementById("categoryModal");
+    const modalMessage = document.getElementById("modalMessage");
 
     categoryGrid.innerHTML = "";
     categoryMessage.textContent = "Loading Categories...";
@@ -92,6 +94,10 @@ async function renderCategories(isEditing) {
     if (isEditing) {
         const addCard = createAddCategoryCard();
         categoryGrid.appendChild(addCard);
+        addCard.addEventListener("click", async() => {
+            await handleCategoryModal(modalMessage);
+            await renderCategories(true);
+        });
     }
 
     displayCategoryMessage(categories.length, categoryMessage);
@@ -128,19 +134,6 @@ function createCategoryCard(category, isEditing) {
     }
 
     return card;
-}
-
-// Function to create add category card
-function createAddCategoryCard() {
-    const addCard = document.createElement("div");
-    addCard.classList.add("category-card");
-
-    const addBtn = document.createElement("button");
-    addBtn.classList.add("add-category-btn");
-    addBtn.textContent = "Add new Category +";
-
-    addCard.appendChild(addBtn);
-    return addCard;
 }
 
 // Function to display category messages
@@ -306,6 +299,87 @@ async function deleteCategory(categoryID){
         return false;
     }
 }
+
+// Function to create add category card
+function createAddCategoryCard() {
+    const addCard = document.createElement("div");
+    addCard.classList.add("category-card");
+
+    const addBtn = document.createElement("button");
+    addBtn.classList.add("add-category-btn");
+    addBtn.textContent = "Add new Category +";
+
+    addCard.appendChild(addBtn);
+    return addCard;
+}
+
+// Function to create new category
+async function createNewCategory(categoryName, modalMessage){
+    try{
+        const newCategory = await window.createCategoryIfNotExists(categoryName);
+        console.log(newCategory);
+        const newCategoryID = newCategory.categoryID;
+
+        if(newCategoryID){
+            modalMessage.textContent = `Successfully created category: "${categoryName}"`;
+            modalMessage.style.color = "green";
+            return true;
+        }else{
+            modalMessage.textContent = `Category "${categoryName}" already exists!`;
+            modalMessage.style.color = "red";
+            return false;
+        }
+    }catch(error){
+        modalMessage.textContent = `Failed to create category: ${categoryName}`;
+        modalMessage.style.color = "red";
+        console.error("Error creating category: ", error);
+        return false;
+    }
+}
+
+// Function to handle category modal
+async function handleCategoryModal(modalMessage){
+    const modalOverlay = document.getElementById("categoryModal");
+    const categoryInput = document.getElementById("newCategory");
+    const confirmBtn = document.getElementById("confirmModal");
+    const cancelBtn = document.getElementById("cancelModal");
+
+    modalOverlay.style.display = "flex";
+    modalMessage.textContent = "";
+    modalMessage.style.color = "black"
+    categoryInput.value = "";
+    categoryInput.focus();
+
+    // Remove old listeners
+    confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+    const newConfirmBtn = document.getElementById("confirmModal");
+    const newCancelBtn = document.getElementById("cancelModal");
+
+    newConfirmBtn.addEventListener("click", async(event) =>{
+        event.preventDefault();
+        const name = categoryInput.value.trim();
+        if(!name){
+            modalMessage.textContent = "Category name cannot be empty.";
+            modalMessage.style.color = "red";
+            return;
+        }
+
+        const success = await createNewCategory(name, modalMessage);
+        if(success){
+            categoryInput.value = "";
+            modalMessage.textContent += "\nYou can add more or press Cancel to exit.";
+        }
+    });
+
+    newCancelBtn.addEventListener("click", ()=>{
+        modalOverlay.style.display = "none";
+        modalMessage.textContent = "";
+        categoryInput.value = "";
+    });
+}
+
 // -------------------------------------- //
 
 // -------- Bookmarks Functions -------- //

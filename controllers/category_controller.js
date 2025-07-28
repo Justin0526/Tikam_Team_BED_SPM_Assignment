@@ -26,7 +26,7 @@ async function createCategory(req, res){
 
         await categoryModel.createCategory(userID, categoryName);
         const newCategory = await categoryModel.getCategoryByName(userID, categoryName)
-        return res.status(201).json({category: newCategory});
+        return res.status(201).json({category: newCategory[0]});
     }catch(error){
         console.error("Controller error: ", error);
         res.status(500).json({error: "Error creating category"})

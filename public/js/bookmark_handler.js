@@ -71,31 +71,32 @@ async function createBookmarkIfNotExists(placeID){
 }
 
 window.createCategoryIfNotExists = async function createCategoryIfNotExists(categoryName){
-    try{
+    try {
         const response = await fetch(`${apiBaseUrl}/category`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify({categoryName})
         });
-
         const data = await response.json();
 
-        if (response.status === 201) {
-            return data.category[0];
-        } else if (response.status === 409) {
-            // Already exists, so fetch it
+        if (response.status == 201) {
+            const category = data.category;
+            if (!category || !category.categoryID) throw new Error("Invalid category response");
+            return category;
+        } else if (response.status == 409) {
             const categories = await fetchCategories();
             const match = categories.find(c => c.categoryName.toLowerCase() === categoryName.toLowerCase());
             return match?.categoryID ?? null;
         } else {
-            throw new Error("Unexpected response creating category");
+            throw new Error(`Unexpected response: ${response.status} - ${JSON.stringify(data)}`);
         }
-    }catch(error){
-        console.error("Failed to create category: ", error);
+
+    } catch (error) {
+        console.error("Failed to create category:", error);
         alert("Failed to create category");
         return null;
     }
-}
+};
 
 async function fetchCategories(){
     try{

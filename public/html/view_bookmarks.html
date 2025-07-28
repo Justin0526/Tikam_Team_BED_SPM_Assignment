@@ -58,6 +58,7 @@
               </div>
           </section>
 
+          <!-- Delete Popup -->
           <div class="popup-overlay" id="delete-popup" style="display: none">
             <div class="popup-box">
               <p class="popup-message">
@@ -68,6 +69,24 @@
                 <button class="popup-btn no-btn" style="display: none">No</button> 
                 <button class="popup-btn cancel-btn">Cancel</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Create Popup -->
+          <div id="categoryModal" class="modal-overlay" style="display:none">
+            <div class="modal">
+              <h3 class="modal-title">Create New Category</h3>
+              <form id="categoryForm">
+                <div class="input-group">
+                  <label for="newCategory" class="modal-label">Add New Category:</label>
+                  <input type="text" id="newCategory" placeholder="e.g. Favourite Clinics" />
+                </div>
+                <div class="modalMessage" id="modalMessage"></div>
+                <div class="modal-buttons">
+                  <button type="submit" id="confirmModal">Confirm</button>
+                  <button type="button" id="cancelModal">Cancel</button>
+                </div>
+              </form>
             </div>
           </div>
       </main>
