@@ -9,7 +9,7 @@ dotenv.config()
 // ─── Controllers ────────────────────────────────────────────────────────────────
 const userController = require("./controllers/user_controller");
 const weatherController = require("./controllers/weather_controller");
-const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
+const favouriteOutfitController = require("./controllers/favourite_outfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
 const { getUserHealthProfile } = require('./controllers/health_controller');
 const medicationsController = require("./controllers/medications_controller");
@@ -60,6 +60,7 @@ app.delete("/bookmark", verifyJWT, bookmarkController.deleteBookmark);
 app.get("/categories", verifyJWT, categoriesController.getAllCategories)
 app.post("/category", verifyJWT, categoriesController.createCategory);
 app.put("/category", verifyJWT, categoriesController.updateCategoryName);
+app.delete("/category", verifyJWT, categoriesController.deleteCategory);
 
 // Bookmark category routes
 app.get("/bookmark-category/category/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);

@@ -59,13 +59,7 @@ h2 {
 
 .category-section{
     padding-bottom: 0.1rem;
-}
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+    max-width: 80rem;
 }
 
 .category-header {
@@ -94,7 +88,26 @@ h2 {
   background-color: #118433;
 }
 
+.category-section {
+  padding-bottom: 0.1rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Wrapper around each category button (including trash icon) */
+.category-card {
+  position: relative;
+}
+
+/* The actual category button */
 .category-btn {
+  min-height: 5rem; /* Adjust height based on your desired size */
+  width: 100%;
   padding: 0.75rem 1rem;
   font-weight: bold;
   font-size: 1.2rem;
@@ -103,13 +116,44 @@ h2 {
   background-color: white;
   color: #2b7da0;
   cursor: pointer;
+  box-sizing: border-box;
+  text-align: center;
 }
 
+.category-grid.editing .category-btn {
+  min-height: 6rem; /* Adjust height based on your desired size */
+}
+
+/* Hover effect for category button */
 .category-btn:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   background-color: #118433;
   color: #FFFFFF;
+}
+
+.category-grid.editing .category-btn:hover {
+  transform: none;
+  box-shadow: none;
+  background-color: white;
+  color: #2b7da0;
+  cursor: default;
+}
+
+/* Trash bin icon in top-right corner */
+.delete-icon {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  font-size: 1.2rem;
+  color: red;
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* Trash bin hover effect */
+.delete-icon:hover {
+  color: darkred;
 }
 
 .bookmark-grid {
@@ -271,6 +315,10 @@ h2 {
   color: black;
 }
 
+.no-btn{
+  background-color: #2b7da0
+}
+
 .cancel-btn {
   background-color: #f44336;
 }
@@ -279,6 +327,12 @@ h2 {
   background-color: #8bb929;
   transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(164, 208, 56, 0.4);
+}
+
+.no-btn:hover {
+  background-color: #0e7faf;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(9, 82, 172, 0.4);
 }
 
 .cancel-btn:hover {

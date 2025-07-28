@@ -12,6 +12,16 @@ window.addEventListener("load", async() => {
 
     const bookmarkMessage = document.getElementById("bookmark-message");
     bookmarkMessage.textContent = "Loading Bookmarks...";
+
+    let isEditing = false;
+    const editBtn = document.getElementById("edit-category-btn");
+    editBtn.addEventListener("click", async () => {
+        isEditing = !isEditing;
+        editBtn.textContent = isEditing ? "✅ Done" : "✏️ Edit";
+
+        // Re-render categories with edit mode toggle
+        await renderCategories(isEditing);
+    });
     await renderCategories();
     await loadBookmarkSection();
 })
@@ -32,26 +42,146 @@ async function loadBookmarkSection(){
     renderBookmarks(bookmarkDetails);
 }
 
-async function renderCategories(){
+// Function to display all categories
+async function renderCategories(isEditing){
     const categoryGrid = document.getElementById("category-grid");
+    categoryGrid.innerHTML = "";
     const categoryMessage = document.getElementById("category-message");
+    categoryMessage.textContent = "Loading Categories..."
 
     const categories = await fetchCategories();
     if (categories.length == 0){
         categoryMessage.textContent = `You currently have 0 categories`
     }
-    categoryMessage.textContent = "Loading Categories..."
     categories.forEach(category => {
+        console.log(category);
+        const categoryCard = document.createElement("div");
+        categoryCard.classList.add("category-card");
+
         const categoryBtn = document.createElement("button");
         categoryBtn.classList.add("category-btn");
         categoryBtn.textContent = category.categoryName;
-        categoryGrid.appendChild(categoryBtn);
+
+        categoryCard.appendChild(categoryBtn);
+
+        if(isEditing){
+            categoryGrid.classList.add("editing");
+            const deleteIcon = document.createElement("img");
+            deleteIcon.classList.add("delete-icon");
+            deleteIcon.src = "../images/unfilled-delete-icon.png";
+            deleteIcon.width = "20";
+            deleteIcon.height = "20"
+
+            // Handle hover to swap icon images
+            deleteIcon.addEventListener("mouseenter", () => {
+            deleteIcon.src = "../images/filled-delete-icon.png";
+            });
+
+            deleteIcon.addEventListener("mouseleave", () => {
+            deleteIcon.src = "../images/unfilled-delete-icon.png";
+            });
+
+            categoryCard.appendChild(deleteIcon);
+
+            deleteIcon.addEventListener("click", async () =>{
+                const popup = document.getElementById("delete-popup");
+                const popUpMessage = popup.querySelector(".popup-message");
+                const yesBtn = popup.querySelector(".yes-btn");
+                const noBtn = popup.querySelector(".no-btn");
+                const cancelBtn = popup.querySelector(".cancel-btn");
+
+                // Set message and show popup
+                popUpMessage.innerHTML = `Are you sure you want to delete <strong>${category.categoryName}</strong>? This action cannot be undone!`;
+                popup.style.display = "flex";
+
+                // Clean up old listeners
+                yesBtn.replaceWith(yesBtn.cloneNode(true));
+                noBtn.replaceWith(noBtn.cloneNode(true));
+                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+                const newYesBtn = popup.querySelector(".yes-btn");
+                const newNoBtn = popup.querySelector(".no-btn");
+                const newCancelBtn = popup.querySelector(".cancel-btn");
+
+                newYesBtn.addEventListener("click", async () => {
+                    const bookmarksInCategory = await getAllBookmarks();
+                    let count = 0;
+                    for (const bookmark of bookmarksInCategory){
+                        if(bookmark.categories.includes(category.categoryName)){
+                            count ++;
+                        }
+                    }
+                    if(count === 0){
+                        await window.deleteCategory(category.categoryID);
+                        popUpMessage.textContent = `Successfully deleted ${category.categoryName} from categories!`
+                    }else{
+                        yesBtn.replaceWith(yesBtn.cloneNode(true));
+                        noBtn.replaceWith(noBtn.cloneNode(true));
+                        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+                        const newYesBtn = popup.querySelector(".yes-btn");
+                        const newNoBtn = popup.querySelector(".no-btn");
+                        const newCancelBtn = popup.querySelector(".cancel-btn");
+
+                        const word = count === 1 ? "bookmark" : "bookmarks";
+                        popUpMessage.textContent = `We've detected that you have ${count} ${word}\nWould you like to delete them as well?`;
+                        newYesBtn.textContent = "Delete them as well";
+                        newNoBtn.textContent = "Delete category only"
+                        noBtn.style.display = "block";
+
+                        newYesBtn.addEventListener("click", async() => {
+                            await 
+                        })
+                    }
+                    categoryCard.remove();
+                    
+                    // Refresh the list 
+                    await renderCategories(isEditing);
+                    setTimeout(() => {
+                        popUpMessage.textContent = "";
+                        popup.style.display = "none";
+                    }, 2000);
+                });
+
+                newCancelBtn.addEventListener("click", () => {
+                    popUpMessage.textContent = `Phew! Thanks for not deleting me (${category.categoryName})`;
+                    setTimeout(() => {
+                        popUpMessage.textContent = "";
+                        popup.style.display = "none";
+                    }, 2000);
+                });
+            })
+        }else{
+            categoryGrid.classList.remove("editing");
+        }
+        categoryGrid.appendChild(categoryCard);
     })
     let category = "category";
     if(categories.length > 1){
         category = "categories"
     }
     categoryMessage.textContent = `You currently have ${categories.length} ${category}`;
+}
+
+// Delete category
+async function deleteCategory(categoryID){
+    try{
+        const response = await fetch(`${apiBaseUrl}/category`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({categoryID})
+        });
+
+        if(!response.ok){
+            const errorBody = await response.json();
+            throw new(errorBody.message || response.statusText);
+        }
+
+        return true;
+    }catch(error){
+        console.error("Error deleting category: ", error);
+        return false;
+    }
 }
 
 // Get all bookmarks

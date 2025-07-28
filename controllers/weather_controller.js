@@ -14,12 +14,13 @@ async function getWeather(req,res){
         });
         const condition = response.data.current.condition.text;
         const outfit = await weatherModel.getSuggestedOutfit(condition);
+        console.log(outfit);
 
         if(!outfit){
-            res.status(404).json({error: "Outfit not found"});
+            return res.status(404).json({error: "Outfit not found"});
         }
 
-        res.json({
+        return res.status(200).json({
                 weather: response.data,
                 outfit: outfit,
         });
