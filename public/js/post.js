@@ -19,6 +19,7 @@ function toLocaleDate(iso) {
     minute: "2-digit"
   });
 }
+
 //refreshes like everytime a post is liked to keep data up to date
 async function updateLikeStatus(postID, likeBtn, likeCountEl) {
   try {
@@ -132,6 +133,13 @@ async function loadComments(postID, listEl) {
     console.error("Error loading comments:", err);
     listEl.innerHTML = `<p class="error">Unable to load comments</p>`;
   }
+  const lang = localStorage.getItem("language") || "en";
+  if (lang !== "en" && typeof translateElements === "function") {
+    setTimeout(() => {
+      translateElements(".comment-item .body", lang);
+    }, 100);
+  }
+
 }
 
 // Load and render all posts from the database
@@ -162,7 +170,7 @@ async function loadPosts() {
         <div class="post-body">${p.Content}</div>
         ${p.ImageURL ? `<div class="post-image-wrap"><img src="${p.ImageURL}" class="post-image" alt=""></div>` : ""}
         <div class="post-actions">
-          <button class="comment-toggle">💬 Comment</button>
+          <button class="comment-toggle">💬 View Comment</button>
           <button class="like-btn">❤️</button>
           <span class="like-count">0</span>
           ${isOwner ? `
@@ -176,16 +184,16 @@ async function loadPosts() {
           ` : ""}
         </div>
         ${isOwner ? `
-        <div class="edit-post-form" hidden>
-          <textarea class="edit-content">${p.Content}</textarea>
-          ${p.ImageURL ? `<img src="${p.ImageURL}" class="edit-image-preview">` : ""}
-          <input type="file" class="edit-image-input" hidden>
-          <button class="change-image-btn">Change Picture</button>
-          <div class="edit-btn-row">
-            <button class="cancel-edit-btn">Cancel</button>
-            <button class="save-edit-btn">Save Changes</button>
-          </div>
-        </div>` : ""}
+          <div class="edit-post-form" hidden>
+            <textarea class="edit-content" data-original="${p.Content}">${p.Content}</textarea>
+            ${p.ImageURL ? `<img src="${p.ImageURL}" class="edit-image-preview">` : ""}
+            <input type="file" class="edit-image-input" hidden>
+            <button class="change-image-btn">Change Picture</button>
+            <div class="edit-btn-row">
+              <button class="cancel-edit-btn">Cancel</button>
+              <button class="save-edit-btn">Save Changes</button>
+            </div>
+          </div>` : ""}
         <div class="comments-section" hidden>
           <div class="comment-list"></div>
           <textarea class="new-comment" placeholder="Write a comment..."></textarea>
@@ -298,6 +306,7 @@ async function loadPosts() {
           dropdown.hidden = true;
           document.querySelectorAll(".edit-post-form").forEach(f => f.hidden = true);
           editForm.hidden = false;
+          editContent.value = editContent.dataset.original;
         });
 
         // Open file selector
@@ -379,6 +388,7 @@ async function loadPosts() {
 
           if (!res.ok) return alert("Failed to update post.");
           await loadPosts();
+          setTimeout(triggerTranslate, 150);
         });
       }
 
@@ -438,6 +448,7 @@ async function loadPosts() {
     console.error("Error loading posts:", err);
     postContainer.innerHTML = `<p class="error">Failed to load posts.</p>`;
   }
+
 }
 
 // Handle new post image preview before upload
@@ -530,12 +541,13 @@ shareBtn.addEventListener("click", async () => {
   imageInput.value = "";
   preview.style.display = removeBtn.style.display = "none";
   await loadPosts();
-
+  setTimeout(triggerTranslate, 150); 
   shareBtn.disabled = false;
 });
 
 // On window load, get token and fetch posts
 window.addEventListener("load", async () => {
   currentUser = await getToken(token);
-  loadPosts();
+  await loadPosts(); // wait for posts to load first
+  setTimeout(triggerTranslate, 150); // then safely trigger translation
 });
