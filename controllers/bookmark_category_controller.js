@@ -105,13 +105,12 @@ async function deleteBookmarksInCategory(req, res){
         if (alsoDeleteBookmarks){
             const bookmarksInCategory = await bookmarkCategoryModel.getBookmarksByCategory(userID, categoryID);
 
-            console.log(bookmarksInCategory);
             for (const bookmark of bookmarksInCategory){
                 const bookmarkID = bookmark.bookmarkID;
                 const categoryLinks = await bookmarkCategoryModel.countCategoriesForBookmark(userID, bookmarkID);
 
                 if (categoryLinks > 1){
-                    await bookmarkCategoryModel.deleteBookmarkFromCategory(userID, bookmarkID, categoryID);
+                    await bookmarkCategoryModel.detachAllBookmarksFromCategory(userID, categoryID);
                 } else{
                     await bookmarkModel.deleteBookmark(userID, bookmarkID);
                 }

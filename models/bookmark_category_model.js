@@ -155,13 +155,14 @@ async function updateBookmarkCategory(bookmarkCategoryID, newCategoryID){
 }
 
 // Function to delete bookmark from category
-async function deleteBookmarkFromCategory(bookmarkCategoryID){
+async function deleteBookmarkFromCategory(userID, bookmarkCategoryID){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query = "DELETE FROM BookmarkCategories WHERE bookmarkCategoryID = @bookmarkCategoryID";
+        const query = "DELETE FROM BookmarkCategories WHERE bookmarkCategoryID = @bookmarkCategoryID AND userID = @userID";
         const request = connection.request();
         request.input("bookmarkCategoryID", bookmarkCategoryID);
+        request.input("userID", userID);
         const result = await request.query(query);
 
         return result.rowsAffected > 0;

@@ -74,11 +74,11 @@ async function renderCategories(isEditing){
 
             // Handle hover to swap icon images
             deleteIcon.addEventListener("mouseenter", () => {
-            deleteIcon.src = "../images/filled-delete-icon.png";
+                deleteIcon.src = "../images/filled-delete-icon.png";
             });
 
             deleteIcon.addEventListener("mouseleave", () => {
-            deleteIcon.src = "../images/unfilled-delete-icon.png";
+                deleteIcon.src = "../images/unfilled-delete-icon.png";
             });
 
             categoryCard.appendChild(deleteIcon);
@@ -90,61 +90,114 @@ async function renderCategories(isEditing){
                 const noBtn = popup.querySelector(".no-btn");
                 const cancelBtn = popup.querySelector(".cancel-btn");
 
+                const categoryID = category.categoryID;
+                const categoryName = category.categoryName;
+
                 // Set message and show popup
                 popUpMessage.innerHTML = `Are you sure you want to delete <strong>${category.categoryName}</strong>? This action cannot be undone!`;
+                popUpMessage.style.color = "black";
                 popup.style.display = "flex";
 
                 // Clean up old listeners
-                yesBtn.replaceWith(yesBtn.cloneNode(true));
-                noBtn.replaceWith(noBtn.cloneNode(true));
-                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-
-                const newYesBtn = popup.querySelector(".yes-btn");
-                const newNoBtn = popup.querySelector(".no-btn");
-                const newCancelBtn = popup.querySelector(".cancel-btn");
+                const { newYesBtn, newNoBtn, newCancelBtn } = resetPopupButtons();
 
                 newYesBtn.addEventListener("click", async () => {
                     const bookmarksInCategory = await getAllBookmarks();
-                    let count = 0;
-                    for (const bookmark of bookmarksInCategory){
-                        if(bookmark.categories.includes(category.categoryName)){
-                            count ++;
-                        }
-                    }
-                    if(count === 0){
-                        await window.deleteCategory(category.categoryID);
-                        popUpMessage.textContent = `Successfully deleted ${category.categoryName} from categories!`
-                    }else{
-                        yesBtn.replaceWith(yesBtn.cloneNode(true));
-                        noBtn.replaceWith(noBtn.cloneNode(true));
-                        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
 
-                        const newYesBtn = popup.querySelector(".yes-btn");
-                        const newNoBtn = popup.querySelector(".no-btn");
-                        const newCancelBtn = popup.querySelector(".cancel-btn");
+                    // .some() returns true if any element matches exactly
+                    const count = bookmarksInCategory.filter(bookmark => {
+                        const categoryList = bookmark.categories
+                            ? bookmark.categories.split(",").map(c => c.trim())
+                            : [];
+
+                        return categoryList.some(cat => cat === categoryName);
+                    }).length;
+
+                    if(count === 0){
+                        try{
+                            await window.deleteCategory(categoryID);
+                            popUpMessage.textContent = `Successfully deleted ${categoryName} from categories!`
+                            popUpMessage.style.color = "green";
+                            await renderCategories(isEditing);
+                            await loadBookmarkSection()
+                            setTimeout(() => {
+                                popUpMessage.textContent = "";
+                                popup.style.display = "none";
+                            }, 2000);
+                        }catch{
+                            popUpMessage.textContent = `Failed to delete ${categoryName}`;
+                            popUpMessage.style.color = "red";
+                            setTimeout(() => {
+                                popUpMessage.textContent = "";
+                                popup.style.display = "none";
+                            }, 2000);
+                        }
+                    }else{
+                        const { newYesBtn, newNoBtn, newCancelBtn } = resetPopupButtons();
 
                         const word = count === 1 ? "bookmark" : "bookmarks";
-                        popUpMessage.textContent = `We've detected that you have ${count} ${word}\nWould you like to delete them as well?`;
+                        popUpMessage.textContent = `We've detected that you have ${count} ${word} in this category\nWould you like to delete them as well? This action cannot be undone!`;
                         newYesBtn.textContent = "Delete them as well";
                         newNoBtn.textContent = "Delete category only"
-                        noBtn.style.display = "block";
+                        newNoBtn.style.display = "block";
+                        let alsoDeleteBookmarks = false;
 
                         newYesBtn.addEventListener("click", async() => {
-                            await 
+                            console.log("hello..")
+                            alsoDeleteBookmarks = true;
+                            try{
+                                await window.deleteBookmarksInCategory(categoryID, alsoDeleteBookmarks);
+                                popUpMessage.textContent = `Category ${categoryName} and ${count} ${word} have been deleted successfully`;
+                                popUpMessage.style.color = "green";
+                                await renderCategories(isEditing);
+                                await loadBookmarkSection()
+                                setTimeout(() => {
+                                    popUpMessage.textContent = "";
+                                    popup.style.display = "none";
+                                }, 2000);
+                            }catch(error){
+                                popUpMessage.textContent = `Failed to delete category ${categoryName} and ${count} ${word}`;
+                                popUpMessage.style.color = "red";
+                                setTimeout(() => {
+                                    popUpMessage.textContent = "";
+                                    popup.style.display = "none";
+                                }, 2000);
+                            }
+                        })
+                        newNoBtn.addEventListener("click", async() => {
+                            alsoDeleteBookmarks = false;
+                            try{
+                                await window.deleteBookmarksInCategory(categoryID, alsoDeleteBookmarks);
+                                popUpMessage.textContent = `Category ${categoryName} have been deleted successfully`;
+                                popUpMessage.style.color = "green";
+                                await renderCategories(isEditing);
+                                await loadBookmarkSection()
+                                setTimeout(() => {
+                                    popUpMessage.textContent = "";
+                                    popup.style.display = "none";
+                                }, 2000);
+                            }catch(error){
+                                popUpMessage.textContent = `Failed to delete category ${categoryName}`;
+                                popUpMessage.style.color = "red";
+                                setTimeout(() => {
+                                    popUpMessage.textContent = "";
+                                    popup.style.display = "none";
+                                }, 2000);
+                            }
+                        })
+                        newCancelBtn.addEventListener("click", async() => {
+                            popUpMessage.textContent = `Phew! Thanks for not deleting me (${categoryName})`;
+                            setTimeout(() => {
+                                popUpMessage.textContent = "";
+                                popup.style.display = "none";
+                            }, 2000);
                         })
                     }
-                    categoryCard.remove();
                     
-                    // Refresh the list 
-                    await renderCategories(isEditing);
-                    setTimeout(() => {
-                        popUpMessage.textContent = "";
-                        popup.style.display = "none";
-                    }, 2000);
                 });
 
                 newCancelBtn.addEventListener("click", () => {
-                    popUpMessage.textContent = `Phew! Thanks for not deleting me (${category.categoryName})`;
+                    popUpMessage.textContent = `Phew! Thanks for not deleting me (${categoryName})`;
                     setTimeout(() => {
                         popUpMessage.textContent = "";
                         popup.style.display = "none";
@@ -173,8 +226,16 @@ async function deleteCategory(categoryID){
         });
 
         if(!response.ok){
-            const errorBody = await response.json();
-            throw new(errorBody.message || response.statusText);
+            // Handle HTTP errors (e.g. 404, 500)
+            // Attempt to read erroro body if available, otherwise use status text
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(
+                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
+            );
         }
 
         return true;
@@ -303,16 +364,19 @@ async function renderBookmarks(bookmarks){
                     
                     // Refresh the list 
                     await loadBookmarkSection();
+                    setTimeout(() => {
+                        popUpMessage.textContent = "";
+                        popup.style.display = "none";
+                    }, 2000)
                 });
 
                 newCancelBtn.addEventListener("click", () => {
                     popUpMessage.textContent = `Phew! Thanks for not deleting me (${bookmark.name})`;
+                    setTimeout(() => {
+                        popUpMessage.textContent = "";
+                        popup.style.display = "none";
+                    }, 2000);
                 });
-
-                setTimeout(() => {
-                    popUpMessage.textContent = "";
-                    popup.style.display = "none";
-                }, 2000);
             });
             bookmarkGrid.appendChild(bookmarkCard);
 
@@ -326,6 +390,25 @@ async function renderBookmarks(bookmarks){
         console.error("Error loading bookmarks", error);
         bookmarkMessage.textContent = `Error loading bookmarks`;
     }
+}
+
+// Reset poup buttons
+function resetPopupButtons() {
+    const popup = document.getElementById("delete-popup");
+
+    const yesBtn = popup.querySelector(".yes-btn");
+    const noBtn = popup.querySelector(".no-btn");
+    const cancelBtn = popup.querySelector(".cancel-btn");
+
+    const newYesBtn = yesBtn.cloneNode(true);
+    const newNoBtn = noBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+
+    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+    noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+    return { newYesBtn, newNoBtn, newCancelBtn };
 }
 
 // Fucntion to formateDate

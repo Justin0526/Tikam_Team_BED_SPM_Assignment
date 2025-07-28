@@ -191,14 +191,50 @@ window.deleteBookmark = async function deleteBookmark(bookmarkID){
             body: JSON.stringify({bookmarkID})
         });
 
-        if (!response.ok){
-            const errorBody = await response.json();
-            throw new Error(errorBody.message || response.statusText);
+        if(!response.ok){
+            // Handle HTTP errors (e.g. 404, 500)
+            // Attempt to read erroro body if available, otherwise use status text
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(
+                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
+            );
         }
 
         return true;
     }catch(error){
         console.error("Error deleting bookmark: ", error);
+        return false;
+    }
+}
+
+window.deleteBookmarksInCategory = async function deleteBookmarksInCategory(categoryID, alsoDeleteBookmarks){
+    try{
+        const response = await fetch(`${apiBaseUrl}/bookmarks/and/category`,{
+            method: "DELETE",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({categoryID, alsoDeleteBookmarks})
+        });
+
+        if(!response.ok){
+            // Handle HTTP errors (e.g. 404, 500)
+            // Attempt to read erroro body if available, otherwise use status text
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(
+                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
+            );
+        }
+
+        return true;
+    }catch(error){
+        console.error("Error deleting boookmarks in category: ", error);
         return false;
     }
 }
@@ -250,6 +286,16 @@ window.handleBookmarkClick = async function (placeID, placeName){
                     messageDiv.textContent = "";
                 }, 2000);
             } 
+        }
+
+        if(categoryIDs.length === 0){
+            messageDiv.textContent = `"${placeName}" bookmarked with no category.`;
+            messageDiv.style.color = "gray";
+            updateBookmarkIcon(placeID, true);
+            setTimeout(() => {
+                messageDiv.textContent = "";
+            }, 2000);
+            return;
         }
 
         // Assign bookmark to all selected categories
@@ -372,7 +418,7 @@ function showCategoryModal(categories, onSubmit){
             modal.style.display = "none";
             form.reset();
         }, 2200); // Just after message timeout
-            onSubmit(selectedIDs, newCategory);
+            onSubmit(selectedIDs, newCategory || null);
         };
 
         cancelBtn.onclick = () => {

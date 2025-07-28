@@ -3,7 +3,7 @@ let currentQuery = "";
 let nextPageToken = null;
 
 const goBtn = document.getElementById("go-btn");
-const backBtn = document.getElementById("back-to-search");
+const loadingMsg = document.getElementById("loading-message");
 const textQuery = document.getElementById("textQuery");
 const quickSearchContainer = document.getElementById("quicksearch-container");
 const resultsSection = document.getElementById("results-section");
@@ -23,8 +23,10 @@ goBtn.addEventListener('click', async (event) => {
     resultsGrid.innerHTML = "";
     loadMoreWrapper.innerHTML = "";
     quickSearchContainer.style.display = "block";
-    resultsSection.style.display = "none";
+    resultsSection.style.display = "block";
 
+    loadingMsg.textContent = `Loading results for ${currentQuery}...`;
+    
     await fetchFacilities(currentQuery);
 });
 
@@ -102,6 +104,7 @@ async function fetchFacilities(query, pageToken = null) {
             loadMoreWrapper.innerHTML = "";
         }
 
+        loadingMsg.textContent = ""
     } catch (error) {
         console.error("Error fetching facility", error);
         alert("Failed to load facility info");
