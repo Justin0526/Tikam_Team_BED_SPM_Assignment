@@ -117,6 +117,18 @@ function renderTable() {
 
 // ─── Load Appointments ─────────────────────────────────────────────────────────────────────
 async function loadAppointments() {
+    //Check if user is logged in
+    //If user has not logged in yet, it will ask the user to log in first to see appointments
+    if(!currentUser){
+      document.getElementById('appointmentsBody').innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; color: #cc0000; font-weight: bold;">
+            🔒 Please log in first to see your appointments.
+          </td>
+        </tr>
+      `;
+      return;
+    }
     try {
       const response = await fetch(`${apiBaseUrl}/appointments/me`,{
         headers: {
