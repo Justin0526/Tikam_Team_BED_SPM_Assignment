@@ -6,9 +6,9 @@ async function getRemindersByUser(userID) {
   const result = await pool.request()
     .input("userID", sql.Int, userID)
     .query(`
-      SELECT reminder_id, title, reminderTime, frequency, message, startDate, endDate
+      SELECT reminder_id, title, reminderTime, frequency, message, startDate, endDate, status
       FROM Reminders
-      WHERE userID = @userID AND isActive = 1
+      WHERE userID = @userID
       ORDER BY startDate ASC, reminderTime ASC
     `);
   return result.recordset;
@@ -25,8 +25,8 @@ async function createReminder({ userID, title, reminderTime, frequency, message,
     .input("startDate", sql.Date, startDate)
     .input("endDate", sql.Date, endDate || null)
     .query(`
-      INSERT INTO Reminders (userID, title, reminderTime, frequency, message, startDate, endDate)
-      VALUES (@userID, @title, @reminderTime, @frequency, @message, @startDate, @endDate)
+      INSERT INTO Reminders (userID, title, reminderTime, frequency, message, startDate, endDate, status)
+      VALUES (@userID, @title, @reminderTime, @frequency, @message, @startDate, @endDate, 'Not Yet')
     `);
 }
 

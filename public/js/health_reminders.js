@@ -37,59 +37,102 @@ async function loadReminders(token) {
       headers: { "Authorization": `Bearer ${token}` }
     });
 
-    if (!res.ok) throw new Error("Failed to load reminders");
+    console.log("Fetch response status:", res.status);
+
+    if (res.status === 401) {
+      console.error("Unauthorized: Token may be missing or invalid.");
+      alert("Session expired. Please log in again.");
+      return;
+    }
+
+    if (!res.ok) throw new Error(`Failed to load reminders: ${res.status}`);
 
     const reminders = await res.json();
+    console.log("Fetched reminders:", reminders);
+
+    if (!Array.isArray(reminders) || reminders.length === 0) {
+      console.warn("No reminders returned from API.");
+    }
 
     const activeBody = document.getElementById("reminders-table-body");
     const upcomingBody = document.getElementById("upcoming-reminders-body");
     activeBody.innerHTML = "";
     upcomingBody.innerHTML = "";
 
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); // compare only dates
+    const now = new Date();
+    now.setSeconds(0, 0);
+    const currentDate = new Date(now);
+    currentDate.setHours(0, 0, 0, 0);
 
+    let upcomingFound = false;
+
+    // ✅ Active Reminders (Show only today's reminders that are NOT taken)
     reminders.forEach(r => {
-      const timeStr = formatTime(r.reminderTime);
+      if (r.status !== "Taken") {  // ✅ Filter out taken reminders
+        const timeStr = formatTime(r.reminderTime);
+        const start = new Date(r.startDate);
+        const end = r.endDate ? new Date(r.endDate) : null;
 
-      const actionButtons = `
-        ${r.status === 'Taken'
-          ? `<button class="mark-btn disabled" disabled><i class="fas fa-check"></i> Taken</button>`
-          : `<button class="mark-btn" data-id="${r.reminder_id}"><i class="fas fa-check"></i> Mark Taken</button>`
+        start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(0, 0, 0, 0);
+
+        if (start <= currentDate && (!end || end >= currentDate)) {
+          activeBody.innerHTML += generateReminderRow(r, timeStr);
         }
-        <button class="menu-btn" data-id="${r.reminder_id}" data-title="${r.title}">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      `;
-
-      const row = `
-        <tr>
-          <td><i class="fas fa-clock"></i> ${timeStr}</td>
-          <td>${r.title}</td>
-          <td>${r.frequency}</td>
-          <td>${r.message || ""}</td>
-          <td>${actionButtons}</td>
-        </tr>
-      `;
-
-      const start = new Date(r.startDate);
-      const end = r.endDate ? new Date(r.endDate) : null;
-
-      start.setHours(0, 0, 0, 0);
-      if (end) end.setHours(0, 0, 0, 0);
-
-      if (start <= currentDate && (!end || end >= currentDate)) {
-        activeBody.innerHTML += row;
-      } else {
-        upcomingBody.innerHTML += row;
       }
     });
+
+    // ✅ Upcoming Reminders (within the next hour, only Not Taken)
+    reminders.forEach(r => {
+      if (r.status !== "Taken") {
+        const reminderTime = new Date(`${r.startDate}T${r.reminderTime}`);
+        const diffMinutes = (reminderTime - now) / (1000 * 60);
+
+        if (diffMinutes > 0 && diffMinutes <= 60) {
+          const timeStr = formatTime(r.reminderTime);
+          upcomingBody.innerHTML += generateReminderRow(r, timeStr);
+          upcomingFound = true;
+        }
+      }
+    });
+
+    // If no upcoming reminders
+    if (!upcomingFound) {
+      upcomingBody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; font-style:italic;">
+            No upcoming reminders in the next hour
+          </td>
+        </tr>
+      `;
+    }
 
     attachReminderMenuButtons();
     attachMarkButtons();
   } catch (err) {
     console.error("Error loading reminders:", err);
   }
+}
+
+// Helper function to generate reminder rows
+function generateReminderRow(r, timeStr) {
+  return `
+    <tr>
+      <td><i class="fas fa-clock"></i> ${timeStr}</td>
+      <td>${r.title}</td>
+      <td>${r.frequency}</td>
+      <td>${r.message || ""}</td>
+      <td>
+        ${r.status === "Taken"
+          ? `<button class="mark-btn disabled" disabled><i class="fas fa-check"></i> Taken</button>`
+          : `<button class="mark-btn" data-id="${r.reminder_id}"><i class="fas fa-check"></i> Mark Taken</button>`
+        }
+        <button class="menu-btn" data-id="${r.reminder_id}" data-title="${r.title}">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </td>
+    </tr>
+  `;
 }
 
 function attachReminderMenuButtons() {
@@ -120,7 +163,10 @@ function attachMarkButtons() {
 
         if (res.ok) {
           showNotification("Reminder marked as taken!");
-          loadReminders(userToken); // reload updated status
+
+          // ✅ Instantly remove the row from the UI
+          const row = button.closest("tr");
+          if (row) row.remove();
         } else {
           const text = await res.text();
           console.error(text);
@@ -140,13 +186,12 @@ async function handleAddReminder(e, token) {
   const title = document.getElementById("reminder-name").value.trim();
   const timeInput = document.getElementById("time").value;
   const reminderTime = timeInput.length === 5 ? `${timeInput}:00` : timeInput || null;
-  console.log("⏰ reminderTime being sent:", reminderTime);
   const frequency = document.getElementById("frequency").value;
   const startDate = document.getElementById("start-date").value;
   const endDate = document.getElementById("end-date").value || null;
   const message = document.getElementById("notes").value.trim() || null;
 
-   const payload = {
+  const payload = {
     title,
     reminderTime,
     frequency,
@@ -155,8 +200,6 @@ async function handleAddReminder(e, token) {
     endDate
   };
 
-  console.log("📦 Sending reminder payload:", payload);
-  console.log("✅ Final reminderTime sent:", reminderTime);
   try {
     const res = await fetch(`${apiBaseUrl}/reminders`, {
       method: "POST",
