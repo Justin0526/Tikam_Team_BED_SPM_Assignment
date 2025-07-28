@@ -43,8 +43,6 @@ async function loadReminders(token) {
       headers: { "Authorization": `Bearer ${token}` }
     });
 
-    console.log("Fetch response status:", res.status);
-
     if (res.status === 401) {
       console.error("Unauthorized: Token may be missing or invalid.");
       alert("Session expired. Please log in again.");
@@ -53,12 +51,18 @@ async function loadReminders(token) {
 
     if (!res.ok) throw new Error(`Failed to load reminders: ${res.status}`);
 
-    const reminders = await res.json();
-    console.log("Fetched reminders:", reminders);
+    let reminders = await res.json();
 
     if (!Array.isArray(reminders) || reminders.length === 0) {
       console.warn("No reminders returned from API.");
     }
+
+    // ✅ SORT reminders by time
+    reminders.sort((a, b) => {
+      const timeA = new Date(`${a.startDate}T${a.reminderTime}`);
+      const timeB = new Date(`${b.startDate}T${b.reminderTime}`);
+      return timeA - timeB; // Ascending order (earliest first)
+    });
 
     const activeBody = document.getElementById("reminders-table-body");
     const upcomingBody = document.getElementById("upcoming-reminders-body");
@@ -74,7 +78,7 @@ async function loadReminders(token) {
 
     // ✅ Active Reminders (Show only today's reminders that are NOT taken)
     reminders.forEach(r => {
-      if (r.status !== "Taken") {  // ✅ Filter out taken reminders
+      if (r.status !== "Taken") {
         const timeStr = formatTime(r.reminderTime);
         const start = new Date(r.startDate);
         const end = r.endDate ? new Date(r.endDate) : null;
