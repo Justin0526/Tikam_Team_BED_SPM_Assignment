@@ -350,42 +350,45 @@ document.addEventListener("DOMContentLoaded", async function () {
     resetFormMode();//Switch back to "Add New Appointment" mode
   });
 
-  //Reminder Banner Alert
-  try {
-    if (!currentUser) {
-      console.warn("Token invalid or expired.");
-      return;
-    }
-    const response = await fetch(`${apiBaseUrl}/appointments/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      console.warn("Failed to fetch appointments:", response.status);
-      return;
-    }
-
-    //Filter only reminders for today
-    const appointments = await response.json();
-    const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
-
-    // Filter appointments for today's reminders by comparing reminderDate
-    const todaysReminders = appointments.filter(appt => {
-      if (!appt.reminderDate) return false;
-      const formatted = new Date(appt.reminderDate).toISOString().split("T")[0];
-      return formatted === today;
-    });
-
-    //Show banner if any reminders match
-    if (todaysReminders.length > 0) {
-      showReminderAlert(todaysReminders);
-    }
-    
-  } catch (err) {
-    console.error("❌ Reminder alert error:", err);
+  if(currentUser){
+    updateReminderBanner();
   }
+  // //Reminder Banner Alert
+  // try {
+  //   if (!currentUser) {
+  //     console.warn("Token invalid or expired.");
+  //     return;
+  //   }
+  //   const response = await fetch(`${apiBaseUrl}/appointments/me`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`
+  //     }
+  //   });
+
+  //   if (!response.ok) {
+  //     console.warn("Failed to fetch appointments:", response.status);
+  //     return;
+  //   }
+
+  //   //Filter only reminders for today
+  //   const appointments = await response.json();
+  //   const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
+
+  //   // Filter appointments for today's reminders by comparing reminderDate
+  //   const todaysReminders = appointments.filter(appt => {
+  //     if (!appt.reminderDate) return false;
+  //     const formatted = new Date(appt.reminderDate).toISOString().split("T")[0];
+  //     return formatted === today;
+  //   });
+
+  //   //Show banner if any reminders match
+  //   if (todaysReminders.length > 0) {
+  //     showReminderAlert(todaysReminders);
+  //   }
+    
+  // } catch (err) {
+  //   console.error("❌ Reminder alert error:", err);
+  // }
 });
 
 // ─── Dismissed (hides and removes) the reminder banner ─────────────────────────────────────────────
@@ -461,11 +464,30 @@ async function updateReminderBanner() {
 
     if (!response.ok) return;
 
-    const appointments = await response.json();
+    //─── Fetch Reminder Appointments & Show Today's Reminder Banner ──────────────
+    const responseData = await response.json();
+
+    // Determine the structure of the response:
+    // - If the response is a raw array → use it directly as the appointment list.
+    // - If it's an object → try to extract the 'appointments' property.
+    // - If 'appointments' is missing, default to an empty array.
+    const appointmentList = Array.isArray(responseData)
+    ? responseData                         // Raw array
+    : responseData.appointments || [];     // Object with appointments
+
+    // Validate that we now have an array before proceeding.
+    // If not, something went wrong — log a warning and exit the update early.
+    if (!Array.isArray(appointmentList)) {
+      console.warn("Reminder update skipped: appointments is not an array", appointmentList);
+      dismissReminderBanner();
+      return;
+    }
+
+    // Get today’s date in YYYY-MM-DD format for easy comparison.
     const today = new Date().toISOString().split("T")[0];
 
-    //Filter out any appointment that has no reminder date or a reminder date that isn't today
-    const todaysReminders = appointments.filter(appt => {
+    // Filter appointments where the reminderDate matches today's date.
+    const todaysReminders = appointmentList.filter(appt => {
       if (!appt.reminderDate) return false;
       const formatted = new Date(appt.reminderDate).toISOString().split("T")[0];
       return formatted === today;
