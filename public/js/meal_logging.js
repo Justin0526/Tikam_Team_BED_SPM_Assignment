@@ -143,6 +143,18 @@ function renderMealsTable() {
 
 // ─── Load Meals ─────────────────────────────────────────────────────────────────────
 async function loadMeals() {
+    //Check if user is logged in
+    //If user has not logged in yet, it will ask the user to log in first to see appointments
+    if(!currentUser){
+      document.getElementById('mealsBody').innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; color: #cc0000; font-weight: bold;">
+            🔒 Please log in first to see your meal logs.
+          </td>
+        </tr>
+      `;
+      return;
+    }
   try {
     const date = document.getElementById("filterByDate").value;
     const query = date ? `?mealDate=${date}` : ''; // If a date is provided, builds a query string like ?mealDate=2025-07-26
