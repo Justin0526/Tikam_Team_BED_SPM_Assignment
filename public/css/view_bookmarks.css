@@ -52,6 +52,10 @@ html, body {
   cursor: pointer;
 }
 
+.authenticate-message{
+  font-size: 1rem;
+}
+
 h2 {
   font-size: 1.8rem;
   margin: 2rem 0 1rem;

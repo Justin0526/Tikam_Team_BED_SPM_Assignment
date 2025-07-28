@@ -7,6 +7,7 @@ async function getAllBookmarks(userID){
         connection = await poolPromise;
         const query = `SELECT 
                         b.bookmarkID,
+                        b.placeName,
                         b.placeID,
                         b.bookmarkedAt,
                         STRING_AGG(c.categoryName, ', ') AS categories
@@ -14,7 +15,7 @@ async function getAllBookmarks(userID){
                         LEFT JOIN BookmarkCategories bc ON b.bookmarkID = bc.bookmarkID
                         LEFT JOIN Categories c ON bc.categoryID = c.categoryID
                         WHERE b.userID = @userID
-                        GROUP BY b.bookmarkID, b.placeID, b.bookmarkedAt
+                        GROUP BY b.bookmarkID, b.placeID, b.placeName, b.bookmarkedAt
                         ORDER BY b.bookmarkedAt DESC
                         `;
         const request = connection.request();
@@ -47,14 +48,15 @@ async function getBookmarkByPlaceID(userID, placeID){
 }
 
 // Create new bookmark
-async function createNewBookmark(userID, placeID){
+async function createNewBookmark(userID, placeID, placeName){
     let connection;
     try{
         connection = await poolPromise;
-        const query = `INSERT INTO Bookmarks (userID, placeID) VALUES (@userID, @placeID)`
+        const query = `INSERT INTO Bookmarks (userID, placeID, placeName) VALUES (@userID, @placeID, @placeName)`
         const request = connection.request();
         request.input("userID", userID);
         request.input("placeID", placeID);
+        request.input("placeName", placeName)
         const result = await request.query(query);
 
         return result;
@@ -83,9 +85,39 @@ async function deleteBookmark(userID, bookmarkID){
     }
 }
 
+// Search bookmarks
+async function searchBookmarks(searchTerm, userID){
+    try{
+        connection = await poolPromise;
+        const query = `SELECT 
+                        b.bookmarkID,
+                        b.placeName,
+                        b.placeID,
+                        b.bookmarkedAt,
+                        STRING_AGG(c.categoryName, ', ') AS categories
+                        FROM Bookmarks b
+                        LEFT JOIN BookmarkCategories bc ON b.bookmarkID = bc.bookmarkID
+                        LEFT JOIN Categories c ON bc.categoryID = c.categoryID
+                        WHERE b.userID = @userID AND b.placeName LIKE '%' + @searchTerm + '%'
+                        GROUP BY b.bookmarkID, b.placeID, b.placeName, b.bookmarkedAt
+                        ORDER BY b.bookmarkedAt DESC
+                        `
+        const request = connection.request();
+        request.input("userID", userID);
+        request.input("searchTerm", searchTerm);
+        const result = await request.query(query);
+
+        return result.recordset;
+    }catch(error){
+        console.error("Database error: ", error);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllBookmarks,
     getBookmarkByPlaceID,
     createNewBookmark,
     deleteBookmark,
+    searchBookmarks,
 }

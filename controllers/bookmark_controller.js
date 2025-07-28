@@ -36,13 +36,14 @@ async function createBookmark(req, res){
     try{
         const userID = req.user.userID;
         const placeID = req.body.placeID;
+        const placeName = req.body.placeName;
 
         const exists = await bookmarkModel.getBookmarkByPlaceID(userID, placeID);
         if(exists && exists.length > 0){
             return res.status(200).json(exists); // Already exists
         }
 
-        await bookmarkModel.createNewBookmark(userID, placeID);
+        await bookmarkModel.createNewBookmark(userID, placeID, placeName);
         const  newBookmark = await bookmarkModel.getBookmarkByPlaceID(userID, placeID);
         return res.status(201).json(newBookmark);
     }catch(error){
@@ -68,9 +69,28 @@ async function deleteBookmark(req, res){
     }
 }
 
+// Search bookmarks
+async function searchBookmarks(req, res){
+    const searchTerm = req.query.searchTerm;
+    const userID = req.user.userID;
+
+    if(!searchTerm){
+        return res.status(400).json({message: "Search term is required"});
+    }
+
+    try{
+        const bookmarks = await bookmarkModel.searchBookmarks(searchTerm, userID);
+        return res.status(200).json(bookmarks);
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({message: "Error searching bookmarks"});
+    }
+}
+
 module.exports = {
     getAllBookmarks,
     getBookmarkByPlaceID,
     createBookmark,
     deleteBookmark,
+    searchBookmarks,
 }

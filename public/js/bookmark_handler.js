@@ -47,12 +47,12 @@ async function isFacilityBookmarked(placeID){
     }
 }
 
-async function createBookmarkIfNotExists(placeID){
+async function createBookmarkIfNotExists(placeID, placeName){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark`, {
             method: "POST",
             headers: getAuthHeaders(),
-            body: JSON.stringify({placeID})
+            body: JSON.stringify({placeID, placeName})
         });
 
         const data = await response.json();
@@ -265,7 +265,7 @@ window.handleBookmarkClick = async function (placeID, placeName){
         const categoryIDs = [...selectedIDs];
 
         // Not bookmarked yet
-        const bookmark = await createBookmarkIfNotExists(placeID);
+        const bookmark = await createBookmarkIfNotExists(placeID, placeName);
         const bookmarkID = bookmark.bookmarkID;
         if(!bookmarkID) return;
 
@@ -289,8 +289,8 @@ window.handleBookmarkClick = async function (placeID, placeName){
         }
 
         if(categoryIDs.length === 0){
-            messageDiv.textContent = `"${placeName}" bookmarked with no category.`;
-            messageDiv.style.color = "gray";
+            messageDiv.textContent = `"${placeName}" successfully bookmarked with no category.`;
+            messageDiv.style.color = "green";
             updateBookmarkIcon(placeID, true);
             setTimeout(() => {
                 messageDiv.textContent = "";

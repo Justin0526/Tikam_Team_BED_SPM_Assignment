@@ -24,6 +24,29 @@ window.addEventListener("load", async() => {
     });
     await renderCategories();
     await loadBookmarkSection();
+
+    const goBtn = document.getElementById("go-btn");
+    const textQuery = document.getElementById("textQuery");
+    const resultsHeader = document.getElementById("bookmark-section-header");
+
+    goBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const searchTerm = textQuery.value.trim();
+        categorySection.style.display = "none";
+        resultsHeader.textContent = "";
+        authMessage.textContent = ""
+
+        if (!searchTerm) {
+            authMessage.textContent = "Please enter a search term! Returning all bookmarks...";
+            authMessage.style.color = "red";
+            return;
+        }
+
+        resultsHeader.textContent = `Results for: ${searchTerm}`;
+        const rawResults = await searchBookmark(searchTerm);
+        const detailedResults = await getBookmarkDetails(rawResults);
+        renderBookmarks(detailedResults);
+    });
 })
 
 // Get Headers for requests
@@ -526,6 +549,33 @@ function attachDeletePopup(bookmarkCard, bookmark) {
     });
 }
 
+// Function to search bookmark
+async function searchBookmark(searchTerm){
+    try{
+        const response = await fetch(`${apiBaseUrl}/search/bookmarks?searchTerm=${searchTerm}`,{
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+        if(!response.ok){
+            // Handle HTTP errors (e.g. 404, 500)
+            // Attempt to read erroro body if available, otherwise use status text
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(
+                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
+            );
+        }
+        const bookmarks = await response.json();
+        return bookmarks;
+    }catch(error){
+        console.error("Error searching bookmarks");
+        return [];
+    }
+}
+
 // Function to display bookmark message
 function displayBookmarkMessage(count, bookmarkMessage) {
     const word = count === 1 ? "bookmark" : "bookmarks";
@@ -578,4 +628,5 @@ async function convertToDetailedBookmark(bookmark, placeData) {
         photo: placePhotoHTML
     };
 }
+
 // ------------------------------------- //
