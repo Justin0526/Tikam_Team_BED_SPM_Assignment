@@ -38,10 +38,18 @@
           <div class="authenticate-message" id="authenticate-message"></div>
 
           <section class="category-section" id="category-section" style="display: none">
-              <h2>Categories</h2>
+              <div class="category-header">
+                <h2>Categories</h2>
+                <button id="edit-category-btn" class="edit-btn">
+                  ✏️ Edit
+                </button>
+              </div>
               <div id="category-message"></div>
               <div class="category-grid" id="category-grid">
                   <!-- Categories inserted dynamically -->
+                   <div id="create-new-category" style="display: none">
+                      <button class="category-btn">+ Create New Category</button>
+                   </div>
               </div>
           </section>
 
@@ -52,6 +60,18 @@
                   <!-- Bookmarks inserted dynamically -->
               </div>
           </section>
+
+          <div class="popup-overlay" id="delete-popup" style="display: none">
+            <div class="popup-box">
+              <p class="popup-message">
+                <!-- Message will be inserted dynamically -->
+              </p>
+              <div class="popup-actions">
+                <button class="popup-btn yes-btn">Yes</button>
+                <button class="popup-btn cancel-btn">Cancel</button>
+              </div>
+            </div>
+          </div>
       </main>
 
       <footer>
