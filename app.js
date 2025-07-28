@@ -24,6 +24,7 @@ const { uploadImage } = require('./controllers/upload_controller')
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
 const medicationValidator  = require("./middlewares/medication_validation");
+const validateReminder = require("./middlewares/health_reminders_validation");
 const { validatePost, validatePostId } = require("./middlewares/posts_validation");
 const { verify } = require("crypto");
 const {verifyJWT} = require("./middlewares/authMiddleware");
@@ -80,7 +81,7 @@ app.delete("/medications/:medicationID", editMedicationsController.deleteMedicat
 // Health Reminders routes
 app.get("/reminders", verifyJWT, healthRemindersController.getReminders);
 app.put("/reminders/:id/mark-taken", verifyJWT, healthRemindersController.markReminderTaken);
-app.post("/reminders", verifyJWT, healthRemindersController.createReminder);
+app.post("/reminders", verifyJWT, validateReminder, healthRemindersController.createReminder);
 
 // Edit medication routes
 app.get("/reminders/:id", verifyJWT, editRemindersController.getReminderById);
