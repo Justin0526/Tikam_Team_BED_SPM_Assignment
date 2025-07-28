@@ -218,6 +218,13 @@ main {
   cursor: not-allowed;
 }
 
+:root {
+  --green: #a6e22e;
+  --red: #ff4f4f;
+  --teal: #217693;
+  --blue: #1f7ea5;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -227,26 +234,105 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
 }
+
 .modal {
   background: white;
   padding: 2rem;
   border-radius: 1rem;
-  width: 90%;
-  max-width: 400px;
-}
-.checkbox-group {
-  max-height: 200px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-}
-
-.modal .message{
-  padding-top: 0.8rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .modal-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.modal h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  color: var(--teal);
+  text-align: center;
+}
+
+.checkbox-group {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background: #f9f9f9;
+}
+
+label[for="newCategory"] {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+  color: #444;
+}
+
+input#newCategory {
+  width: 90%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 2px solid black;
+  border-radius: 1rem;
+  font-size: 1rem;
+}
+
+.message {
+  font-size: 0.9rem;
+  padding: 0.4rem 0;
+  color: green;
+  min-height: 1.2rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* Blue Add */
+.add-btn {
+  background-color: var(--blue);
+}
+.add-btn:hover {
+  background-color: #186688;
+}
+
+/* Green Confirm */
+.confirm-btn {
+  background-color: var(--green);
+  color: black;
+}
+.confirm-btn:hover {
+  background-color: #8ed016;
+}
+
+/* Red Cancel */
+.cancel-btn {
+  background-color: var(--red);
+}
+.cancel-btn:hover {
+  background-color: #e04343;
 }

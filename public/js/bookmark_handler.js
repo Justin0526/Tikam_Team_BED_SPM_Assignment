@@ -252,7 +252,6 @@ window.handleBookmarkClick = async function (placeID, placeName){
 
         const success = await deleteBookmark(bookmarkID);
         if(success){
-            alert(`"${placeName}" bookmark removed.`);
             updateBookmarkIcon(placeID, false);
         }else{
             alert("Failed to remove bookmark");
@@ -260,15 +259,15 @@ window.handleBookmarkClick = async function (placeID, placeName){
         return
     }
 
-    // Not bookmarked yet
-    const bookmark = await createBookmarkIfNotExists(placeID);
-    const bookmarkID = bookmark.bookmarkID;
-    if(!bookmarkID) return;
-
     // Ask for existing category selection or new category
     const categories = await fetchCategories();
     showCategoryModal(categories, async(selectedIDs, newCategoryName) => {
         const categoryIDs = [...selectedIDs];
+
+        // Not bookmarked yet
+        const bookmark = await createBookmarkIfNotExists(placeID);
+        const bookmarkID = bookmark.bookmarkID;
+        if(!bookmarkID) return;
 
         if(newCategoryName){
             const newCategory= await createCategoryIfNotExists(newCategoryName);
@@ -368,20 +367,8 @@ function showCategoryModal(categories, onSubmit){
     // Initial render
     renderCheckboxes(categories);
 
-    // Before inserting the button, remove any existing one
-    const existingAddBtn = newCategoryInput.parentNode.querySelector(".add-category-btn");
-    if(existingAddBtn){
-        existingAddBtn.remove();
-    }
-
     // Handle Add New Category 
-    const addBtn = document.createElement("button");
-    addBtn.textContent = "Add";
-    addBtn.type = "button";
-    addBtn.classList.add("add-category-btn");
-    addBtn.style.marignLeft = "0.5rem";
-    newCategoryInput.parentNode.insertBefore(addBtn, newCategoryInput.nextSibling);
-
+    const addBtn = document.getElementById("addCategoryBtn");
     addBtn.onclick = handleNewCategory;
 
     async function handleNewCategory(){

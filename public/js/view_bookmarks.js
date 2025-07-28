@@ -195,11 +195,11 @@ async function confirmDeleteCategoryOnly(categoryID, categoryName, popUpMessage,
         popUpMessage.style.color = "red";
     } finally {
         const noBtn = document.getElementById("delete-popup").querySelector(".no-btn");
-        noBtn.style.display = "none";
         setTimeout(() => {
             popUpMessage.textContent = "";
             popup.style.display = "none";
         }, 2000);
+        noBtn.style.display = "none";
     }
 }
 
@@ -242,11 +242,11 @@ async function deleteCategoryAndBookmarks(categoryID, categoryName, count, word,
         popUpMessage.style.color = "red";
     } finally {
         const noBtn = document.getElementById("delete-popup").querySelector(".no-btn");
-        noBtn.style.display = "none";
         setTimeout(() => {
             popUpMessage.textContent = "";
             popup.style.display = "none";
         }, 2000);
+        noBtn.style.display = "none";
     }
 }
 
@@ -263,11 +263,11 @@ async function deleteCategoryOnlyPreserveBookmarks(categoryID, categoryName, pop
         popUpMessage.style.color = "red";
     } finally {
         const noBtn = document.getElementById("delete-popup").querySelector(".no-btn");
-        noBtn.style.display = "none";
         setTimeout(() => {
             popUpMessage.textContent = "";
             popup.style.display = "none";
         }, 2000);
+        noBtn.style.display = "none";
     }
 }
 
