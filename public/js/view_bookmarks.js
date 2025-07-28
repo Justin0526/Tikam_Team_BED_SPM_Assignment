@@ -26,6 +26,7 @@ window.addEventListener("load", async() => {
     await loadBookmarkSection();
 })
 
+// Get Headers for requests
 getAuthHeaders = function getAuthHeaders(){
     if(!token){
         console.warn("User not authenticated.");
@@ -36,184 +37,245 @@ getAuthHeaders = function getAuthHeaders(){
     }
 }
 
+// Function to load bookmark section
 async function loadBookmarkSection(){
     const allBookmarks = await getAllBookmarks();
     const bookmarkDetails = await getBookmarkDetails(allBookmarks);
     renderBookmarks(bookmarkDetails);
 }
 
+// Reset poup buttons
+function resetPopupButtons() {
+    const popup = document.getElementById("delete-popup");
+
+    const yesBtn = popup.querySelector(".yes-btn");
+    const noBtn = popup.querySelector(".no-btn");
+    const cancelBtn = popup.querySelector(".cancel-btn");
+
+    const newYesBtn = yesBtn.cloneNode(true);
+    const newNoBtn = noBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+
+    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+    noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+    newYesBtn.textContent = "Yes";
+    newNoBtn.style.display = "none";
+    return { newYesBtn, newNoBtn, newCancelBtn };
+}
+
+// -------- Categories Functions -------- //
 // Function to display all categories
-async function renderCategories(isEditing){
+async function renderCategories(isEditing) {
     const categoryGrid = document.getElementById("category-grid");
-    categoryGrid.innerHTML = "";
     const categoryMessage = document.getElementById("category-message");
-    categoryMessage.textContent = "Loading Categories..."
+
+    categoryGrid.innerHTML = "";
+    categoryMessage.textContent = "Loading Categories...";
 
     const categories = await fetchCategories();
-    if (categories.length == 0){
-        categoryMessage.textContent = `You currently have 0 categories`
+
+    if (categories.length === 0) {
+        categoryMessage.textContent = "You currently have 0 categories";
+        return;
     }
+
+    if (isEditing) categoryGrid.classList.add("editing");
+    else categoryGrid.classList.remove("editing");
+
     categories.forEach(category => {
-        console.log(category);
-        const categoryCard = document.createElement("div");
-        categoryCard.classList.add("category-card");
-
-        const categoryBtn = document.createElement("button");
-        categoryBtn.classList.add("category-btn");
-        categoryBtn.textContent = category.categoryName;
-
-        categoryCard.appendChild(categoryBtn);
-
-        if(isEditing){
-            categoryGrid.classList.add("editing");
-            const deleteIcon = document.createElement("img");
-            deleteIcon.classList.add("delete-icon");
-            deleteIcon.src = "../images/unfilled-delete-icon.png";
-            deleteIcon.width = "20";
-            deleteIcon.height = "20"
-
-            // Handle hover to swap icon images
-            deleteIcon.addEventListener("mouseenter", () => {
-                deleteIcon.src = "../images/filled-delete-icon.png";
-            });
-
-            deleteIcon.addEventListener("mouseleave", () => {
-                deleteIcon.src = "../images/unfilled-delete-icon.png";
-            });
-
-            categoryCard.appendChild(deleteIcon);
-
-            deleteIcon.addEventListener("click", async () =>{
-                const popup = document.getElementById("delete-popup");
-                const popUpMessage = popup.querySelector(".popup-message");
-                const yesBtn = popup.querySelector(".yes-btn");
-                const noBtn = popup.querySelector(".no-btn");
-                const cancelBtn = popup.querySelector(".cancel-btn");
-
-                const categoryID = category.categoryID;
-                const categoryName = category.categoryName;
-
-                // Set message and show popup
-                popUpMessage.innerHTML = `Are you sure you want to delete <strong>${category.categoryName}</strong>? This action cannot be undone!`;
-                popUpMessage.style.color = "black";
-                popup.style.display = "flex";
-
-                // Clean up old listeners
-                const { newYesBtn, newNoBtn, newCancelBtn } = resetPopupButtons();
-
-                newYesBtn.addEventListener("click", async () => {
-                    const bookmarksInCategory = await getAllBookmarks();
-
-                    // .some() returns true if any element matches exactly
-                    const count = bookmarksInCategory.filter(bookmark => {
-                        const categoryList = bookmark.categories
-                            ? bookmark.categories.split(",").map(c => c.trim())
-                            : [];
-
-                        return categoryList.some(cat => cat === categoryName);
-                    }).length;
-
-                    if(count === 0){
-                        try{
-                            await window.deleteCategory(categoryID);
-                            popUpMessage.textContent = `Successfully deleted ${categoryName} from categories!`
-                            popUpMessage.style.color = "green";
-                            await renderCategories(isEditing);
-                            await loadBookmarkSection()
-                            setTimeout(() => {
-                                popUpMessage.textContent = "";
-                                popup.style.display = "none";
-                            }, 2000);
-                        }catch{
-                            popUpMessage.textContent = `Failed to delete ${categoryName}`;
-                            popUpMessage.style.color = "red";
-                            setTimeout(() => {
-                                popUpMessage.textContent = "";
-                                popup.style.display = "none";
-                            }, 2000);
-                        }
-                    }else{
-                        const { newYesBtn, newNoBtn, newCancelBtn } = resetPopupButtons();
-
-                        const word = count === 1 ? "bookmark" : "bookmarks";
-                        popUpMessage.textContent = `We've detected that you have ${count} ${word} in this category\nWould you like to delete them as well? This action cannot be undone!`;
-                        newYesBtn.textContent = "Delete them as well";
-                        newNoBtn.textContent = "Delete category only"
-                        newNoBtn.style.display = "block";
-                        let alsoDeleteBookmarks = false;
-
-                        newYesBtn.addEventListener("click", async() => {
-                            console.log("hello..")
-                            alsoDeleteBookmarks = true;
-                            try{
-                                await window.deleteBookmarksInCategory(categoryID, alsoDeleteBookmarks);
-                                popUpMessage.textContent = `Category ${categoryName} and ${count} ${word} have been deleted successfully`;
-                                popUpMessage.style.color = "green";
-                                await renderCategories(isEditing);
-                                await loadBookmarkSection()
-                                setTimeout(() => {
-                                    popUpMessage.textContent = "";
-                                    popup.style.display = "none";
-                                }, 2000);
-                            }catch(error){
-                                popUpMessage.textContent = `Failed to delete category ${categoryName} and ${count} ${word}`;
-                                popUpMessage.style.color = "red";
-                                setTimeout(() => {
-                                    popUpMessage.textContent = "";
-                                    popup.style.display = "none";
-                                }, 2000);
-                            }
-                        })
-                        newNoBtn.addEventListener("click", async() => {
-                            alsoDeleteBookmarks = false;
-                            try{
-                                await window.deleteBookmarksInCategory(categoryID, alsoDeleteBookmarks);
-                                popUpMessage.textContent = `Category ${categoryName} have been deleted successfully`;
-                                popUpMessage.style.color = "green";
-                                await renderCategories(isEditing);
-                                await loadBookmarkSection()
-                                setTimeout(() => {
-                                    popUpMessage.textContent = "";
-                                    popup.style.display = "none";
-                                }, 2000);
-                            }catch(error){
-                                popUpMessage.textContent = `Failed to delete category ${categoryName}`;
-                                popUpMessage.style.color = "red";
-                                setTimeout(() => {
-                                    popUpMessage.textContent = "";
-                                    popup.style.display = "none";
-                                }, 2000);
-                            }
-                        })
-                        newCancelBtn.addEventListener("click", async() => {
-                            popUpMessage.textContent = `Phew! Thanks for not deleting me (${categoryName})`;
-                            setTimeout(() => {
-                                popUpMessage.textContent = "";
-                                popup.style.display = "none";
-                            }, 2000);
-                        })
-                    }
-                    
-                });
-
-                newCancelBtn.addEventListener("click", () => {
-                    popUpMessage.textContent = `Phew! Thanks for not deleting me (${categoryName})`;
-                    setTimeout(() => {
-                        popUpMessage.textContent = "";
-                        popup.style.display = "none";
-                    }, 2000);
-                });
-            })
-        }else{
-            categoryGrid.classList.remove("editing");
-        }
+        const categoryCard = createCategoryCard(category, isEditing);
         categoryGrid.appendChild(categoryCard);
-    })
-    let category = "category";
-    if(categories.length > 1){
-        category = "categories"
+    });
+
+    if (isEditing) {
+        const addCard = createAddCategoryCard();
+        categoryGrid.appendChild(addCard);
     }
-    categoryMessage.textContent = `You currently have ${categories.length} ${category}`;
+
+    displayCategoryMessage(categories.length, categoryMessage);
+}
+
+// Function to create category card
+function createCategoryCard(category, isEditing) {
+    const card = document.createElement("div");
+    card.classList.add("category-card");
+
+    const btn = document.createElement("button");
+    btn.classList.add("category-btn");
+    btn.textContent = category.categoryName;
+    card.appendChild(btn);
+
+    if (isEditing) {
+        const deleteIcon = document.createElement("img");
+        deleteIcon.classList.add("delete-icon");
+        deleteIcon.src = "../images/unfilled-delete-icon.png";
+        deleteIcon.width = 20;
+        deleteIcon.height = 20;
+
+        deleteIcon.addEventListener("mouseenter", () => {
+            deleteIcon.src = "../images/filled-delete-icon.png";
+        });
+        deleteIcon.addEventListener("mouseleave", () => {
+            deleteIcon.src = "../images/unfilled-delete-icon.png";
+        });
+        deleteIcon.addEventListener("click", () =>
+            handleDeleteCategoryPopup(category, isEditing)
+        );
+
+        card.appendChild(deleteIcon);
+    }
+
+    return card;
+}
+
+// Function to create add category card
+function createAddCategoryCard() {
+    const addCard = document.createElement("div");
+    addCard.classList.add("category-card");
+
+    const addBtn = document.createElement("button");
+    addBtn.classList.add("add-category-btn");
+    addBtn.textContent = "Add new Category +";
+
+    addCard.appendChild(addBtn);
+    return addCard;
+}
+
+// Function to display category messages
+function displayCategoryMessage(count, categoryMessage) {
+    const word = count === 1 ? "category" : "categories";
+    categoryMessage.textContent = `You currently have ${count} ${word}`;
+}
+
+// Function to handle Delete Category, when a pop up appears
+async function handleDeleteCategoryPopup(category, isEditing) {
+    const popup = document.getElementById("delete-popup");
+    const popUpMessage = popup.querySelector(".popup-message");
+
+    const { newYesBtn, newNoBtn, newCancelBtn } = resetPopupButtons();
+
+    const categoryID = category.categoryID;
+    const categoryName = category.categoryName;
+
+    popUpMessage.innerHTML = `Are you sure you want to delete <strong>${categoryName}</strong>? This action cannot be undone!`;
+    popUpMessage.style.color = "black";
+    popup.style.display = "flex";
+
+    newYesBtn.addEventListener("click", async () => {
+        const bookmarksInCategory = await getAllBookmarks();
+        const count = bookmarksInCategory.filter(bookmark => {
+            const categoryList = bookmark.categories
+                ? bookmark.categories.split(",").map(c => c.trim())
+                : [];
+            return categoryList.some(cat => cat === categoryName);
+        }).length;
+
+        if (count === 0) {
+            await confirmDeleteCategoryOnly(categoryID, categoryName, popUpMessage, popup, isEditing);
+        } else {
+            await handleBookmarksExistPrompt(count, categoryID, categoryName, popUpMessage, popup, newYesBtn, newNoBtn, newCancelBtn, isEditing);
+        }
+    });
+
+    newCancelBtn.addEventListener("click", () => {
+        document.getElementById("delete-popup").querySelector(".no-btn").style.display = "none";
+        popUpMessage.textContent = `Phew! Thanks for not deleting me (${categoryName})`;
+        setTimeout(() => {
+            popUpMessage.textContent = "";
+            popup.style.display = "none";
+        }, 2000);
+    });
+}
+
+// Function to delete category when there no bookmark in the category
+async function confirmDeleteCategoryOnly(categoryID, categoryName, popUpMessage, popup, isEditing) {
+    try {
+        await window.deleteCategory(categoryID);
+        popUpMessage.textContent = `Successfully deleted ${categoryName} from categories!`;
+        popUpMessage.style.color = "green";
+        await renderCategories(isEditing);
+        await loadBookmarkSection();
+    } catch {
+        popUpMessage.textContent = `Failed to delete ${categoryName}`;
+        popUpMessage.style.color = "red";
+    } finally {
+        const noBtn = document.getElementById("delete-popup").querySelector(".no-btn");
+        noBtn.style.display = "none";
+        setTimeout(() => {
+            popUpMessage.textContent = "";
+            popup.style.display = "none";
+        }, 2000);
+    }
+}
+
+// Function to prompt user when there is bookmarks in the category they are going to delete
+async function handleBookmarksExistPrompt(count, categoryID, categoryName, popUpMessage, popup, yesBtn, noBtn, cancelBtn, isEditing) {
+    const word = count === 1 ? "bookmark" : "bookmarks";
+    popUpMessage.textContent = `We've detected that you have ${count} ${word} in this category.\nWould you like to delete them as well?`;
+    yesBtn.textContent = "Delete them as well";
+    noBtn.textContent = "Delete category only";
+    noBtn.style.display = "block";
+
+    yesBtn.addEventListener("click", async () => {
+        await deleteCategoryAndBookmarks(categoryID, categoryName, count, word, popUpMessage, popup, isEditing);
+    });
+
+    noBtn.addEventListener("click", async () => {
+        await deleteCategoryOnlyPreserveBookmarks(categoryID, categoryName, popUpMessage, popup, isEditing);
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        document.getElementById("delete-popup").querySelector(".no-btn").style.display = "none";
+        popUpMessage.textContent = `Phew! Thanks for not deleting me (${categoryName})`;
+        setTimeout(() => {
+            popUpMessage.textContent = "";
+            popup.style.display = "none";
+        }, 2000);
+    });
+}
+
+// Function to delete category and bookmarks
+async function deleteCategoryAndBookmarks(categoryID, categoryName, count, word, popUpMessage, popup, isEditing) {
+    try {
+        await window.deleteBookmarksInCategory(categoryID, true);
+        popUpMessage.textContent = `Category ${categoryName} and ${count} ${word} have been deleted successfully`;
+        popUpMessage.style.color = "green";
+        await renderCategories(isEditing);
+        await loadBookmarkSection();
+    } catch {
+        popUpMessage.textContent = `Failed to delete category ${categoryName} and ${count} ${word}`;
+        popUpMessage.style.color = "red";
+    } finally {
+        const noBtn = document.getElementById("delete-popup").querySelector(".no-btn");
+        noBtn.style.display = "none";
+        setTimeout(() => {
+            popUpMessage.textContent = "";
+            popup.style.display = "none";
+        }, 2000);
+    }
+}
+
+// Function to delete only the category and not the bookmarks
+async function deleteCategoryOnlyPreserveBookmarks(categoryID, categoryName, popUpMessage, popup, isEditing) {
+    try {
+        await window.deleteBookmarksInCategory(categoryID, false);
+        popUpMessage.textContent = `Category ${categoryName} has been deleted successfully`;
+        popUpMessage.style.color = "green";
+        await renderCategories(isEditing);
+        await loadBookmarkSection();
+    } catch {
+        popUpMessage.textContent = `Failed to delete category ${categoryName}`;
+        popUpMessage.style.color = "red";
+    } finally {
+        const noBtn = document.getElementById("delete-popup").querySelector(".no-btn");
+        noBtn.style.display = "none";
+        setTimeout(() => {
+            popUpMessage.textContent = "";
+            popup.style.display = "none";
+        }, 2000);
+    }
 }
 
 // Delete category
@@ -244,7 +306,9 @@ async function deleteCategory(categoryID){
         return false;
     }
 }
+// -------------------------------------- //
 
+// -------- Bookmarks Functions -------- //
 // Get all bookmarks
 async function getAllBookmarks(){
     try{
@@ -272,6 +336,7 @@ async function getAllBookmarks(){
     }
 }
 
+// Get bookmark details from google api and database
 async function getBookmarkDetails(bookmarks){
     const detailedBookmarks = [];
     console.log(bookmarks)
@@ -308,107 +373,89 @@ async function getBookmarkDetails(bookmarks){
 }
 
 // Function to display all bookmarks
-async function renderBookmarks(bookmarks){
+async function renderBookmarks(bookmarks) {
+    const bookmarkGrid = document.getElementById("bookmark-grid");
     const bookmarkMessage = document.getElementById("bookmark-message");
-    let bookmarksCount = bookmarks.length;
-    try{
-        const bookmarkGrid = document.getElementById("bookmark-grid");
-        bookmarkGrid.innerHTML = "";
-        bookmarkMessage.textContent = "Loading Bookmarks...";
-        if(bookmarksCount == 0){
-            bookmarkMessage.textContent = `You currently have 0 bookmarks`;
-            return;
-        }
-        for (const bookmark of bookmarks){
-            const bookmarkCard = document.createElement("div");
-            bookmarkCard.classList.add("bookmark-card");
 
-            bookmarkCard.innerHTML = `
-                <span class="close-btn">❌</span>
-                <div class="bookmark-img">
-                    ${bookmark.photo}
-                </div>
-                <div class="bookmark-content">
-                    <h3 class="bookmark-title" data-bookmark-id="${bookmark.bookmarkID}">${bookmark.name}</h3>
-                    <p><strong>Address:</strong> ${bookmark.address}</p>
-                    <p><strong>Open Now:</strong> ${bookmark.openNow}</p>
-                    <p class="category-line"><strong>Category:</strong> ${bookmark.category}</p>
-                    <p><strong>Bookmarked Date:</strong> ${bookmark.bookmarkedDate}</p>
-                    <div class="bookmark-footer">
-                        <a href="${bookmark.mapsLink}" class="bookmark-link" target="_blank">Take me there➤</a>
-                    </div>
-                </div>
-            `
-            const closeBtn = bookmarkCard.querySelector(".close-btn");
-            closeBtn.addEventListener("click", async () => {
-                const popup = document.getElementById("delete-popup");
-                const popUpMessage = popup.querySelector(".popup-message");
-                const yesBtn = popup.querySelector(".yes-btn");
-                const cancelBtn = popup.querySelector(".cancel-btn");
+    bookmarkGrid.innerHTML = "";
+    bookmarkMessage.textContent = "Loading Bookmarks...";
 
-                // Set message and show popup
-                popUpMessage.innerHTML = `Are you sure you want to delete <strong>${bookmark.name}</strong>? This action cannot be undone!`;
-                popup.style.display = "flex";
-
-                // Clean up old listeners
-                yesBtn.replaceWith(yesBtn.cloneNode(true));
-                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-
-                const newYesBtn = popup.querySelector(".yes-btn");
-                const newCancelBtn = popup.querySelector(".cancel-btn");
-
-                newYesBtn.addEventListener("click", async () => {
-                    await window.deleteBookmark(bookmark.bookmarkID);
-                    popUpMessage.textContent = `Successfully deleted ${bookmark.name} from bookmarks!`;
-                    bookmarkCard.remove();
-                    
-                    // Refresh the list 
-                    await loadBookmarkSection();
-                    setTimeout(() => {
-                        popUpMessage.textContent = "";
-                        popup.style.display = "none";
-                    }, 2000)
-                });
-
-                newCancelBtn.addEventListener("click", () => {
-                    popUpMessage.textContent = `Phew! Thanks for not deleting me (${bookmark.name})`;
-                    setTimeout(() => {
-                        popUpMessage.textContent = "";
-                        popup.style.display = "none";
-                    }, 2000);
-                });
-            });
-            bookmarkGrid.appendChild(bookmarkCard);
-
-        }
-        let bookmark = "bookmark";
-        if(bookmarksCount > 1){
-            bookmark = "bookmarks"
-        }
-        bookmarkMessage.textContent = `You currently have ${bookmarksCount} ${bookmark}`;
-    }catch(error){
-        console.error("Error loading bookmarks", error);
-        bookmarkMessage.textContent = `Error loading bookmarks`;
+    if (!bookmarks || bookmarks.length === 0) {
+        bookmarkMessage.textContent = "You currently have 0 bookmarks";
+        return;
     }
+
+    for (const bookmark of bookmarks) {
+        const bookmarkCard = createBookmarkCard(bookmark);
+        attachDeletePopup(bookmarkCard, bookmark);
+        bookmarkGrid.appendChild(bookmarkCard);
+    }
+
+    displayBookmarkMessage(bookmarks.length, bookmarkMessage);
 }
 
-// Reset poup buttons
-function resetPopupButtons() {
-    const popup = document.getElementById("delete-popup");
+// Function to create bookmark card
+function createBookmarkCard(bookmark) {
+    const card = document.createElement("div");
+    card.classList.add("bookmark-card");
 
-    const yesBtn = popup.querySelector(".yes-btn");
-    const noBtn = popup.querySelector(".no-btn");
-    const cancelBtn = popup.querySelector(".cancel-btn");
+    card.innerHTML = `
+        <span class="close-btn">❌</span>
+        <div class="bookmark-img">
+            ${bookmark.photo}
+        </div>
+        <div class="bookmark-content">
+            <h3 class="bookmark-title" data-bookmark-id="${bookmark.bookmarkID}">${bookmark.name}</h3>
+            <p><strong>Address:</strong> ${bookmark.address}</p>
+            <p><strong>Open Now:</strong> ${bookmark.openNow}</p>
+            <p class="category-line"><strong>Category:</strong> ${bookmark.category}</p>
+            <p><strong>Bookmarked Date:</strong> ${bookmark.bookmarkedDate}</p>
+            <div class="bookmark-footer">
+                <a href="${bookmark.mapsLink}" class="bookmark-link" target="_blank">Take me there➤</a>
+            </div>
+        </div>
+    `;
+    return card;
+}
 
-    const newYesBtn = yesBtn.cloneNode(true);
-    const newNoBtn = noBtn.cloneNode(true);
-    const newCancelBtn = cancelBtn.cloneNode(true);
+// Function to handle popup when deleting bookmarks
+function attachDeletePopup(bookmarkCard, bookmark) {
+    const closeBtn = bookmarkCard.querySelector(".close-btn");
 
-    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
-    noBtn.parentNode.replaceChild(newNoBtn, noBtn);
-    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    closeBtn.addEventListener("click", () => {
+        const popup = document.getElementById("delete-popup");
+        const popUpMessage = popup.querySelector(".popup-message");
 
-    return { newYesBtn, newNoBtn, newCancelBtn };
+        const { newYesBtn, newCancelBtn } = resetPopupButtons();
+
+        popUpMessage.innerHTML = `Are you sure you want to delete <strong>${bookmark.name}</strong>? This action cannot be undone!`;
+        popup.style.display = "flex";
+
+        newYesBtn.addEventListener("click", async () => {
+            await window.deleteBookmark(bookmark.bookmarkID);
+            popUpMessage.textContent = `Successfully deleted ${bookmark.name} from bookmarks!`;
+            bookmarkCard.remove();
+            await loadBookmarkSection();
+            setTimeout(() => {
+                popUpMessage.textContent = "";
+                popup.style.display = "none";
+            }, 2000);
+        });
+
+        newCancelBtn.addEventListener("click", () => {
+            popUpMessage.textContent = `Phew! Thanks for not deleting me (${bookmark.name})`;
+            setTimeout(() => {
+                popUpMessage.textContent = "";
+                popup.style.display = "none";
+            }, 2000);
+        });
+    });
+}
+
+// Function to display bookmark message
+function displayBookmarkMessage(count, bookmarkMessage) {
+    const word = count === 1 ? "bookmark" : "bookmarks";
+    bookmarkMessage.textContent = `You currently have ${count} ${word}`;
 }
 
 // Fucntion to formateDate
@@ -457,4 +504,4 @@ async function convertToDetailedBookmark(bookmark, placeData) {
         photo: placePhotoHTML
     };
 }
-
+// ------------------------------------- //
