@@ -1,10 +1,12 @@
+const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 let meals = [];
 let isEditing = false;
 let pendingDeleteID = null;
 
+// ─── Reset Form Mode ─────────────────────────────────────────────────────────────────────
 function resetFormMode() {
-  isEditing = false;
+  isEditing = false; //tells the rest of the app that it is not in edit mode in default
   document.getElementById('mealID').value = '';
   document.getElementById('form-title').innerHTML = '<i class="fas fa-plus-circle"></i> Add Meal Log';
   document.getElementById('editButtons').style.display = 'none';
@@ -12,87 +14,18 @@ function resetFormMode() {
 
   document.getElementById("manualCaloriesLabel").style.display = "none";
   document.getElementById("manualCalories").style.display = "none";
-  // document.getElementById("manualCaloriesNote").style.display = "none";
-
 }
 
+// ─── Show Manual Calorie Input ─────────────────────────────────────────────────────────────────────
 function showManualCalorieInput() {
   document.getElementById("manualCaloriesLabel").style.display = "block";
   document.getElementById("manualCalories").style.display = "block";
-  // document.getElementById("manualCaloriesNote").style.display = "block";
   document.getElementById("manualCalories").value = ''; // optional: clear field
 }
 
-// // Handle form submit (Create or Update)
-// document.getElementById('meal-form').addEventListener('submit', async function (e) {
-//   e.preventDefault();
-
-//   //test
-//   if (!currentUser) {
-//     alert("You must be logged in to log meals.");
-//     return;
-//   }
-
-//   const mealID = document.getElementById('mealID').value;
-//   const meal = {
-//     timeFrame: document.getElementById('timeFrame').value,
-//     foodItem: document.getElementById('foodItem').value,
-//     mealDate: document.getElementById('mealDate').value
-//   };
-
-//   // Include manualCalories only if it's visible
-//   const manualFieldVisible = document.getElementById("manualCalories").style.display === "block";
-//   if (manualFieldVisible) {
-//     const manualInput = document.getElementById('manualCalories').value.trim();
-//     meal.manualCalories = manualInput; // Could be empty or "unknown"
-//   }
-
-//   try {
-//     let response;
-//     if (isEditing) {
-//       response = await fetch(`http://localhost:3000/meals/${mealID}`, {
-//         method: 'PUT',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Authorization': `Bearer ${token}`
-//         },
-//         body: JSON.stringify(meal)
-//       });
-//     } else {
-//       response = await fetch('http://localhost:3000/meals', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Authorization': `Bearer ${token}`
-//         },
-//         body: JSON.stringify(meal)
-//       });
-//     }
-
-//     const result = await response.json();
-//     if(result.requiresManual){
-//       showManualCalorieInput();// display input
-//       alert("⚠️ Calorie data not found. Please enter it manually and submit again.");
-//       return; // stop here, wait for second submit
-//     }
-//     if (response.ok) {
-//       showSuccessModal("Meal log saved successfully!");
-//       this.reset();
-//       resetFormMode();
-//       loadMeals();
-//     } else {
-//       alert("❌ Error: " + result.error);
-//     }
-
-//   } catch (err) {
-//     console.error("❌ Network error:", err);
-//     alert("❌ Failed to connect to the server.");
-//   }
-// });
-
+// ─── Handles the submission of your meal log form  (adding and editing )─────────────────────────────────────────────────────────────────────
 document.getElementById('meal-form').addEventListener('submit', async function (e) {
   e.preventDefault();
-
   if (!currentUser) {
     alert("You must be logged in to log meals.");
     return;
@@ -100,27 +33,24 @@ document.getElementById('meal-form').addEventListener('submit', async function (
 
   const mealID = document.getElementById('mealID').value;
 
+  //Builds a meal object from the form input fields
   const meal = {
     timeFrame: document.getElementById('timeFrame').value,
     foodItem: document.getElementById('foodItem').value,
     mealDate: document.getElementById('mealDate').value
   };
 
-  // Include manualCalories if it's visible
-  // const manualFieldVisible = document.getElementById("manualCalories").style.display === "block";
-  // if (manualFieldVisible) {
-  //   const manualInput = document.getElementById('manualCalories').value.trim();
-  //   meal.manualCalories = manualInput !== "" ? manualInput : null; // Could be empty or "unknown"
-  // }
-  
+  //If the user typed in calories manually, include it in the object
+  //If the field is empty and set it to null
   const manualInput = document.getElementById('manualCalories').value.trim();
   meal.manualCalories = manualInput !== "" ? manualInput : null;
 
   try {
     let response;
+    //If editing existing meal
     if (isEditing) {
       console.log("Submitting meal:", meal);
-      response = await fetch(`http://localhost:3000/meals/${mealID}`, {
+      response = await fetch(`${apiBaseUrl}/meals/${mealID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -128,8 +58,10 @@ document.getElementById('meal-form').addEventListener('submit', async function (
         },
         body: JSON.stringify(meal)
       });
-    } else {
-      response = await fetch('http://localhost:3000/meals', {
+    }
+    //If adding new meal 
+    else {
+      response = await fetch(`${apiBaseUrl}/meals`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,12 +96,14 @@ document.getElementById('meal-form').addEventListener('submit', async function (
   }
 });
 
+// ─── Render Meals Table ─────────────────────────────────────────────────────────────────────
 function renderMealsTable() {
   const body = document.getElementById("mealsBody");
   const summary = document.getElementById("totalCalories");
   body.innerHTML = '';
   let total = 0;
 
+  //If there are no meals
   if (meals.length === 0) {
     body.innerHTML = `<tr id="emptyState">
         <td colspan="5" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No meals logged yet. Add one above to get started.</td>
@@ -178,8 +112,11 @@ function renderMealsTable() {
     return;
   }
 
+  //Loop through each meal
   meals.forEach(meal => {
     const row = document.createElement('tr');
+
+    //Fill the row with meal data
     row.innerHTML = `
       <td>${meal.timeFrame}</td>
       <td>${meal.foodItem}</td>
@@ -194,21 +131,28 @@ function renderMealsTable() {
           </div>
         </div>
       </td>`;
+    
+    //Append row and update total
     body.appendChild(row);
     total += Number(meal.calories || 0);
   });
 
+  //Update total calories display
   summary.innerText = total.toString();
 }
 
+// ─── Load Meals ─────────────────────────────────────────────────────────────────────
 async function loadMeals() {
   try {
     const date = document.getElementById("filterByDate").value;
-    const query = date ? `?mealDate=${date}` : '';
-    const response = await fetch(`http://localhost:3000/meals/me${query}`, {
+    const query = date ? `?mealDate=${date}` : ''; // If a date is provided, builds a query string like ?mealDate=2025-07-26
+    
+    //Fetch meals from backend
+    const response = await fetch(`${apiBaseUrl}/meals/me${query}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    //Check for session expiration
     if (response.status === 401) {
       document.getElementById("mealsBody").innerHTML = `
         <tr><td colspan="5" style="text-align:center; color: red;">
@@ -216,9 +160,11 @@ async function loadMeals() {
       return;
     }
 
+    //Handle successful response
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load meals");
 
+    //Update UI
     meals = data;
     renderMealsTable();
   } catch (err) {
@@ -229,20 +175,22 @@ async function loadMeals() {
   }
 }
 
+// ─── Edit Meals ─────────────────────────────────────────────────────────────────────
 function editMeal(mealID) {
+  //Search the global meals array for a meal that matches the given mealID
+  //Uses .find() to return the full meal object
   const meal = meals.find(m => m.mealID === mealID);
-  if (!meal) return alert("Meal not found.");
+  if (!meal) return alert("Meal not found."); // If the meal isn't found, it alerts the user
 
+  //Pre-fill the form with the meal's data
   document.getElementById("mealID").value = meal.mealID;
   document.getElementById("timeFrame").value = meal.timeFrame;
   document.getElementById("foodItem").value = meal.foodItem;
   document.getElementById("mealDate").value = meal.mealDate;
-  document.getElementById("manualCalories").value = meal.manualCalories;
 
-  // ✅ Always show and pre-fill manualCalories field
+  // Always show and pre-fill manualCalories field
   document.getElementById("manualCaloriesLabel").style.display = "block";
   document.getElementById("manualCalories").style.display = "block";
-  // document.getElementById("manualCaloriesNote").style.display = "block";
   document.getElementById("manualCalories").value = (meal.calories !== null) ? meal.calories : '';
   
   document.getElementById('form-title').innerHTML = '<i class="fas fa-edit"></i> Edit Meal Log';
@@ -251,21 +199,24 @@ function editMeal(mealID) {
   isEditing = true;
 }
 
+// ─── Delete Meals ─────────────────────────────────────────────────────────────────────
 function deleteMeal(mealID) {
   if (!currentUser) {
     alert("You must be logged in to delete a meal log.");
     return;
   }
-  pendingDeleteID = mealID;
+  pendingDeleteID = mealID; // Temporarily stores the mealID in a global variable
   document.getElementById("deleteModal").style.display = "flex";
 }
 
+// ─── Confirm Delete ─────────────────────────────────────────────────────────────────────
 document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
   const mealID = pendingDeleteID;
   document.getElementById("deleteModal").style.display = "none";
 
+  //Send DELETE request to backend
   try {
-    const response = await fetch(`http://localhost:3000/meals/${mealID}`, {
+    const response = await fetch(`${apiBaseUrl}/meals/${mealID}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
@@ -286,116 +237,58 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async () =
   pendingDeleteID = null;
 });
 
+// ─── Cancel Delete  ─────────────────────────────────────────────────────────────────────
 document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
   document.getElementById("deleteModal").style.display = "none";
   pendingDeleteID = null;
 });
 
+// ─── Show Success Message  ─────────────────────────────────────────────────────────────────────
 function showSuccessModal(message) {
   document.getElementById("successMessage").innerText = message;
   document.getElementById("successModal").style.display = "flex";
 }
 
+// ─── Close Success Message ─────────────────────────────────────────────────────────────────────
 function closeSuccessModal() {
   document.getElementById("successModal").style.display = "none";
 }
 
+// ─── Cancel Edit Button ─────────────────────────────────────────────────────────────────────
 document.getElementById("cancelEditButton").addEventListener("click", function () {
   document.getElementById("meal-form").reset();
   resetFormMode();
 });
 
+// ─── Filter by Date  ─────────────────────────────────────────────────────────────────────
 document.getElementById("filterByDate").addEventListener("change", () => {
-  loadMeals();
+  loadMeals(); //to refresh meals table again if filter by date is clicked
 });
 
-// Dropdown menu toggle
+// ─── Toggles the visibility of the dropdown menu  ─────────────────────────────────────────────────────────────────────
 document.addEventListener("click", function (e) {
+  //Adds a global click listener to the entire page.
+  //Every time the user clicks anywhere, this function runs.
   const allMenus = document.querySelectorAll(".dropdown-menu");
+  //Selects all dropdown menus (the small boxes that contain "Edit" and "Delete").
+
+  //If user clicks the ":" icon
   if (e.target.classList.contains("dropdown-trigger")) {
     const menu = e.target.nextElementSibling;
     allMenus.forEach(m => (m !== menu ? (m.style.display = "none") : null));
     menu.style.display = menu.style.display === "block" ? "none" : "block";
-    e.stopPropagation();
-  } else {
+    e.stopPropagation(); //Prevents the click from bubbling up and triggering the else block below
+  } 
+  else {
     allMenus.forEach(m => (m.style.display = "none"));
+    //If the click was not on a dropdown-trigger, then close all menus
   }
 });
 
+// ─── Set up my app's initial state  ─────────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async function () {
   currentUser = await getToken(token);
   console.log("Current user:", currentUser);
   loadMeals();
 });
 
-// // ─── Reminder Alert Banner ─────────────────────────────────────────────────────────
-// document.addEventListener("DOMContentLoaded", async function () {
-//   currentUser = await getToken(token);
-//   console.log("Current user:", currentUser);
-//   loadMeals();
-
-//   try {
-//     if (!currentUser) return;
-
-//     const response = await fetch("http://localhost:3000/appointments/me", {
-//       headers: { Authorization: `Bearer ${token}` }
-//     });
-
-//     if (!response.ok) return;
-
-//     const appointments = await response.json();
-//     const today = new Date().toISOString().split("T")[0];
-
-//     const todaysReminders = appointments.filter(appt => {
-//       if (!appt.reminderDate) return false;
-//       const formatted = new Date(appt.reminderDate).toISOString().split("T")[0];
-//       return formatted === today;
-//     });
-
-//     if (todaysReminders.length > 0) {
-//       showReminderAlert(todaysReminders);
-//     }
-//   } catch (err) {
-//     console.error("Reminder error:", err);
-//   }
-// });
-
-// // Function to dismiss the reminder banner
-// function dismissReminderBanner() {
-//   const banner = document.getElementById("reminderBanner");
-//   if (banner) {
-//     banner.classList.remove("active"); // Slide out
-//     setTimeout(() => banner.remove(), 300); // Wait for animation to finish
-//     document.body.style.paddingTop = "0";
-//   }
-// }
-
-// //Function to show the reminder alert banner
-// function showReminderAlert(reminders) {
-//   const alertDiv = document.createElement("div");
-//   alertDiv.id = "reminderBanner";
-
-//   const grouped = {};
-//   for (let appt of reminders) {
-//     const formattedDate = new Date(appt.appointmentDate).toLocaleDateString('en-GB');
-//     if (!grouped[formattedDate]) grouped[formattedDate] = [];
-//     grouped[formattedDate].push(appt.appointmentID);
-//   }
-
-//   const links = Object.entries(grouped).map(([date, ids]) => {
-//     return `<a href="appointment_management.html?scrollTo=${ids.join(',')}" class="appt-link">${date}</a>`;
-//   }).join(", ");
-
-//   const plural = reminders.length === 1 ? "appointment" : "appointments";
-
-//   alertDiv.innerHTML = `
-//     <span class="close-banner" onclick="dismissReminderBanner()">✖</span>
-//     🔔 <strong>Reminder:</strong> You have ${reminders.length} ${plural} for ${links}.
-//   `;
-
-//   document.body.prepend(alertDiv);
-//   document.body.style.paddingTop = "60px";
-
-//   // 👉 Trigger the slide-in after rendering
-//   setTimeout(() => alertDiv.classList.add("active"), 10);
-// }
