@@ -36,6 +36,8 @@ const { validateRegistration } = require('./middlewares/registration_validation'
 const { validateLogin } = require('./middlewares/login_validation');
 const mealValidator =require("./middlewares/meal_validation");
 
+const { profile } = require("console");
+
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
 const port = process.env.PORT || 3000;
@@ -128,6 +130,7 @@ app.listen(3000, () => {
 // Profile-related routes
 app.get('/api/profile/:userID', verifyJWT, profileController.getProfile);
 app.post('/api/profile/update', verifyJWT, validateUserProfile, profileController.updateProfile);
+app.delete("/api/profile/:userID/remove-picture", verifyJWT, profileController.removeProfilePicture);
 
 // Health Records routes
 app.get("/api/healthRecords/:userID", healthRecordsController.getHealthRecords); // Read

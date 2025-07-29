@@ -1,7 +1,6 @@
 let currentUser = null;
 const apiBaseURl = "http://localhost:3000/api";
 
-// Load user data when page loads
 window.addEventListener('load', async () => {
   currentUser = await getToken(token);
   getUserProfile(currentUser);
@@ -16,7 +15,6 @@ async function getUserProfile(currentUser) {
   })
     .then(res => res.json())
     .then(data => {
-      console.log("✅ Loaded profile:", data);
       document.getElementById("fullname").value = data.fullName || "";
       document.getElementById("dob").value = data.dob ? data.dob.split('T')[0] : "";
       document.getElementById("gender").value = data.gender || "";
@@ -28,17 +26,15 @@ async function getUserProfile(currentUser) {
       populateCheckboxes(data.allergies, "allergy-options", "other-allergy", "allergy-other-check");
       populateCheckboxes(data.chronicConditions, "condition-options", "other-conditions", "condition-other-check");
 
-      // Load profile picture if available
-      if (data.profilePicture) {
-        console.log("✅ Existing profile picture:", data.profilePicture);
-        document.getElementById("avatarPic").src = data.profilePicture;
-        document.getElementById("headerProfilePic").src = data.profilePicture;
-        document.getElementById("profilePicture").value = data.profilePicture; // ✅ Preload
-      }
+      // ✅ Load profile picture
+      const profilePic = data.profilePicture || "../images/default-avatar.png";
+      document.getElementById("avatarPic").src = profilePic;
+      document.getElementById("profilePicture").value = data.profilePicture || "";
+      const headerImg = document.getElementById("headerProfilePic");
+      if (headerImg) headerImg.src = profilePic;
     })
     .catch(err => {
       console.error("❌ Failed to load profile:", err);
-      alert("❌ Failed to load profile data.");
     });
 }
 
@@ -76,7 +72,7 @@ function getCombinedCheckboxes(containerId, otherInputId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Toggle "Others" input for allergies and conditions
+  // ✅ Toggle "Others"
   document.getElementById("allergy-other-check").addEventListener("change", e => {
     document.getElementById("other-allergy").style.display = e.target.checked ? "block" : "none";
   });
@@ -86,43 +82,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const uploadBtn = document.getElementById("uploadBtn");
   const avatarPic = document.getElementById("avatarPic");
-  const headerProfilePic = document.getElementById("headerProfilePic");
 
-  // ✅ Cloudinary Upload Widget
+  // ✅ Cloudinary Upload
   uploadBtn.addEventListener("click", function () {
-    console.log("📤 Opening Cloudinary Widget...");
     cloudinary.openUploadWidget({
-      cloudName: 'dvgx5dw12', // ✅ Replace with your Cloudinary cloud name
-      uploadPreset: 'healthyLah_unsigned', // ✅ Replace with your unsigned preset
+      cloudName: 'dvgx5dw12',
+      uploadPreset: 'healthyLah_unsigned',
       sources: ['local', 'url', 'camera'],
       multiple: false,
       cropping: true,
       folder: 'HealthyLah_ProfilePics',
       maxFileSize: 1000000
     }, function (error, result) {
-      console.log("📥 Cloudinary Callback Fired");
       if (error) {
-        console.error("❌ Cloudinary upload error:", error);
+        console.error("❌ Cloudinary error:", error);
         return;
       }
-      console.log("Cloudinary Result:", result);
       if (result?.event === "success") {
         const imageUrl = result.info.secure_url;
-        console.log("✅ Image uploaded:", imageUrl);
-        document.getElementById("avatarPic").src = imageUrl;
-        document.getElementById("profilePicture").value = imageUrl; // ✅ Save new URL
+        avatarPic.src = imageUrl;
+        document.getElementById("profilePicture").value = imageUrl;
       }
     });
   });
 
-  // Handle profile form submission
-  document.querySelector('.profile-form').addEventListener('submit', function (e) {
-    e.preventDefault();
+  // ✅ Remove Profile Picture
+  const removeBtn = document.getElementById("removeProfilePic");
+  if (removeBtn) {
+    removeBtn.addEventListener("click", () => {
+      avatarPic.src = "../images/default-avatar.png";
+      document.getElementById("profilePicture").value = "";
+    });
+  }
 
-    let currentProfilePicture = document.getElementById("profilePicture").value;
-    if (!currentProfilePicture) {
-      console.warn("⚠️ No image uploaded and no existing image, sending null");
-    }
+  // ✅ Form Submit
+  document.querySelector('.profile-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
     const formData = {
       userID: currentUser.userID,
@@ -135,32 +130,32 @@ document.addEventListener('DOMContentLoaded', () => {
       emergencyNumber: document.getElementById("emergencyNumber").value,
       address: document.getElementById("address").value,
       bio: document.getElementById("bio").value,
-      profilePicture: currentProfilePicture || null
+      profilePicture: document.getElementById("profilePicture").value || null
     };
 
-    console.log("📦 Sending data:", formData);
+    try {
+      const res = await fetch(`${apiBaseURl}/profile/update`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
 
-    fetch(`${apiBaseURl}/profile/update`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(formData)
-    })
-    .then(async res => {
       const data = await res.json();
       if (!res.ok) {
-        console.error("❌ API Error:", data);
-        alert(`❌ Failed to update profile: ${data.errors ? data.errors.join(", ") : data.error}`);
+        alert(`❌ Failed to update profile: ${data.error}`);
         return;
       }
-      console.log("✅ Update Success:", data);
+
       alert('✅ Profile updated successfully!');
-    })
-    .catch(err => {
+      const headerImg = document.getElementById("headerProfilePic");
+      headerImg.src = formData.profilePicture ? formData.profilePicture : "../images/default-avatar.png";
+
+    } catch (err) {
       console.error('❌ Fetch error:', err);
       alert('❌ Failed to update profile.');
-    });
+    }
   });
 });
