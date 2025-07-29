@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Health Reminders</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/health_reminders.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/settings_translation.js" defer></script>
+</head>
+<body>
+    <header class="top-bar">
+    <div class="logo-bar">
+      <div class="logo-container">
+        <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img">
+      </div>
+      <div class="profile" id="user-profile">
+            <!-- Dynamic profile -->
+      </div>
+    </div>
+    <nav class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="about_us.html">About Us</a>
+      <a href="weather.html">Weather</a>
+      <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+      <a href="health.html">Health</a>
+      <a href="post_forum.html">Post</a>
+    </nav>
+  </header>
+
+  <main class="reminders-main">
+    <section class="page-title">
+      <h1>Set Health Reminders</h1>
+    </section>
+
+    <!-- Green container holds all reminders sections -->
+    <section class="reminders-box">
+
+      <!-- Today's Reminders -->
+      <h2 id="today-header">Today's Reminders</h2>
+      <table class="reminders-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Task</th>
+            <th>Frequency</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="reminders-table-body">
+          <!-- Rows loaded dynamically -->
+        </tbody>
+      </table>
+      <div class="sync-container">
+        <button class="sync-btn"><i class="fas fa-calendar-alt"></i> Sync to Calendar</button>
+      </div>
+
+      <!-- Upcoming Reminders -->
+      <h2>Upcoming Reminders</h2>
+      <table class="reminder-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Task</th>
+            <th>Frequency</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="upcoming-reminders-body">
+          <!-- Populated dynamically by JS -->
+        </tbody>
+      </table>
+
+      <!-- Add New Reminders -->
+      <form class="reminders-form">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="med-name">Reminder Name</label>
+      <input type="text" id="reminder-name" placeholder="e.g., Drink Water" required>
+    </div>
+    <div class="form-group">
+      <label for="time">Time(s)</label>
+      <input type="time" id="time" required>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="frequency">Frequency</label>
+      <select id="frequency" required>
+        <option value="">Select frequency</option>
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="As Needed">As Needed</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="start-date">Start Date</label>
+      <input type="date" id="start-date" required>
+    </div>
+    <div class="form-group">
+      <label for="end-date">End Date</label>
+      <input type="date" id="end-date">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="notes">Notes</label>
+      <input type="text" id="notes" placeholder="(Optional)" required>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="add-btn"><i class="fas fa-plus"></i> Add Reminder</button>
+  </div>
+</form>
+
+  </main>
+
+  <footer>
+    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+    <div class="social-links" style="display:inline-block;">
+      <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
+      <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
+      <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
+      </a>
+      <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
+      <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
+      </a>
+      <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
+        <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
+      </a>
+    </div>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/health_reminders.js" defer></script>
+</body>
+</html>

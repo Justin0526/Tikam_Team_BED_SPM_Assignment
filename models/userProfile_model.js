@@ -5,26 +5,15 @@ async function getUserProfile(userID) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const request = connection.request();
-    request.input('userID', sql.Int, userID);
-    const result = await request.query("SELECT * FROM UserProfile WHERE userID = @userID");
-
-    if (result.recordset.length === 0) {
-      return null;
-    }
-
-    return result.recordset[0];
+    const result = await connection.request()
+      .input('userID', sql.Int, userID)
+      .query("SELECT userID, fullName, dob, gender, allergies, chronicConditions, emergencyName, emergencyNumber, address, bio, profilePicture FROM UserProfile WHERE userID = @userID");
+    return result.recordset.length ? result.recordset[0] : null;
   } catch (error) {
     console.error("❌ Database error (getUserProfile):", error);
     throw error;
   } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (closeError) {
-        console.error("⚠️ Error closing connection:", closeError);
-      }
-    }
+    if (connection) await connection.close();
   }
 }
 
@@ -33,7 +22,6 @@ async function updateUserProfile(userID, data) {
   try {
     connection = await sql.connect(dbConfig);
     const request = connection.request();
-
     request.input('userID', sql.Int, userID);
     request.input('fullName', sql.VarChar(100), data.fullName);
     request.input('dob', sql.Date, data.dob);
@@ -44,6 +32,7 @@ async function updateUserProfile(userID, data) {
     request.input('emergencyNumber', sql.VarChar(20), data.emergencyNumber);
     request.input('address', sql.VarChar(255), data.address);
     request.input('bio', sql.VarChar(500), data.bio);
+    request.input('profilePicture', sql.VarChar(500), data.profilePicture);
 
     const result = await request.query(`
       UPDATE UserProfile SET
@@ -56,27 +45,17 @@ async function updateUserProfile(userID, data) {
         emergencyNumber = @emergencyNumber,
         address = @address,
         bio = @bio,
+        profilePicture = @profilePicture,  -- ✅ Must be here
         updatedAt = GETDATE()
       WHERE userID = @userID
     `);
-
-    console.log("✅ DB Update result:", result.rowsAffected);
     return result;
   } catch (error) {
     console.error("❌ Database error (updateUserProfile):", error);
     throw error;
   } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (closeError) {
-        console.error("⚠️ Error closing connection:", closeError);
-      }
-    }
+    if (connection) await connection.close();
   }
 }
 
-module.exports = {
-  getUserProfile,
-  updateUserProfile,
-};
+module.exports = { getUserProfile, updateUserProfile };
