@@ -1,9 +1,9 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-async function getAllPosts() {
-  const pool  = await sql.connect(dbConfig);
-  const result = await pool.request().query(`
+async function getAllPosts(date, owner) {
+  const pool = await sql.connect(dbConfig);
+  let query = `
     SELECT 
       p.PostID,
       p.UserID, 
@@ -13,10 +13,26 @@ async function getAllPosts() {
       p.CreatedAt
     FROM dbo.Posts p
     JOIN dbo.Users u ON p.UserID = u.UserID
-    ORDER BY p.CreatedAt DESC
-  `);
+    WHERE 1=1
+  `;
+  // Dynamic filters
+  if (date) {
+    query += ` AND CAST(p.CreatedAt AS DATE) = @date`;
+  }
+  if (owner) {
+    query += ` AND u.FullName LIKE '%' + @owner + '%'`;
+  }
+
+  query += ` ORDER BY p.CreatedAt DESC`;
+
+  const request = pool.request();
+  if (date) request.input("date", sql.Date, date);
+  if (owner) request.input("owner", sql.VarChar, owner);
+
+  const result = await request.query(query);
   return result.recordset;
 }
+
 
 async function getPostById(id) {
   const pool  = await sql.connect(dbConfig);

@@ -3,7 +3,8 @@ const postModel = require("../models/posts_model");
 // ─── Posts ───────────────────────────────────────────────────────────────────
 async function getAllPosts(req, res) {
   try {
-    const posts = await postModel.getAllPosts();
+    const { date, owner } = req.query; // capture filters from query params
+    const posts = await postModel.getAllPosts(date, owner);
     res.json(posts);
   } catch (err) {
     console.error("getAllPosts:", err);
