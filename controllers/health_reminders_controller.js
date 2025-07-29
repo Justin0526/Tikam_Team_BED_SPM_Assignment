@@ -3,6 +3,7 @@ const dbConfig = require("../dbConfig");
 
 const Reminder = require("../models/health_reminders_model");
 
+// GET /reminders
 async function getReminders(req, res) {
   try {
     const userID = req.user.userID;
@@ -14,6 +15,7 @@ async function getReminders(req, res) {
   }
 }
 
+// PUT /reminders/:id/mark-taken
 async function markReminderTaken(req, res) {
   const id = req.params.id;
 
@@ -30,19 +32,35 @@ async function markReminderTaken(req, res) {
   }
 }
 
+// ✅ NEW: GET /reminders/upcoming
+async function getUpcomingReminders(req, res) {
+  const userID = req.user.userID;
+  const now = new Date();
+  const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+
+  try {
+    const reminders = await Reminder.fetchUpcomingReminders(userID, now, oneHourLater);
+    res.status(200).json(reminders);
+  } catch (err) {
+    console.error("Error fetching upcoming reminders:", err);
+    res.status(500).json({ message: "Failed to fetch upcoming reminders" });
+  }
+}
+
+// POST /reminders
 async function createReminder(req, res) {
   try {
     const userID = req.user.userID;
     const { title, reminderTime, frequency, message, startDate, endDate } = req.body;
 
     await Reminder.createReminder({
-    userID,
-    title,
-    reminderTime,
-    frequency,
-    message,
-    startDate,
-    endDate
+      userID,
+      title,
+      reminderTime,
+      frequency,
+      message,
+      startDate,
+      endDate
     });
 
     res.status(201).json({ message: "Reminder added" });
@@ -55,5 +73,6 @@ async function createReminder(req, res) {
 module.exports = {
   getReminders,
   markReminderTaken,
+  getUpcomingReminders,
   createReminder
 };

@@ -5,126 +5,141 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = await getToken(userToken);
   if (!user) return;
 
-  loadReminders(userToken);
+  // Auto-fill the start date field with today's date
+  const startDateInput = document.getElementById("start-date");
+  if (startDateInput) {
+    startDateInput.valueAsDate = new Date(); // auto-fills with today's date
+  }
+
+  loadReminders(userToken);          // Load today's reminders
+  loadUpcomingReminders();           // Load upcoming reminders
   document.querySelector(".reminders-form").addEventListener("submit", (e) => {
     handleAddReminder(e, userToken);
   });
 });
 
 function formatTime(time) {
-  let hour, minute;
-
-  if (typeof time === "string" && time.includes("T")) {
-    const date = new Date(time);
-    hour = date.getUTCHours(); // use UTC to avoid timezone shifts
-    minute = date.getUTCMinutes();
-  } else if (typeof time === "string") {
-    [hour, minute] = time.split(":").map(Number);
+  // Handle "HH:mm:ss" or full ISO datetime strings
+  if (time.includes("T")) {
+    const parts = time.split("T")[1].split(":");
+    let hour = parseInt(parts[0]);
+    const minute = parseInt(parts[1]);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${String(minute).padStart(2, "0")} ${ampm}`;
   } else {
-    return "Invalid";
+    const [hourStr, minuteStr] = time.split(":");
+    let hour = parseInt(hourStr, 10);
+    const minute = parseInt(minuteStr, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${String(minute).padStart(2, "0")} ${ampm}`;
   }
-
-  const ampm = hour >= 12 ? "PM" : "AM";
-  const hour12 = hour % 12 || 12;
-  const paddedMin = String(minute).padStart(2, "0");
-
-  return `${hour12}:${paddedMin} ${ampm}`;
 }
 
+/**
+ * Loads today's reminders (Active Reminders section).
+ */
 async function loadReminders(token) {
   try {
-    // Set today's date beside "Your active reminders"
+    // Set header date
     const todayHeader = document.getElementById("today-header");
     const today = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     todayHeader.textContent = `Today's Reminders - ${today.toLocaleDateString('en-GB', options)}`;
 
+    // Fetch reminders
     const res = await fetch(`${apiBaseUrl}/reminders`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
 
     if (res.status === 401) {
-      console.error("Unauthorized: Token may be missing or invalid.");
       alert("Session expired. Please log in again.");
       return;
     }
 
     if (!res.ok) throw new Error(`Failed to load reminders: ${res.status}`);
-
     let reminders = await res.json();
+
+    const activeBody = document.getElementById("reminders-table-body");
+    activeBody.innerHTML = "";
 
     if (!Array.isArray(reminders) || reminders.length === 0) {
       console.warn("No reminders returned from API.");
+      return;
     }
 
-    // ✅ SORT reminders by time
-    reminders.sort((a, b) => {
-      const timeA = new Date(`${a.startDate}T${a.reminderTime}`);
-      const timeB = new Date(`${b.startDate}T${b.reminderTime}`);
-      return timeA - timeB; // Ascending order (earliest first)
-    });
-
-    const activeBody = document.getElementById("reminders-table-body");
-    const upcomingBody = document.getElementById("upcoming-reminders-body");
-    activeBody.innerHTML = "";
-    upcomingBody.innerHTML = "";
-
+    // Sort by time and filter today's active reminders
     const now = new Date();
-    now.setSeconds(0, 0);
     const currentDate = new Date(now);
     currentDate.setHours(0, 0, 0, 0);
 
-    let upcomingFound = false;
+    reminders.sort((a, b) => a.reminderTime.localeCompare(b.reminderTime));
 
-    // ✅ Active Reminders (Show only today's reminders that are NOT taken)
     reminders.forEach(r => {
       if (r.status !== "Taken") {
-        const timeStr = formatTime(r.reminderTime);
         const start = new Date(r.startDate);
         const end = r.endDate ? new Date(r.endDate) : null;
-
         start.setHours(0, 0, 0, 0);
         if (end) end.setHours(0, 0, 0, 0);
 
         if (start <= currentDate && (!end || end >= currentDate)) {
+          const timeStr = formatTime(r.reminderTime);
           activeBody.innerHTML += generateReminderRow(r, timeStr);
         }
       }
     });
 
-    // ✅ Upcoming Reminders (within the next hour, only Not Taken)
-    reminders.forEach(r => {
-      if (r.status !== "Taken") {
-        const reminderTime = new Date(`${r.startDate}T${r.reminderTime}`);
-        const diffMinutes = (reminderTime - now) / (1000 * 60);
-
-        if (diffMinutes > 0 && diffMinutes <= 60) {
-          const timeStr = formatTime(r.reminderTime);
-          upcomingBody.innerHTML += generateReminderRow(r, timeStr);
-          upcomingFound = true;
-        }
-      }
-    });
-
-    // If no upcoming reminders
-    if (!upcomingFound) {
-      upcomingBody.innerHTML = `
-        <tr>
-          <td colspan="5" style="text-align:center; font-style:italic;">
-            No upcoming reminders in the next hour
-          </td>
-        </tr>
-      `;
-    }
-
-    attachReminderMenuButtons();
-    attachMarkButtons();
   } catch (err) {
     console.error("Error loading reminders:", err);
   }
 }
 
-// Helper function to generate reminder rows
+/**
+ * Loads upcoming reminders in the next hour (Upcoming Reminders section).
+ */
+async function loadUpcomingReminders() {
+  try {
+    const res = await fetch(`${apiBaseUrl}/reminders/upcoming`, {
+      headers: { "Authorization": `Bearer ${userToken}` }
+    });
+
+    const upcomingBody = document.getElementById("upcoming-reminders-body");
+    upcomingBody.innerHTML = "";
+
+    if (!res.ok) {
+      console.error("Failed to fetch upcoming reminders:", res.status);
+      upcomingBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Error loading upcoming reminders.</td></tr>`;
+      return;
+    }
+
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      upcomingBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No upcoming reminders in the next hour.</td></tr>`;
+      return;
+    }
+
+    data.forEach(r => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><i class="fas fa-clock"></i> ${formatTime(r.reminderTime)}</td>
+        <td>${r.title}</td>
+        <td>${r.frequency}</td>
+        <td>${r.message || ""}</td>
+      `;
+      upcomingBody.appendChild(row);
+    });
+
+    attachReminderMenuButtons();
+    attachMarkButtons();
+  } catch (err) {
+    console.error("Error loading upcoming reminders:", err);
+  }
+}
+
+/**
+ * Generates HTML row for a reminder.
+ */
 function generateReminderRow(r, timeStr) {
   return `
     <tr>
@@ -145,6 +160,9 @@ function generateReminderRow(r, timeStr) {
   `;
 }
 
+/**
+ * Attach menu button actions.
+ */
 function attachReminderMenuButtons() {
   document.querySelectorAll('.menu-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -157,6 +175,9 @@ function attachReminderMenuButtons() {
   });
 }
 
+/**
+ * Attach "Mark Taken" button actions.
+ */
 function attachMarkButtons() {
   document.querySelectorAll('.mark-btn:not(.disabled)').forEach(button => {
     button.addEventListener('click', async () => {
@@ -173,13 +194,10 @@ function attachMarkButtons() {
 
         if (res.ok) {
           showNotification("Reminder marked as taken!");
-
-          // ✅ Instantly remove the row from the UI
           const row = button.closest("tr");
           if (row) row.remove();
+          loadUpcomingReminders(); // Refresh upcoming section
         } else {
-          const text = await res.text();
-          console.error(text);
           alert("Failed to mark as taken");
         }
       } catch (err) {
@@ -190,6 +208,9 @@ function attachMarkButtons() {
   });
 }
 
+/**
+ * Handles adding a new reminder.
+ */
 async function handleAddReminder(e, token) {
   e.preventDefault();
 
@@ -201,14 +222,7 @@ async function handleAddReminder(e, token) {
   const endDate = document.getElementById("end-date").value || null;
   const message = document.getElementById("notes").value.trim() || null;
 
-  const payload = {
-    title,
-    reminderTime,
-    frequency,
-    message,
-    startDate,
-    endDate
-  };
+  const payload = { title, reminderTime, frequency, message, startDate, endDate };
 
   try {
     const res = await fetch(`${apiBaseUrl}/reminders`, {
@@ -220,20 +234,21 @@ async function handleAddReminder(e, token) {
       body: JSON.stringify(payload)
     });
 
-    if (!res.ok) {
-      const errData = await res.json();
-      throw new Error(errData.message || "Failed to create reminder");
-    }
+    if (!res.ok) throw new Error("Failed to create reminder");
 
     alert("Reminder added successfully!");
     document.querySelector(".reminders-form").reset();
     loadReminders(token);
+    loadUpcomingReminders();
   } catch (err) {
     console.error("Error creating reminder:", err);
     alert("Failed to add reminder.");
   }
 }
 
+/**
+ * Displays a floating notification.
+ */
 function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "notification";
