@@ -129,6 +129,7 @@ app.delete("/medications/:medicationID", editMedicationsController.deleteMedicat
 
 // Health Reminders routes
 app.get("/reminders", verifyJWT, healthRemindersController.getReminders);
+app.get("/reminders/upcoming", verifyJWT, healthRemindersController.getUpcomingReminders);
 app.put("/reminders/:id/mark-taken", verifyJWT, healthRemindersController.markReminderTaken);
 app.post("/reminders", verifyJWT, healthRemindersController.createReminder);
 
