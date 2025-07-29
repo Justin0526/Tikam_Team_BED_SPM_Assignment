@@ -38,3 +38,26 @@ window.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("summary-condition").textContent = "N/A";
   }
 });
+
+function calculateBMI() {
+    const weight = parseFloat(document.getElementById("bmiWeight").value);
+    const height = parseFloat(document.getElementById("bmiHeight").value);
+
+    if (!weight || !height) {
+        alert("Please enter both weight and height.");
+        return;
+    }
+
+    const bmi = (weight / (height * height)).toFixed(2);
+    let advice = "";
+
+    if (bmi < 18.5) advice = "Underweight: Consider a balanced diet.";
+    else if (bmi < 24.9) advice = "Normal: Great job! Maintain your lifestyle.";
+    else if (bmi < 29.9) advice = "Overweight: Add more exercise and monitor diet.";
+    else advice = "Obese: Consult a doctor for a healthy plan.";
+
+    document.getElementById("bmiResult").innerHTML = `
+        <strong>BMI: ${bmi}</strong><br>
+        <span style="font-size: 14px; color: #555;">${advice}</span>
+    `;
+}
