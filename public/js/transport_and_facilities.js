@@ -101,7 +101,7 @@ async function getFacilities(location){
 async function getTransport(location, includedTypes, containerId, typeLabelFunction){
     const reqBody = {
         includedTypes,
-        maxResultCount: 2,
+        maxResultCount: 4,
         rankPreference: "DISTANCE",
         locationRestriction: {
             circle: {
@@ -171,7 +171,6 @@ async function renderTransport(results, containerId, typeLabelFunction){
          card.innerHTML = `
             <p><strong>Name: </strong> ${result.displayName.text}</p>
             <p><strong>Type: </strong> ${label} </p>
-            <a href='#' class="view-more" target="_blank">View more</a>
         `;
         container.appendChild(card);
     })
