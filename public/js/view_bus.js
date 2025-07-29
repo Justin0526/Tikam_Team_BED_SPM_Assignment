@@ -287,7 +287,7 @@ async function renderBusArrival(busStops){
         busStopBlock.innerHTML = `
             <div class="bus-stop-header">
               <strong>${busStop.busStopName}</strong>
-              <img class="bookmark" src="../images/icons8-bookmark-50.png">
+              <img width="50" height="50" id="bookmark" class="bookmark" src="../images/unfilled-bookmark-icon.png">
             </div>
             <div class="bus-cards"> </div>
             <div class="actions">

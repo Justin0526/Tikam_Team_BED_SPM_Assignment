@@ -1,14 +1,9 @@
-const apiBaseUrl = "http://localhost:3000";
+// const apiBaseUrl = "http://localhost:3000";
 let currentQuery = "";
 let nextPageToken = null;
 
-// get user token 
-window.addEventListener('load', async () => {
-  await getToken(token);
-});
-
 const goBtn = document.getElementById("go-btn");
-const backBtn = document.getElementById("back-to-search");
+const loadingMsg = document.getElementById("loading-message");
 const textQuery = document.getElementById("textQuery");
 const quickSearchContainer = document.getElementById("quicksearch-container");
 const resultsSection = document.getElementById("results-section");
@@ -28,8 +23,10 @@ goBtn.addEventListener('click', async (event) => {
     resultsGrid.innerHTML = "";
     loadMoreWrapper.innerHTML = "";
     quickSearchContainer.style.display = "block";
-    resultsSection.style.display = "none";
+    resultsSection.style.display = "block";
 
+    loadingMsg.textContent = `Loading results for ${currentQuery}...`;
+    
     await fetchFacilities(currentQuery);
 });
 
@@ -107,41 +104,10 @@ async function fetchFacilities(query, pageToken = null) {
             loadMoreWrapper.innerHTML = "";
         }
 
+        loadingMsg.textContent = ""
     } catch (error) {
         console.error("Error fetching facility", error);
         alert("Failed to load facility info");
-    }
-}
-
-// Get the photo of the facility
-async function fetchPhoto(placePhoto) {
-    try {
-        const maxHeightPx = 400;
-        const maxWidthPx = 300;
-        const urlQuery = `photoName=${placePhoto.name}&maxHeightPx=${maxHeightPx}&maxWidthPx=${maxWidthPx}`;
-
-        const response = await fetch(`${apiBaseUrl}/facilities/photo?${urlQuery}`, {
-            method: 'GET',
-        });
-
-        if (!response.ok) {
-            const errorBody = response.headers
-                .get("content-type")
-                ?.includes("application/json")
-                ? await response.json()
-                : { message: response.statusText };
-
-            throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
-        }
-
-        // Blob = Binary Large Object. It represents raw binary data like images, videos, pdf files...
-        // In the browser, a Blob is a wrapper for binary data so JavaScript can handle it like a normal object
-        const blob = await response.blob();
-        return URL.createObjectURL(blob); // this is your <img src>
-        
-    } catch (error) {
-        console.error("Error fetching photo", error);
-        alert("Failed to load photo");
     }
 }
 
@@ -162,25 +128,49 @@ async function renderFacilities(results) {
         let photoHTML = `<div class="picture-placeholder">No Picture Available</div>`;
         if (result.photos && result.photos.length > 0) {
             try {
-                const imageURL = await fetchPhoto(result.photos[0]);
+                const imageURL = await fetchPhoto(result.photos[0], 400, 300);
                 photoHTML = `<img class="picture-placeholder" src="${imageURL}">`;
             } catch (e) {
                 console.warn("Photo fetch failed, showing placeholder.");
             }
         }
-            resultCard.innerHTML = `
-                <div class="result-card-content">
-                    ${photoHTML}
-                    <img width="50" height="50" src="../images/icons8-bookmark-50.png" class="bookmark-icon" />
-                    <div class="facility-details">
-                    <p class="facility-name">${result.displayName.text}</p>
-                    <p><strong>Address:</strong> ${result.formattedAddress}</p>
-                    <p><strong>Currently Open:</strong> ${openNow}</p>
-                    <p><strong>Accessibility:</strong> ${accessibility}</p>
-                    </div>
+        resultCard.innerHTML = `
+            <div class="result-card-content">
+                ${photoHTML}
+                <img width="50" height="50" src="../images/unfilled-bookmark-icon.png" class="bookmark-icon" data-place-id="${result.id}"/>
+                <div class="facility-details">
+                <p class="facility-name">${result.displayName.text}</p>
+                <p><strong>Address:</strong> ${result.formattedAddress}</p>
+                <p><strong>Currently Open:</strong> ${openNow}</p>
+                <p><strong>Accessibility:</strong> ${accessibility}</p>
                 </div>
-                <a href="${result.googleMapsLinks.directionsUri}" class="take-me-btn" target="_blank" rel="noopener noreferrer">Take me there &gt;</a>
-            `;
+            </div>
+            <a href="${result.googleMapsLinks.directionsUri}" class="take-me-btn" target="_blank" rel="noopener noreferrer">Take me there &gt;</a>
+        `;
+
+        const bookmarkImg = resultCard.querySelector(".bookmark-icon");
+
+        // Check if already bookmarked
+        isFacilityBookmarked(result.id).then(bookmarked => {
+            bookmarkImg.src = bookmarked ? window.filledIcon : window.unfilledIcon;
+            bookmarkImg.setAttribute("data-bookmarked", bookmarked);
+
+            bookmarkImg.addEventListener("mouseenter", () => {
+                if (bookmarkImg.getAttribute("data-bookmarked") === "false") {
+                    bookmarkImg.src = window.filledIcon;
+                }
+            });
+
+            bookmarkImg.addEventListener("mouseleave", () => {
+                if (bookmarkImg.getAttribute("data-bookmarked") === "false") {
+                    bookmarkImg.src = window.unfilledIcon;
+                }
+            });
+        });
+
+        bookmarkImg.addEventListener("click", async () => {
+            await window.handleBookmarkClick(result.id, result.displayName.text);
+        });
 
         resultGrid.appendChild(resultCard);
     });
