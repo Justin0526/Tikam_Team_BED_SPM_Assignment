@@ -31,6 +31,30 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGlobalObserver();
 });
 
+function translateElementScope(element = document.body) { 
+  const lang = localStorage.getItem("language") || "en";
+  if (lang !== "en" && typeof translateText === "function") {
+    requestAnimationFrame(() => {
+      // Store original text once
+      element.querySelectorAll(".post-body, .comment-item .body, [data-translate]").forEach(el => {
+        if (!el.dataset.original) {
+          el.dataset.original = el.textContent.trim();
+        }
+      });
+
+      // Translate only from original
+      element.querySelectorAll(".post-body, .comment-item .body, [data-translate]").forEach(el => {
+        const originalText = el.dataset.original;
+        if (originalText) {
+          translateText(originalText, lang).then(translated => {
+            el.textContent = translated;
+          });
+        }
+      });
+    });
+  }
+}
+
 async function translatePage(targetLang, container = document.body) {
   const nodes = [];
   const placeholders = [];
@@ -75,8 +99,10 @@ async function translatePage(targetLang, container = document.body) {
     const translations = translatedText.split("\n@@\n");
 
     nodes.forEach((node, i) => {
-      node.textContent = translations[i] || node.textContent;
-      node.parentNode.dataset.translated = "true"; // ✅ Mark as translated
+    node.textContent = translations[i] || node.textContent;
+    if (node.parentNode && node.parentNode.nodeType === Node.ELEMENT_NODE) {
+      node.parentNode.dataset.translated = "true"; 
+      }
     });
 
     placeholders.forEach((p, i) => {
@@ -153,18 +179,4 @@ window.translateElements = async function translateElements(selector, lang) {
   console.log("Scoped translation complete");
 };
 
-// ✅ FINAL triggerTranslate function – global + scoped
-window.triggerTranslate = function () {
-  const lang = localStorage.getItem("language") || "en";
-  if (lang !== "en" && typeof translatePage === "function") {
-    setTimeout(() => {
-      translatePage(lang);
-      if (typeof translateElements === "function") {
-        translateElements(".post-body", lang);
-        translateElements(".new-comment", lang);
-        translateElements(".submit-comment", lang);
-        translateElements(".comment-toggle", lang);
-      }
-    }, 150);
-  }
-};
+translateElementScope(document.body); 
