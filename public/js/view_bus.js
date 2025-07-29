@@ -369,6 +369,10 @@ async function renderBusArrival(busStops){
 
         bookmarkImg.addEventListener("click", async () => {
             await window.handleBookmarkClick(placeID, placeName);
+            if (!token) {
+                alert("You must be signed in to create categories.");
+                return null;
+            }
         });
 
         
