@@ -169,6 +169,10 @@ async function renderFacilities(results) {
         });
 
         bookmarkImg.addEventListener("click", async () => {
+            if (!token) {
+                alert("You must be signed in to bookmark facilities");
+                return null;
+            }
             await window.handleBookmarkClick(result.id, result.displayName.text);
         });
 

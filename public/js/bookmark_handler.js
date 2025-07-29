@@ -93,6 +93,10 @@ async function createBookmarkIfNotExists(placeID, placeName){
 
 window.createCategoryIfNotExists = async function createCategoryIfNotExists(categoryName){
     try {
+        if (!token) {
+            alert("You must be signed in to create categories.");
+            return null;
+        }
         const response = await fetch(`${apiBaseUrl}/category`, {
             method: "POST",
             headers: getAuthHeaders(),
@@ -263,6 +267,11 @@ window.deleteBookmarksInCategory = async function deleteBookmarksInCategory(cate
 
 window.handleBookmarkClick = async function (placeID, placeName){
     const messageDiv = document.getElementById("message");
+
+    if (!token) {
+        alert("You must be signed in to create categories.");
+        return null;
+    }
 
     // Check if already bookmarked
     const isBookmarked = await isFacilityBookmarked(placeID);
