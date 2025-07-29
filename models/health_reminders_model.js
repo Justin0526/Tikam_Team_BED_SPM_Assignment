@@ -14,6 +14,29 @@ async function getRemindersByUser(userID) {
   return result.recordset;
 }
 
+// ✅ FIXED: Proper model-level fetchUpcomingReminders
+async function fetchUpcomingReminders(userID, now, oneHourLater) {
+  const pool = await sql.connect(dbConfig);
+  const nowStr = now.toTimeString().split(" ")[0]; 
+  const nextHourStr = oneHourLater.toTimeString().split(" ")[0];
+
+  const result = await pool.request()
+    .input("userID", sql.Int, userID)
+    .input("now", sql.VarChar(8), nowStr)
+    .input("nextHour", sql.VarChar(8), nextHourStr)
+    .query(`
+      SELECT reminder_id, title, reminderTime, frequency, message, startDate, endDate, status
+      FROM Reminders
+      WHERE userID = @userID
+        AND status != 'Taken'
+        AND CAST(reminderTime AS TIME) >= @now
+        AND CAST(reminderTime AS TIME) < @nextHour
+        AND CAST(GETDATE() AS DATE) BETWEEN CAST(startDate AS DATE) AND ISNULL(CAST(endDate AS DATE), GETDATE())
+    `);
+
+  return result.recordset;
+}
+
 async function createReminder({ userID, title, reminderTime, frequency, message, startDate, endDate }) {
   const pool = await sql.connect(dbConfig);
   await pool.request()
@@ -32,5 +55,6 @@ async function createReminder({ userID, title, reminderTime, frequency, message,
 
 module.exports = {
   getRemindersByUser,
+  fetchUpcomingReminders,
   createReminder
 };
