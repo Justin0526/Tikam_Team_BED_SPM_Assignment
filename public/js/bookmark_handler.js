@@ -69,6 +69,7 @@ async function isFacilityBookmarked(placeID){
 }
 
 async function createBookmarkIfNotExists(placeID, placeName){
+    console.log(placeID);
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark`, {
             method: "POST",
