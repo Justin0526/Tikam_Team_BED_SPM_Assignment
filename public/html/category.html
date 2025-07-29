@@ -61,19 +61,29 @@
           </div>
           
           <!-- Update Category Name Modal -->
-          <div id="updateCategoryModal" class="modal-overlay" style="display: none">
-              <div class="modal">
-                  <h3>Update Category</h3>
-                  <form id="updateCategoryForm">
-                  <label for="updatedCategory">New Category Name:</label>
-                  <input type="text" id="updatedCategory" placeholder="e.g. Favourite Clinics" />
-                  <div id="updateModalMessage" class="message"></div>
-                  <div class="modal-buttons">
-                      <button type="submit" id="confirmUpdate" class="btn confirm-btn">Confirm</button>
-                      <button type="button" id="cancelUpdate" class="btn cancel-btn">Cancel</button>
-                  </div>
-                  </form>
-              </div>
+          <div id="editCategoryModal" class="modal-overlay" style="display: none">
+            <div class="modal">
+              <h3>Edit Category</h3>
+              <form id="editCategoryForm">
+                <!-- Bookmarks Checkbox -->
+                <label>Add Bookmarks to this Category:</label>
+                <div id="bookmarkCheckboxes" class="checkbox-container"></div>
+
+                <!-- Update Category Name -->
+                <label for="updatedCategory">New Category Name:</label>
+                <input type="text" id="updatedCategory" placeholder="e.g. Favourite Clinics" />
+
+                <!-- Message -->
+                <div id="editModalMessage" class="message"></div>
+
+                <!-- Buttons -->
+                <div class="modal-buttons">
+                  <button type="submit" id="addBookmarksBtn" class="btn confirm-btn blue-btn">Add Bookmarks</button>
+                  <button type="button" id="updateCategoryBtn" class="btn confirm-btn green-btn">Update Category</button>
+                  <button type="button" id="cancelEdit" class="btn cancel-btn">Cancel</button>
+                </div>
+              </form>
+            </div>
           </div>
       </main>
 

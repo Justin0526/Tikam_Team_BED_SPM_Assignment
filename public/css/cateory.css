@@ -353,8 +353,8 @@ h2 {
   box-shadow: 0 4px 10px rgba(244, 67, 54, 0.4);
 }
 
-/* Overlay for Update Category Modal */
-#updateCategoryModal {
+/* Shared Modal Overlay */
+#editCategoryModal.modal-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
@@ -366,64 +366,84 @@ h2 {
 }
 
 /* Modal Box */
-#updateCategoryModal .modal {
+#editCategoryModal .modal {
   background-color: white;
   padding: 2rem;
   border-radius: 1rem;
-  width: 90%;
+  width: 95%;
   max-width: 500px;
   box-shadow: 0 0 15px rgba(0,0,0,0.25);
   text-align: center;
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Title Styling */
-#updateCategoryModal h3 {
-  margin: 0 0 1.5rem;
+/* Title */
+#editCategoryModal h3 {
+  margin-bottom: 1.5rem;
   font-size: 1.6rem;
   font-weight: bold;
   color: #2b7da0;
 }
 
-/* Input Label */
-#updateCategoryModal label {
+/* Label styling */
+#editCategoryModal label {
   display: block;
   font-weight: bold;
   font-size: 1.05rem;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
   text-align: left;
-  margin-left: 0.5rem;
 }
 
-/* Text Input */
+/* Input styling */
 #updatedCategory {
   width: 90%;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   border: 1px solid #ccc;
   font-size: 1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
 }
 
-/* Message below input */
-#updateModalMessage {
-  color: green;
+/* Message */
+#editModalMessage {
   font-size: 0.95rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin: 0.5rem 0;
 }
 
-/* Buttons Layout */
-#updateCategoryModal .modal-buttons {
+/* Checkboxes layout */
+.checkbox-container {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
 }
 
-/* Button Shared Styling */
-#updateCategoryModal .modal-buttons button {
-  padding: 0.7rem 2rem;
+/* Each row of checkbox + label */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 0.7rem 1rem;
   border: none;
   border-radius: 2rem;
   font-weight: bold;
@@ -433,23 +453,29 @@ h2 {
   color: white;
 }
 
-/* Blue Confirm Button */
-#confirmUpdate {
+.blue-btn {
   background-color: #2b7da0;
 }
-
-#confirmUpdate:hover {
+.blue-btn:hover {
   background-color: #0e7faf;
   transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(9, 82, 172, 0.4);
 }
 
-/* Red Cancel Button */
-#cancelUpdate {
-  background-color: #f44336;
+.green-btn {
+  background-color: #A4D038;
+  color: black;
+}
+.green-btn:hover {
+  background-color: #8bb929;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(164, 208, 56, 0.4);
 }
 
-#cancelUpdate:hover {
+.cancel-btn {
+  background-color: #f44336;
+}
+.cancel-btn:hover {
   background-color: #d32f2f;
   transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(244, 67, 54, 0.4);

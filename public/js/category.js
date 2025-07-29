@@ -24,7 +24,7 @@ window.addEventListener("load", async () => {
 
     const editBtn = document.getElementById("edit-category-btn");
     editBtn.addEventListener("click", () => {
-        showUpdateCategoryModal(categoryName, categoryID);
+        showEditCategoryModal(categoryName, categoryID);
     });
 });
 
@@ -306,65 +306,78 @@ async function updateCategoryName(newCategoryName, categoryID) {
     }
 }
 
-function showUpdateCategoryModal(currentName, categoryID) {
-    const modal = document.getElementById("updateCategoryModal");
+function showEditCategoryModal(categoryName, categoryID) {
+    const modal = document.getElementById("editCategoryModal");
+    const form = document.getElementById("editCategoryForm");
+    const checkboxesDiv = document.getElementById("bookmarkCheckboxes");
     const input = document.getElementById("updatedCategory");
-    const message = document.getElementById("updateModalMessage");
-    const confirmBtn = document.getElementById("confirmUpdate");
-    const cancelBtn = document.getElementById("cancelUpdate");
+    const message = document.getElementById("editModalMessage");
+    const addBtn = document.getElementById("addBookmarksBtn");
+    const updateBtn = document.getElementById("updateCategoryBtn");
+    const cancelBtn = document.getElementById("cancelEdit");
 
-    modal.style.display = "flex";
-    input.value = currentName;
-    input.focus();
+    input.value = categoryName;
     message.textContent = "";
+    modal.style.display = "flex";
 
-    // Remove old listeners
-    confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    fetch(`${apiBaseUrl}/bookmarks`, { headers: getAuthHeaders() })
+        .then(res => res.json())
+        .then(async allBookmarks => {
+            const existing = await getBookmarksFromCategory(categoryID);
+            const existingIDs = new Set(existing.map(b => b.bookmarkID));
+            const toAdd = allBookmarks.filter(b => !existingIDs.has(b.bookmarkID));
 
-    const newConfirmBtn = document.getElementById("confirmUpdate");
-    const newCancelBtn = document.getElementById("cancelUpdate");
+            checkboxesDiv.innerHTML = toAdd.length === 0
+            ? "<p style='color:gray;'>All bookmarks are already in this category.</p>"
+            : toAdd.map(b => `
+                <div class="checkbox-row">
+                    <input type="checkbox" value="${b.bookmarkID}" id="bm-${b.bookmarkID}">
+                    <label for="bm-${b.bookmarkID}">${b.placeName}</label>
+                </div>
+                `).join('');
 
-    newConfirmBtn.addEventListener("click", async (e) => {
+        });
+
+    addBtn.onclick = async (e) => {
         e.preventDefault();
+        const selected = Array.from(checkboxesDiv.querySelectorAll("input:checked")).map(c => parseInt(c.value));
+        let count = 0;
+        for (const id of selected) {
+            if (await assignBookmarkToCategory(id, categoryID)) count++;
+        }
+        message.textContent = count ? `${count} bookmarks added.` : "No bookmarks added.";
+        message.style.color = count ? "green" : "red";
+        reloadBookmarkSection();
+    };
+
+    updateBtn.onclick = async () => {
         const newName = input.value.trim();
         if (!newName) {
             message.textContent = "Category name cannot be empty.";
             message.style.color = "red";
             return;
         }
-        
-        const {status, data} = await updateCategoryName(newName, categoryID);
-        console.log(status)
+
+        const { status, data } = await updateCategoryName(newName, categoryID);
         if (status === 409) {
-            message.textContent = "Cannot update category to an existing name!";
+            message.textContent = "Category name already exists.";
             message.style.color = "red";
-            return;
-        }
-
-        if (status === 200 && data) {
-            categoryName = data[0].categoryName;
-
-            message.textContent = "Category updated successfully!";
+        } else if (status === 200) {
+            message.textContent = "Category updated.";
             message.style.color = "green";
-
-            const categoryH2 = document.getElementById("category-h2");
-            categoryH2.textContent = `Bookmarks for ${categoryName}`;
-
+            categoryName = data[0].categoryName;
+            document.getElementById("category-h2").textContent = `Bookmarks for ${categoryName}`;
             window.history.replaceState({}, '', `?categoryID=${categoryID}&categoryName=${encodeURIComponent(categoryName)}`);
-
-            setTimeout(() => {
-                modal.style.display = "none";
-            }, 1000);
         } else {
-            message.textContent = "Failed to update category.";
+            message.textContent = "Update failed.";
             message.style.color = "red";
         }
-    });
+    };
 
-    newCancelBtn.addEventListener("click", () => {
+    cancelBtn.onclick = () => {
         modal.style.display = "none";
-        input.value = "";
-        message.textContent = "";
-    });
+        form.reset();
+    };
 }
+
+
