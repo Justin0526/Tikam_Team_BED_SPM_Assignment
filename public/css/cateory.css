@@ -276,6 +276,83 @@ h2 {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-box {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+}
+
+.popup-message {
+  font-weight: 500;
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.popup-btn{
+  padding: 0.6rem 2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.yes-btn{
+  background-color: #A4D038;
+  color: black;
+}
+
+.no-btn{
+  background-color: #2b7da0
+}
+
+.cancel-btn{
+  background-color: #f44336;
+}
+
+.yes-btn:hover{
+  background-color: #8bb929;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(164, 208, 56, 0.4);
+}
+
+.no-btn:hover {
+  background-color: #0e7faf;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(9, 82, 172, 0.4);
+}
+
+.cancel-btn:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(244, 67, 54, 0.4);
+}
+
 /* Overlay for Update Category Modal */
 #updateCategoryModal {
   position: fixed;

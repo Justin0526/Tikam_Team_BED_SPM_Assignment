@@ -20,9 +20,7 @@ window.addEventListener("load", async () => {
     const categoryH2 = document.getElementById("category-h2");
     categoryH2.textContent = `Bookmarks for ${categoryName}`;
 
-    const bookmarks = await getBookmarksFromCategory(categoryID);
-    const bookmarkDetails = await getBookmarkDetails(bookmarks);
-    renderBookmarks(bookmarkDetails);
+    reloadBookmarkSection()
 
     const editBtn = document.getElementById("edit-category-btn");
     editBtn.addEventListener("click", () => {
@@ -40,6 +38,31 @@ getAuthHeaders = function getAuthHeaders(){
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json"
     }
+}
+
+// reload bookmarks
+async function reloadBookmarkSection() {
+    const bookmarkMessage = document.getElementById("bookmark-message");
+    bookmarkMessage.textContent = "Refreshing bookmarks...";
+
+    const bookmarks = await getBookmarksFromCategory(categoryID);
+    const bookmarkDetails = await getBookmarkDetails(bookmarks);
+    renderBookmarks(bookmarkDetails);
+}
+
+function resetPopupButtons() {
+    const popup = document.getElementById("delete-popup");
+
+    const yesBtn = popup.querySelector(".yes-btn");
+    const cancelBtn = popup.querySelector(".cancel-btn");
+
+    const newYesBtn = yesBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+
+    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+    return { newYesBtn, newCancelBtn };
 }
 
 // Get bookmarks from categories
@@ -150,6 +173,32 @@ function createBookmarkCard(bookmark) {
     return card;
 }
 
+async function deleteBookmarkFromCategory(bookmarkID, categoryID){
+    try{
+        const response = await fetch(`${apiBaseUrl}/bookmark-category`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({bookmarkID, categoryID})
+        });
+
+        if(!response.ok){
+            const errorBody = response.headers
+                .get("content-type")
+                ?.includes("application/json")
+                ? await response.json()
+                : {message: response.statusText};
+            throw new Error(
+                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
+            );
+        }
+
+        return true;
+    }catch(error){
+        console.error("Error deleting bookmark from category: ", error);
+        return false;
+    }
+}
+
 // Function to handle popup when deleting bookmarks
 function attachDeletePopup(bookmarkCard, bookmark) {
     const closeBtn = bookmarkCard.querySelector(".close-btn");
@@ -164,14 +213,18 @@ function attachDeletePopup(bookmarkCard, bookmark) {
         popup.style.display = "flex";
 
         newYesBtn.addEventListener("click", async () => {
-            await window.deleteBookmark(bookmark.bookmarkID);
-            popUpMessage.textContent = `Successfully deleted ${bookmark.name} from bookmarks!`;
-            bookmarkCard.remove();
-            await loadBookmarkSection();
+            const success = await deleteBookmarkFromCategory(bookmark.bookmarkID, categoryID);
+            if (success) {
+                popUpMessage.textContent = `Successfully removed ${bookmark.name} from this category!`;
+                await reloadBookmarkSection();
+            } else {
+                popUpMessage.textContent = `Failed to remove ${bookmark.name} from this category.`;
+            }
+
             setTimeout(() => {
                 popUpMessage.textContent = "";
                 popup.style.display = "none";
-            }, 2000);
+            }, 1000);
         });
 
         newCancelBtn.addEventListener("click", () => {
@@ -179,36 +232,9 @@ function attachDeletePopup(bookmarkCard, bookmark) {
             setTimeout(() => {
                 popUpMessage.textContent = "";
                 popup.style.display = "none";
-            }, 2000);
+            }, 1000);
         });
     });
-}
-
-// Function to search bookmark
-async function searchBookmark(searchTerm){
-    try{
-        const response = await fetch(`${apiBaseUrl}/search/bookmarks?searchTerm=${searchTerm}`,{
-            method: 'GET',
-            headers: getAuthHeaders()
-        });
-        if(!response.ok){
-            // Handle HTTP errors (e.g. 404, 500)
-            // Attempt to read erroro body if available, otherwise use status text
-            const errorBody = response.headers
-                .get("content-type")
-                ?.includes("application/json")
-                ? await response.json()
-                : {message: response.statusText};
-            throw new Error(
-                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
-            );
-        }
-        const bookmarks = await response.json();
-        return bookmarks;
-    }catch(error){
-        console.error("Error searching bookmarks");
-        return [];
-    }
 }
 
 // Function to display bookmark message
@@ -271,23 +297,12 @@ async function updateCategoryName(newCategoryName, categoryID) {
             headers: getAuthHeaders(),
             body: JSON.stringify({categoryID, newCategoryName})
         });
-        if(!response.ok){
-            // Handle HTTP errors (e.g. 404, 500)
-            // Attempt to read erroro body if available, otherwise use status text
-            const errorBody = response.headers
-                .get("content-type")
-                ?.includes("application/json")
-                ? await response.json()
-                : {message: response.statusText};
-            throw new Error(
-                `HTTP Error! status ${response.status}, message: ${errorBody.message}`
-            );
-        }
-        const newName = await response.json();
-        return newName;
+
+        const data = await response.json();
+        return { status: response.status, data }; 
     }catch(error){
         console.error("Error updating category name");
-        return;
+        return { status: 500, data: null };;
     }
 }
 
@@ -318,16 +333,23 @@ function showUpdateCategoryModal(currentName, categoryID) {
             message.style.color = "red";
             return;
         }
+        
+        const {status, data} = await updateCategoryName(newName, categoryID);
+        console.log(status)
+        if (status === 409) {
+            message.textContent = "Cannot update category to an existing name!";
+            message.style.color = "red";
+            return;
+        }
 
-        const result = await updateCategoryName(newName, categoryID);
-        if (result) {
-            categoryName = result[0].categoryName; // ✅ update global
+        if (status === 200 && data) {
+            categoryName = data[0].categoryName;
 
             message.textContent = "Category updated successfully!";
             message.style.color = "green";
 
             const categoryH2 = document.getElementById("category-h2");
-            categoryH2.textContent = `Bookmarks for ${categoryName}`; // use updated global
+            categoryH2.textContent = `Bookmarks for ${categoryName}`;
 
             window.history.replaceState({}, '', `?categoryID=${categoryID}&categoryName=${encodeURIComponent(categoryName)}`);
 

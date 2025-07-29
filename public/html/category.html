@@ -28,15 +28,6 @@
       </header>
 
       <main class="page-container">
-          <h1 class="page-title">Search Bookmarks</h1>
-
-          <div class="search-bar">
-              <input type="text" placeholder="Search for bookmarks" id="textQuery" required />
-              <button id="go-btn">Go</button>
-          </div>
-
-          <div class="authenticate-message" id="authenticate-message"></div>
-
           <section class="category-section" id="category-section" style="display: none">
               <div class="category-header">
                 <h2 id="category-h2">Categories</h2>
@@ -55,22 +46,35 @@
               </div>
           </section>
 
-          
-            <!-- Update Category Name Modal -->
-            <div id="updateCategoryModal" class="modal-overlay" style="display: none">
-                <div class="modal">
-                    <h3>Update Category</h3>
-                    <form id="updateCategoryForm">
-                    <label for="updatedCategory">New Category Name:</label>
-                    <input type="text" id="updatedCategory" placeholder="e.g. Favourite Clinics" />
-                    <div id="updateModalMessage" class="message"></div>
-                    <div class="modal-buttons">
-                        <button type="submit" id="confirmUpdate" class="btn confirm-btn">Confirm</button>
-                        <button type="button" id="cancelUpdate" class="btn cancel-btn">Cancel</button>
-                    </div>
-                    </form>
-                </div>
+          <!-- Delete Popup -->
+          <div class="popup-overlay" id="delete-popup" style="display: none">
+            <div class="popup-box">
+              <p class="popup-message">
+                <!-- Message will be inserted dynamically -->
+              </p>
+              <div class="popup-actions">
+                <button class="popup-btn yes-btn">Yes</button>
+                <button class="popup-btn no-btn" style="display: none">No</button> 
+                <button class="popup-btn cancel-btn">Cancel</button>
+              </div>
             </div>
+          </div>
+          
+          <!-- Update Category Name Modal -->
+          <div id="updateCategoryModal" class="modal-overlay" style="display: none">
+              <div class="modal">
+                  <h3>Update Category</h3>
+                  <form id="updateCategoryForm">
+                  <label for="updatedCategory">New Category Name:</label>
+                  <input type="text" id="updatedCategory" placeholder="e.g. Favourite Clinics" />
+                  <div id="updateModalMessage" class="message"></div>
+                  <div class="modal-buttons">
+                      <button type="submit" id="confirmUpdate" class="btn confirm-btn">Confirm</button>
+                      <button type="button" id="cancelUpdate" class="btn cancel-btn">Cancel</button>
+                  </div>
+                  </form>
+              </div>
+          </div>
       </main>
 
       <footer>

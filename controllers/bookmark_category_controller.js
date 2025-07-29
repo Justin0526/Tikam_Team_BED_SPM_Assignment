@@ -81,11 +81,11 @@ async function deleteBookmarkFromCategory(req, res){
         const categoryID = req.body.categoryID;
 
         const existing = await bookmarkCategoryModel.getBookmarkCategoryID(userID, bookmarkID, categoryID);
-        if(!existing){
+        if(!existing || existing.length == 0){
             return res.status(404).json({message: "Bookmark not found in this category"});
         }
 
-        await bookmarkCategoryModel.deleteBookmarkFromCategory(userID, bookmarkID, categoryID);
+        await bookmarkCategoryModel.deleteBookmarkFromCategory(userID, existing.bookmarkCategoryID);
         return res.status(200).json({message: "Bookmarks successfully deleted from category"});
     } catch(error){
         if(error.statusCode === 404){

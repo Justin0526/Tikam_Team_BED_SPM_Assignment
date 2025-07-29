@@ -14,6 +14,27 @@ getAuthHeaders = function getAuthHeaders(){
     }
 }
 
+// Reset poup buttons
+function resetPopupButtons() {
+    const popup = document.getElementById("delete-popup");
+
+    const yesBtn = popup.querySelector(".yes-btn");
+    const noBtn = popup.querySelector(".no-btn");
+    const cancelBtn = popup.querySelector(".cancel-btn");
+
+    const newYesBtn = yesBtn.cloneNode(true);
+    const newNoBtn = noBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+
+    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+    noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+    newYesBtn.textContent = "Yes";
+    newNoBtn.style.display = "none";
+    return { newYesBtn, newNoBtn, newCancelBtn };
+}
+
 async function isFacilityBookmarked(placeID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark/${placeID}`, {
