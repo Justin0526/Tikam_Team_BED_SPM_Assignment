@@ -114,7 +114,7 @@ app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.v
 app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
 
 // Health page route
-// app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
+app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
 
 // Medication routes
 app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
