@@ -236,6 +236,28 @@ async function loadPosts(filters = {}) {
 function attachPostEventListeners() {
   postContainer.querySelectorAll(".post-item").forEach(item => {
     const postID = item.dataset.postId;
+     // Lightbox elements
+      const lightbox = document.getElementById("imageLightbox");
+      const lightboxImage = lightbox.querySelector(".lightbox-image");
+      const closeBtn = lightbox.querySelector(".close-btn");
+
+      // Image click to open lightbox
+      item.querySelectorAll(".post-image").forEach(img => {
+        img.addEventListener("click", () => {
+          lightboxImage.src = img.src;
+          lightbox.hidden = false;
+        });
+      });
+
+      // Close button
+      closeBtn.addEventListener("click", () => {
+        lightbox.hidden = true;
+      });
+
+      // Close if clicking outside image
+      lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) lightbox.hidden = true;
+      });
 
     // Comment toggle
     const toggle = item.querySelector(".comment-toggle");
@@ -564,6 +586,7 @@ shareBtn.addEventListener("click", async () => {
   await loadPosts();
   shareBtn.disabled = false;
 });
+
 
 // On window load, get token and fetch posts
 window.addEventListener("load", async () => {
