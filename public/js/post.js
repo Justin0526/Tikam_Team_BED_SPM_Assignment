@@ -278,7 +278,11 @@ async function loadPosts() {
           e.stopPropagation();
           document.querySelectorAll(".post-menu-dropdown").forEach(d => d.hidden = true);
           dropdown.hidden = !dropdown.hidden;
+           if (!dropdown.hidden) {
+           translateElementScope(dropdown);
+          }
         });
+          
 
         //Close dropdown if clicking outside of post 
         document.addEventListener("click", e => {
@@ -307,6 +311,7 @@ async function loadPosts() {
           document.querySelectorAll(".edit-post-form").forEach(f => f.hidden = true);
           editForm.hidden = false;
           editContent.value = editContent.dataset.original;
+          translateElementScope(editForm);
         });
 
         // Open file selector
@@ -388,7 +393,7 @@ async function loadPosts() {
 
           if (!res.ok) return alert("Failed to update post.");
           await loadPosts();
-          setTimeout(triggerTranslate, 150);
+          translateElementScope(listEl);
         });
       }
 
@@ -549,5 +554,4 @@ shareBtn.addEventListener("click", async () => {
 window.addEventListener("load", async () => {
   currentUser = await getToken(token);
   await loadPosts(); // wait for posts to load first
-  setTimeout(triggerTranslate, 150); // then safely trigger translation
 });

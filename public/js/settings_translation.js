@@ -31,6 +31,15 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGlobalObserver();
 });
 
+function translateElementScope(element = document.body) { 
+  const lang = localStorage.getItem("language") || "en";
+  if (lang !== "en" && typeof translatePage === "function") {
+    requestAnimationFrame(() => {
+      translatePage(lang, element); 
+    });
+  }
+}
+
 async function translatePage(targetLang, container = document.body) {
   const nodes = [];
   const placeholders = [];
@@ -153,18 +162,4 @@ window.translateElements = async function translateElements(selector, lang) {
   console.log("Scoped translation complete");
 };
 
-// ✅ FINAL triggerTranslate function – global + scoped
-window.triggerTranslate = function () {
-  const lang = localStorage.getItem("language") || "en";
-  if (lang !== "en" && typeof translatePage === "function") {
-    setTimeout(() => {
-      translatePage(lang);
-      if (typeof translateElements === "function") {
-        translateElements(".post-body", lang);
-        translateElements(".new-comment", lang);
-        translateElements(".submit-comment", lang);
-        translateElements(".comment-toggle", lang);
-      }
-    }, 150);
-  }
-};
+translateElementScope(document.body); 

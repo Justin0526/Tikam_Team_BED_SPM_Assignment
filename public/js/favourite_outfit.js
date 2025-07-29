@@ -7,15 +7,6 @@ const outfitGrid = document.getElementById("outfit-grid");
 const popup = document.getElementById("popup");
 const closePopup = document.getElementById("close-btn");
 
-function translateElementScope(element) {
-  const lang = localStorage.getItem("language") || "en";
-  if (lang !== "en" && typeof translatePage === "function") {
-    requestAnimationFrame(() => {
-      translatePage(lang, element); // Pass a container to limit translation
-    });
-  }
-}
-
 // Get user's favourite outfits
 async function getFavouriteOutfits(){
     try{

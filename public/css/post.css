@@ -30,10 +30,12 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
+  padding: 10px 30px; /* Reduce padding */
   background-color: #F9FFF4;
   border-bottom: 2px solid #A4D038;
+  height: auto; /* Let content control height */
 }
+
 
 .logo-container {
   display: flex;
@@ -41,14 +43,16 @@ main {
 }
 
 .logo-img {
-  height: 50px;
-  margin-right: 10px;
+  height: 90px; /* Increase the actual image size */
+  width: auto; /* Maintain aspect ratio */
 }
 
+
 .logo-text {
-  font-size: 1.8em;
+  font-size: 2.5em; /* Adjust font size to match new logo size */
   font-weight: bold;
   color: #3399CC;
+  margin-left: 10px; /* Space between logo and text */
 }
 
 .profile {
