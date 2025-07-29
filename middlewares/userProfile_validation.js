@@ -1,60 +1,32 @@
-// middlewares/userProfile_validation.js
 const Joi = require('joi');
 
-const validateUserProfile = (req, res, next) => {
-  const schema = Joi.object({
-    userID: Joi.number().integer().positive().required(),
+const profileSchema = Joi.object({
+  userID: Joi.number().integer().required(),
+  fullName: Joi.string().max(100).required().messages({
+    'string.empty': 'Full name is required.',
+    'string.max': 'Full name must not exceed 100 characters.'
+  }),
+  dob: Joi.date().iso().optional().allow('', null),
+  gender: Joi.string().valid('Male', 'Female', 'Prefer not to say').optional().allow('', null),
+  allergies: Joi.string().max(255).allow('', null),
+  conditions: Joi.string().max(255).allow('', null),
+  emergencyName: Joi.string().max(100).allow('', null),
+  emergencyNumber: Joi.string().pattern(/^[0-9\-+ ]*$/).max(20).allow('', null),
+  address: Joi.string().max(255).allow('', null),
+  bio: Joi.string().max(500).allow('', null),
+  profilePicture: Joi.string().uri().allow('', null)  // ✅ Add this line
+});
 
-    fullName: Joi.string().min(3).max(100).required().messages({
-      'string.empty': 'Full name is required',
-      'string.min': 'Full name must be at least 3 characters'
-    }),
-
-    dob: Joi.date().less('now').required().messages({
-      'date.base': 'Invalid date format for DOB',
-      'date.less': 'Date of birth must be in the past'
-    }),
-
-    gender: Joi.string().valid('Male', 'Female', 'Prefer not to say').required()
-      .messages({
-        'any.only': 'Gender must be Male, Female or Prefer not to say',
-        'string.empty': 'Gender is required'
-      }),
-
-    allergies: Joi.string().max(100).allow('').messages({
-      'string.max': 'Allergies must not exceed 100 characters'
-    }),
-
-    conditions: Joi.string().max(100).allow('').messages({
-      'string.max': 'Conditions must not exceed 100 characters'
-    }),
-
-    emergencyName: Joi.string().min(3).max(100).required().messages({
-      'string.empty': 'Emergency contact name is required',
-      'string.min': 'Emergency contact name must be at least 3 characters'
-    }),
-
-    emergencyNumber: Joi.string().pattern(/^[\d+\- ]{8,20}$/).required().messages({
-      'string.pattern.base': 'Emergency number must be valid and 8–20 digits',
-      'string.empty': 'Emergency number is required'
-    }),
-
-    address: Joi.string().max(255).allow('').messages({
-      'string.max': 'Address must not exceed 255 characters'
-    }),
-
-    bio: Joi.string().max(500).allow('').messages({
-      'string.max': 'Bio must not exceed 500 characters'
-    }),
-  });
-
-  const { error } = schema.validate(req.body);
+const validateProfile = (req, res, next) => {
+  const { error } = profileSchema.validate(req.body, { abortEarly: false });
 
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    console.error("❌ Joi Validation Errors:", error.details.map(e => e.message));
+    const details = error.details.map(detail => detail.message);
+    return res.status(400).json({ errors: details });
   }
 
   next();
 };
 
-module.exports = { validateUserProfile };
+module.exports = validateProfile;

@@ -5,10 +5,10 @@ const dbConfig = require("../dbConfig.js");
  * Fetches medications scheduled for today for a specific user.
  */
 async function fetchTodayMeds(userID, start, end) {
-  let pool;
+  let connection;
   try {
-    pool = await sql.connect(dbConfig);
-    const result = await pool.request()
+    connection = await sql.connect(dbConfig);
+    const result = await connection.request()
       .input('userID', sql.Int, userID)
       .input('start', sql.DateTime, start)
       .input('end', sql.DateTime, end)
@@ -24,20 +24,26 @@ async function fetchTodayMeds(userID, start, end) {
     console.error("Database error in fetchTodayMeds:", err);
     throw err;
   } finally {
-    sql.close();
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
   }
 }
 
 async function fetchUpcomingMeds(userID, now, oneHourLater) {
-  let pool;
+  let connection;
   try {
-    pool = await sql.connect(dbConfig);
+    connection = await sql.connect(dbConfig);
 
     // Convert times to HH:mm:ss format
     const nowStr = now.toTimeString().split(' ')[0];         // "HH:mm:ss"
     const nextHourStr = oneHourLater.toTimeString().split(' ')[0];
 
-    const result = await pool.request()
+    const result = await connection.request()
       .input('userID', sql.Int, userID)
       .input('now', sql.VarChar(8), nowStr)
       .input('nextHour', sql.VarChar(8), nextHourStr)
@@ -60,10 +66,10 @@ async function fetchUpcomingMeds(userID, now, oneHourLater) {
  * Inserts a new medication record into the database.
  */
 async function insertMedication(userID, data) {
-  let pool;
+  let connection;
   try {
-    pool = await sql.connect(dbConfig);
-    await pool.request()
+    connection = await sql.connect(dbConfig);
+    await connection.request()
       .input('userID', sql.Int, userID)
       .input('medicineName', sql.NVarChar, data.medicineName)
       .input('dosage', sql.NVarChar, data.dosage)
@@ -89,10 +95,10 @@ async function insertMedication(userID, data) {
  * Updates a medication’s status to "Taken".
  */
 async function updateMedicationAsTaken(userID, medicationID) {
-  let pool;
+  let connection;
   try {
-    pool = await sql.connect(dbConfig);
-    await pool.request()
+    connection = await sql.connect(dbConfig);
+    await connection.request()
       .input('medicationID', sql.Int, medicationID)
       .input('userID', sql.Int, userID)
       .query(`

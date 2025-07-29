@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function fetchCalories(foodItem) {
-  try {
+  try { // sends a GET request to OpenFoodFacts using Axios
     const response = await axios.get(
       'https://world.openfoodfacts.org/cgi/search.pl',
       {

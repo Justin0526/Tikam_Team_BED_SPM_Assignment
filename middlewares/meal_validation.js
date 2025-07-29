@@ -1,24 +1,5 @@
 const Joi = require("joi");
 
-// const mealSchema = Joi.object({
-//     foodItem: Joi.string().min(1).max(100).required().messages({
-//         "string.base": "Food name must be a string",
-//         "string.empty": "Food name cannot be empty",
-//         "string.max": "Food name cannot exceed 100 characters",
-//         "any.required": "Food name is required"
-//     }),
-//     timeFrame: Joi.string().min(1).max(100).required().messages({
-//         "string.base": "Time frame must be a string",
-//         "string.empty": "Time frame cannot be empty",
-//         "string.max": "Time frame cannot exceed 100 characters",
-//         "any.required": "Time frame is required"
-//     }),
-//     mealDate: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).required().messages({
-//         "string.empty": "Log date is required",
-//         "string.pattern.base": "Log date must be in YYYY-MM-DD format"
-//     })
-// });
-
 const mealSchema = Joi.object({
     foodItem: Joi.string().min(1).max(100).required().messages({
         "string.base": "Food name must be a string",
@@ -45,7 +26,6 @@ const mealSchema = Joi.object({
         "string.pattern.base": "Manual calories must be digits only or 'unknown'"
     })
 });
-
 
 // Middleware to validate req.body
 function validateMeal(req, res, next) {
@@ -80,23 +60,7 @@ function validateMealId(req, res, next) {
     next();
 }
 
-// function validateSearchQuery(req, res, next) {
-//     const searchTerm = req.query.searchTerm || "";
-//     const appointmentDate = req.query.appointmentDate || null;
-
-//     if(!searchTerm && !appointmentDate) {
-//         return res.status(400).json({ message: "Please provide any keywords or appointment date to search." });
-//     }
-
-//     //check if appointmenDate is in YYYY-MM-DD format
-//     if(appointmentDate && !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate)) {
-//         return res.status(400).json({ error: "Appointment date must be in YYYY-MM-DD format." });
-//     }
-//     next();
-// }
-
 module.exports = {
     validateMeal,
     validateMealId,
-    // validateSearchQuery,
 };

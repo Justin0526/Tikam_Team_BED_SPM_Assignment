@@ -3,24 +3,30 @@ const dbConfig = require('../dbConfig');
 
 // Get medication by ID
 async function fetchMedicationById(medicationID) {
-  let pool;
+  let connection;
   try {
-    pool = await sql.connect(dbConfig);
-    const result = await pool.request()
+    connection = await sql.connect(dbConfig);
+    const result = await connection.request()
       .input('medicationID', sql.Int, medicationID)
       .query(`SELECT * FROM Medications WHERE medicationID = @medicationID`);
     return result.recordset[0];
   } finally {
-    sql.close();
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
   }
 }
 
 // Update medication by ID
 async function updateMedicationById(medicationID, data) {
-  let pool;
+  let connection;
   try {
-    pool = await sql.connect(dbConfig);
-    await pool.request()
+    connection = await sql.connect(dbConfig);
+    await connection.request()
       .input('medicationID', sql.Int, medicationID)
       .input('medicineName', sql.NVarChar, data.medicineName)
       .input('dosage', sql.NVarChar, data.dosage)

@@ -1,3 +1,4 @@
+const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 let appointments = [];
 let isEditing = false;//For edit form
@@ -21,6 +22,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
   const rawReminder = document.getElementById('reminderDate').value;
   const appointmentID = document.getElementById('appointmentID').value;
 
+  //Collect all input field values and creates a JavaScript object
   const appointment = {
     doctorName: document.getElementById('doctorName').value,
     clinicName: document.getElementById('clinicName').value,
@@ -34,7 +36,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
     let response;
     if (isEditing) {
       // PUT: update appointment
-      response = await fetch(`http://localhost:3000/appointments/${appointmentID}`, {
+      response = await fetch(`${apiBaseUrl}/appointments/${appointmentID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -43,7 +45,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
       });
     } else {
       // POST: create new appointment
-      response = await fetch('http://localhost:3000/appointments', {
+      response = await fetch(`${apiBaseUrl}/appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -56,10 +58,10 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
 
     if (response.ok) {
       showSuccessModal("Appointment added successfully!");
-      this.reset();
-      resetFormMode();
-      loadAppointments();
-      updateReminderBanner(); // Refresh reminders if needed
+      this.reset();//Reset form fields
+      resetFormMode();// Switch form to "Add" mode
+      loadAppointments();//Refresh table
+      updateReminderBanner(); // Update the top reminder if needed
     } else {
       alert("❌ Error: " + result.error);
     }
@@ -69,149 +71,13 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
   }
 });
 
-// function renderTable() {
-//     const body = document.getElementById('appointmentsBody');
-//     body.innerHTML = '';
-//     if (appointments.length === 0) {
-//     body.innerHTML = `
-//         <tr id="emptyState">
-//         <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments yet. Add one above to get started.</td>
-//         </tr>`;
-//     return;
-//     }
-//     for (let appt of appointments) {
-//     const row = document.createElement('tr');
-//     row.innerHTML = `
-//         <td>${String(appt.id).padStart(2, '0')}</td>
-//         <td>${appt.doctor}</td>
-//         <td>${appt.clinic}</td>
-//         <td>${appt.date.split('-').reverse().join(' - ')}</td>
-//         <td>${appt.time}</td>
-//         <td>${appt.purpose}</td>
-//         <td>${appt.reminderDate ? appt.reminderDate.split('-').reverse().join(' - ') : '-'}</td>
-//         <td class="actions">
-//             <div class="dropdown-container">
-//                 <span class="dropdown-trigger">⋮</span>
-//                 <div class="dropdown-menu" style="display: none;">
-//                     <div class="dropdown-item" onclick="editAppointment(${appt.appointmentID})">Edit</div>
-//                     <div class="dropdown-item" onclick="deleteAppointment(${appt.appointmentID})">Delete</div>
-//                 </div>
-//             </div>
-//         </td>
-
-//         <span onclick="editAppointment(${appt.id})">⋮</span>
-//         </td>
-//     `;
-//     body.appendChild(row);
-//     }
-// }
-
-// function renderTable() {
-//     const body = document.getElementById('appointmentsBody');
-//     body.innerHTML = '';
-//     if (appointments.length === 0) {
-//     body.innerHTML = `
-//         <tr id="emptyState">
-//         <td colspan="7" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments yet. Add one above to get started.</td>
-//         </tr>`;
-//     return;
-//     }
-//     for (let appt of appointments) {
-//     const row = document.createElement('tr');
-//     row.innerHTML = `
-//         <td>${appt.purpose}</td>
-//         <td>${appt.appointmentDate.split('-').reverse().join(' - ')}</td>
-//         <td>${appt.appointmentTime}</td>
-//         <td>${appt.doctorName}</td>
-//         <td>${appt.clinicName}</td>
-//         <td>${appt.reminderDate ? appt.reminderDate.split('-').reverse().join(' - ') : '-'}</td>
-//         <td class="actions">
-//             <div class="dropdown-container">
-//                 <span class="dropdown-trigger">⋮</span>
-//                 <div class="dropdown-menu" style="display: none;">
-//                     <div class="dropdown-item" onclick="editAppointment(${appt.appointmentID})">Edit</div>
-//                     <div class="dropdown-item" onclick="deleteAppointment(${appt.appointmentID})">Delete</div>
-//                 </div>
-//             </div>
-//         </td>
-//     `;
-//     body.appendChild(row);
-//     }
-// }
-
-// async function loadAppointments() {
-//     try {
-//     const response = await fetch(`http://localhost:3000/appointments/me`,{
-//       headers: {
-//         'Authorization': `Bearer ${token}`
-//       }
-//     });
-//     //Handle 401 Unauthorized separately
-//     if(response.status === 401) {
-//       document.getElementById('appointmentsBody').innerHTML = `
-//         <tr>
-//           <td colspan="8" style="text-align:center; color: red;">
-//             Session expired. Please <a href="login.html">log in again</a>.
-//           </td>
-//         </tr>
-//       `;
-//       return;
-//     }
-//     const data = await response.json();
-//     if (!response.ok) {
-//         throw new Error(data.error || "Failed to load appointments");
-//     }
-//     appointments = data;
-//     // Clear table body
-//     const body = document.getElementById('appointmentsBody');
-//     body.innerHTML = '';
-
-//     if (data.length === 0) {
-//         body.innerHTML = `
-//         <tr id="emptyState">
-//             <td colspan="8" style="text-align:center; padding: 20px; color: #888; font-style: italic;">No appointments added yet.</td>
-//         </tr>`;
-//         return;
-//     }
-
-//     data.forEach(appt => {
-//         const row = document.createElement('tr');
-//         row.innerHTML = `
-//             <td>${appt.purpose}</td>
-//             <td>${appt.appointmentDate.split('-').reverse().join(' - ')}</td>
-//             <td>${appt.appointmentTime}</td>
-//             <td>${appt.doctorName}</td>
-//             <td>${appt.clinicName}</td>
-//             <td>${appt.reminderDate ? appt.reminderDate.split('-').reverse().join(' - ') : '-'}</td>
-//             <td class="actions">
-//                 <div class="dropdown-container">
-//                     <span class="dropdown-trigger">⋮</span>
-//                     <div class="dropdown-menu" style="display: none;">
-//                         <div class="dropdown-item" onclick="editAppointment(${appt.appointmentID})">Edit</div>
-//                         <div class="dropdown-item" onclick="deleteAppointment(${appt.appointmentID})">Delete</div>
-//                     </div>
-//                 </div>
-//             </td>
-//         `;
-//         body.appendChild(row);
-//     });
-//     } 
-//     catch (err) {
-//     console.error("❌ Failed to load appointments:", err);
-//     // document.getElementById('appointmentsBody').innerHTML = `
-//     //     <tr><td colspan="7" style="text-align:center; color: red;">Error loading appointments.</td></tr>
-//     // `;
-//     document.getElementById('appointmentsBody').innerHTML = `
-//     <tr><td colspan="8" style="text-align:center; color: red; font-weight: bold;">
-//         ⚠️ Failed to connect to the server. Please try again later.
-//     </td></tr>
-//     `;
-//     }
-// }
-
+// ─── Render Tables ─────────────────────────────────────────────────────────────────────
 function renderTable() {
     const body = document.getElementById('appointmentsBody');
     body.innerHTML = '';
+
+    //If there are no appointments, it inserts a message row to indicate
+    //that the table is empty.
     if (appointments.length === 0) {
     body.innerHTML = `
         <tr id="emptyState">
@@ -219,9 +85,14 @@ function renderTable() {
         </tr>`;
     return;
     }
+
+    //Loops through the appointments array
+    //For each appt, creates a new <tr> row
+    //Sets its ID to something like appt-12 (for scroll targeting)
     for (let appt of appointments) {
     const row = document.createElement('tr');
     row.id = `appt-${appt.appointmentID}`;  // Mark row with appointmentID to allow scrolling from banner
+    //Fill in the row with data
     row.innerHTML = `
         <td>${appt.purpose}</td>
         <td>${appt.appointmentDate.split('-').reverse().join(' - ')}</td>
@@ -238,14 +109,28 @@ function renderTable() {
                 </div>
             </div>
         </td>
-    `;
+    `;// Creates a three-dot dropdown menu 
     body.appendChild(row);
+    //Finally, the completed <tr> is added to the the <tbody> so it appears in the UI.
     }
 }
 
+// ─── Load Appointments ─────────────────────────────────────────────────────────────────────
 async function loadAppointments() {
+    //Check if user is logged in
+    //If user has not logged in yet, it will ask the user to log in first to see appointments
+    if(!currentUser){
+      document.getElementById('appointmentsBody').innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; color: #cc0000; font-weight: bold;">
+            🔒 Please log in first to see your appointments.
+          </td>
+        </tr>
+      `;
+      return;
+    }
     try {
-      const response = await fetch(`http://localhost:3000/appointments/me`,{
+      const response = await fetch(`${apiBaseUrl}/appointments/me`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -265,12 +150,23 @@ async function loadAppointments() {
       if (!response.ok) {
           throw new Error(data.error || "Failed to load appointments");
       }
-      appointments = data;
+      //Treat empty appointments as valid
+      appointments = Array.isArray(data) ? data : [];
+
+      if (appointments.length === 0) {
+        document.getElementById('appointmentsBody').innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align:center; color: #777; font-style: italic;">
+              No appointments added yet.
+            </td>
+          </tr>`;
+        return;
+      }
       // Clear table body
       renderTable();
       
       //Scroll to specific appointment if scrollTo parameter is present
-      const scrollParam = new URLSearchParams(window.location.search).get("scrollTo");
+      const scrollParam = new URLSearchParams(window.location.search).get("scrollTo");//Check the URL for a query parameter like ?scrollTo=12 or ?scrollTo=12, 14
       if (scrollParam) {
         const ids = scrollParam.split(",");
         ids.forEach(id => {
@@ -283,9 +179,6 @@ async function loadAppointments() {
   }
   catch (err) {
     console.error("❌ Failed to load appointments:", err);
-    // document.getElementById('appointmentsBody').innerHTML = `
-    //     <tr><td colspan="7" style="text-align:center; color: red;">Error loading appointments.</td></tr>
-    // `;
     document.getElementById('appointmentsBody').innerHTML = `
     <tr><td colspan="8" style="text-align:center; color: red; font-weight: bold;">
         ⚠️ Failed to connect to the server. Please try again later.
@@ -294,6 +187,7 @@ async function loadAppointments() {
     }
 }
 
+// ─── Delete Appointments ─────────────────────────────────────────────────────────────────────
 async function deleteAppointment(appointmentID){
   if(!currentUser || currentUser === null){
     alert("You must be logged in to delete an appointment.");
@@ -304,9 +198,12 @@ async function deleteAppointment(appointmentID){
   document.getElementById('deleteModal').style.display = 'flex';
 }
 
+// ─── Edit Appointments ─────────────────────────────────────────────────────────────────────
 function editAppointment(id) {
+  //looks for the matching appointment from the appointments array using .find()
   const appt = appointments.find(a => a.appointmentID === id);
 
+  //If no appointments is found, it alerts the user and exists the functions early
   if (!appt) {
     alert("Appointment not found.");
     return;
@@ -328,16 +225,18 @@ function editAppointment(id) {
   isEditing = true;//Store true to indicate we are in edit mode
 }
 
+// ─── Dislay a success popup/modal ─────────────────────────────────────────────────────────────────────
 function showSuccessModal(message) {
   document.getElementById('successMessage').innerText = message;
   document.getElementById('successModal').style.display = 'flex';
 }
 
+// ─── Hides the success model that was previously shown using showSuccessModal() ─────────────────────────────
 function closeSuccessModal() {
     document.getElementById('successModal').style.display = 'none';
 }
 
-//Confirm delete action
+// ─── Delete Confirmation Modal ─────────────────────────────────────────────────────────────────────
 document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
   const appointmentID = pendingDeleteID;
   document.getElementById('deleteModal').style.display = 'none';
@@ -370,24 +269,24 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async func
   pendingDeleteID = null; // Clear the pending ID or Reset it
 });
 
-//Cancel delete action
+// ─── Cancel Delete ─────────────────────────────────────────────────────────────────────
 document.getElementById('cancelDeleteBtn').addEventListener('click', function () {
   document.getElementById('deleteModal').style.display = 'none';
   pendingDeleteID = null;// Clear the pending ID or Reset it
 })
 
-//search appointments
+// ─── Search for Appointments ─────────────────────────────────────────────
 async function searchAppointments() {
   const keyword = document.getElementById("searchKeyword").value.trim();
   const date = document.getElementById("filterByDate").value;
 
-  const queryParams = new URLSearchParams();
-
-  if (keyword) queryParams.append("searchTerm", keyword);
+  const queryParams = new URLSearchParams(); // create a query string object
+  if (keyword) queryParams.append("searchTerm", keyword); 
   if (date) queryParams.append("appointmentDate", date);
+  //adds keyword and date to the query string only if they exist
 
   try {
-    const response = await fetch(`http://localhost:3000/appointments/search?${queryParams.toString()}`, {
+    const response = await fetch(`${apiBaseUrl}/appointments/search?${queryParams.toString()}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -408,7 +307,7 @@ async function searchAppointments() {
       return;
     }
 
-    appointments = data;
+    appointments = data;//updates the appointments array with the results
     renderTable();
 
   } catch (err) {
@@ -417,95 +316,60 @@ async function searchAppointments() {
   }
 }
 
-//The box where there are two options: edit and delete will pop up here
+// ─── The box where there are two options: edit and delete will pop up here ─────────────────────────────────────────────
 document.addEventListener("click", function (e) {
+  //Get elements with class dropdown-menu
   const allMenus = document.querySelectorAll(".dropdown-menu");
 
   // If user clicks on ⋮ icon
   if (e.target.classList.contains("dropdown-trigger")) {
     const menu = e.target.nextElementSibling;
+
+    //hides all other dropdown menus except the one being triggered
+    //prevents multiple menus from being open at once
     allMenus.forEach(m => {
       if (m !== menu) m.style.display = "none";
     });
+    
+    //Toggles the clicked menu: if it's already open, close it. If it's closed, open it.
     menu.style.display = menu.style.display === "block" ? "none" : "block";
     e.stopPropagation(); // prevent from bubbling to document
-  } else {
-    allMenus.forEach(m => m.style.display = "none");
+  } 
+
+  else {
+    allMenus.forEach(m => m.style.display = "none"); 
   }
 });
 
-// document.addEventListener("DOMContentLoaded", async function () {
-//     currentUser = await getToken(token);
-//     //Debugging
-//     console.log("Current User:", currentUser);
-//     document.querySelector(".search-filter button").addEventListener("click", function (e) {
-//       e.preventDefault();
-//       searchAppointments();
-//     });
-    
-//     loadAppointments();
-
-//     document.getElementById('cancelEditButton').addEventListener('click', function () {
-//     document.getElementById('appointment-form').reset();//Clear form fields
-//     resetFormMode();//Switch back to "Add New Appointment" mode
-//   });
-
-// });
-
+// ─── Runs immediately when the HTML page is fully loaded ─────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async function () {
+  //Get the current user
   currentUser = await getToken(token);
   console.log("Current User:", currentUser);//Debugging
+  //Setupt the search button
   document.querySelector(".search-filter button").addEventListener("click", function (e) {
     e.preventDefault();
     searchAppointments();
   });
 
+  //Load and display all appointments
   loadAppointments();
 
+  //Cancel edit button
+  //When the cancel btn is clicked while editing,
   document.getElementById('cancelEditButton').addEventListener('click', function () {
     document.getElementById('appointment-form').reset();//Clear form fields
     resetFormMode();//Switch back to "Add New Appointment" mode
   });
 
-  //Reminder Banner Alert
-  try {
-    if (!currentUser) {
-      console.warn("Token invalid or expired.");
-      return;
-    }
-    const response = await fetch("http://localhost:3000/appointments/me", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      console.warn("Failed to fetch appointments:", response.status);
-      return;
-    }
-
-    const appointments = await response.json();
-    const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
-
-    // Filter appointments for today's reminders by comparing reminderDate
-    const todaysReminders = appointments.filter(appt => {
-      if (!appt.reminderDate) return false;
-      const formatted = new Date(appt.reminderDate).toISOString().split("T")[0];
-      return formatted === today;
-    });
-
-    if (todaysReminders.length > 0) {
-      showReminderAlert(todaysReminders);
-    }
-    
-  } catch (err) {
-    console.error("❌ Reminder alert error:", err);
+  if(currentUser){
+    updateReminderBanner();
   }
 });
 
-//Function to dismiss the reminder banner
+// ─── Dismissed (hides and removes) the reminder banner ─────────────────────────────────────────────
 function dismissReminderBanner() {
-  const banner = document.getElementById("reminderBanner");
+  const banner = document.getElementById("reminderBanner"); //finds the reminder banner element using its ID
   if (banner) {
     banner.classList.remove("active"); // Slide out
 
@@ -517,7 +381,7 @@ function dismissReminderBanner() {
   }
 }
 
-//Function to show the reminder alert banner
+// ─── Show the reminde alert banner ─────────────────────────────────────────────
 function showReminderAlert(reminders) {
   const alertDiv = document.createElement("div");
   alertDiv.id = "reminderBanner";
@@ -563,12 +427,12 @@ function showReminderAlert(reminders) {
   });
 }
 
-// Update the reminder banner when appointments change after actions like add/edit/delete dynamically
+// ─── Update Reminder Banner ─────────────────────────────────────────────
 async function updateReminderBanner() {
   try {
     if (!token) return;
 
-    const response = await fetch("http://localhost:3000/appointments/me", {
+    const response = await fetch(`${apiBaseUrl}/appointments/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -576,10 +440,30 @@ async function updateReminderBanner() {
 
     if (!response.ok) return;
 
-    const appointments = await response.json();
+    //─── Fetch Reminder Appointments & Show Today's Reminder Banner ──────────────
+    const responseData = await response.json();
+
+    // Determine the structure of the response:
+    // - If the response is a raw array → use it directly as the appointment list.
+    // - If it's an object → try to extract the 'appointments' property.
+    // - If 'appointments' is missing, default to an empty array.
+    const appointmentList = Array.isArray(responseData)
+    ? responseData                         // Raw array
+    : responseData.appointments || [];     // Object with appointments
+
+    // Validate that we now have an array before proceeding.
+    // If not, something went wrong — log a warning and exit the update early.
+    if (!Array.isArray(appointmentList)) {
+      console.warn("Reminder update skipped: appointments is not an array", appointmentList);
+      dismissReminderBanner();
+      return;
+    }
+
+    // Get today’s date in YYYY-MM-DD format for easy comparison.
     const today = new Date().toISOString().split("T")[0];
 
-    const todaysReminders = appointments.filter(appt => {
+    // Filter appointments where the reminderDate matches today's date.
+    const todaysReminders = appointmentList.filter(appt => {
       if (!appt.reminderDate) return false;
       const formatted = new Date(appt.reminderDate).toISOString().split("T")[0];
       return formatted === today;

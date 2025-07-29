@@ -112,7 +112,9 @@ async function updatePost(req, res) {
       return res.status(403).json({ error: "Not allowed to edit this post." });
     }
 
-    res.status(200).json({ message: "Post updated successfully" });
+    const updatedPost = await postModel.getPostById(postID);
+    res.status(200).json(updatedPost);
+
   } catch (err) {
     console.error("Update Post Error:", err);
     res.status(500).json({ error: "Failed to update post" });
@@ -154,6 +156,59 @@ async function deleteComment(req, res) {
   }
 }
 
+async function likePost(req, res) {
+  const { postID } = req.params;
+  const userID = req.user.userID;
+
+  try {
+    const existing = await postModel.getLikes(postID, userID);
+    if (existing?.Liked > 0) {
+      // Already liked, treat as success
+      return res.status(200).json({ message: "Already liked" });
+    }
+
+    await postModel.addLike(postID, userID);
+    res.status(201).json({ message: "Liked" });
+  } catch (err) {
+    console.error("Like Post Error:", err);
+    res.status(500).json({ error: "Failed to like post" });
+  }
+}
+
+async function unlikePost(req, res) {
+  const postID = parseInt(req.params.postID);
+  const userID = req.user?.userID || req.body.userID;
+
+  console.log(`unlikePost: postID=${postID}, userID=${userID}`);
+
+  try {
+    const deleted = await postModel.removeLike(postID, userID);
+    if (deleted > 0) {
+      console.log(`Unlike successful`);
+      return res.status(200).json({ message: "Post unliked" });
+    } else {
+      console.warn(`No like found to delete`);
+      return res.status(404).json({ message: "Like not found" });
+    }
+  } catch (err) {
+    console.error("Unlike error:", err);
+    res.status(500).json({ error: "Failed to unlike post" });
+  }
+}
+
+async function getLikes(req, res) {
+  const { postID } = req.params;
+  const userID = req.user?.userID; // ← pulled from JWT
+
+  try {
+    const result = await postModel.getLikes(postID, userID);
+    res.json(result);
+  } catch (err) {
+    console.error("Get Likes Error:", err);
+    res.status(500).json({ error: "Failed to fetch like status" });
+  }
+}
+
 module.exports = {
   getAllPosts,
   getPostById,
@@ -163,5 +218,8 @@ module.exports = {
   deletePost,
   updatePost,
   updateComment,
-  deleteComment
+  deleteComment,
+  likePost,
+  unlikePost,
+  getLikes
 };
