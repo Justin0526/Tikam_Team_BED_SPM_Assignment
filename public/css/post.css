@@ -135,6 +135,12 @@ main {
   cursor: pointer;
 }
 
+.share-btn:hover {
+  transform: scale(1.05); /* Slightly enlarges button */
+  background-color: #2b7da4; /* Darker blue on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Glow shadow */
+}
+
 .today-posts h3 {
   color: #3399CC;
   margin-bottom: 15px;
@@ -219,6 +225,18 @@ footer a {
   color: #3b7dd8;
   font-size: 1rem;
   cursor: pointer;
+  font-weight: normal; /* Default normal weight */
+  text-decoration: none; /* Remove underline */
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Space between icon and text */
+}
+
+
+.comment-toggle:hover {
+  font-weight: bold; /* Bold on hover */
+  text-decoration: none; /* Ensure no underline */
+  transform: scale(1.05); /* Optional: subtle zoom effect */
 }
 
 /* Comments container (hidden by default via JS) */
@@ -277,6 +295,12 @@ footer a {
   cursor: pointer;
 }
 
+.comments-section .submit-comment:hover {
+  transform: scale(1.05);
+  background-color: #2b7da4;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
 /* Hover & focus states */
 .comment-toggle:hover,
 .comments-section .submit-comment:hover {
@@ -329,7 +353,8 @@ footer a {
 }
 
 .post-menu-dropdown button:hover {
-  background-color: #f0f0f0;
+  transform: translateX(4px); /* Slide in effect */
+  background-color: #e6f7e6; /* Light green hover */
 }
 
 
@@ -373,9 +398,19 @@ footer a {
   background-color: #ccc;
 }
 
+.cancel-edit-btn:hover {
+  background-color: #bbb;
+  transform: scale(1.05);
+}
+
 .save-edit-btn {
   background-color: #4caf50;
   color: white;
+}
+
+.save-edit-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
 }
 
 /*comment edit*/
@@ -454,6 +489,11 @@ footer a {
   font-size: 1.2em;
   margin-left: 10px;
   transition: color 0.3s ease;
+}
+
+.like-btn:hover {
+  transform: scale(1.2); /* Heart slightly grows */
+  color: #ff4d4d; /* Brighter red on hover */
 }
 
 .like-btn.liked {

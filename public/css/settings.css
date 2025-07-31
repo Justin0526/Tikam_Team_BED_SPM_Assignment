@@ -100,12 +100,25 @@ body {
 .settings-sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* ✅ Adds even spacing between items */
 }
 
-.settings-sidebar li {
+.settings-sidebar li a {
+  text-decoration: none;
+  color: #4B0082; /* Purple text */
   font-weight: bold;
-  margin-bottom: 15px;
-  cursor: pointer;
+  display: inline-block;
+  transition: all 0.3s ease-in-out;
+  font-size: 1.2em; /* Optional: slightly larger font for better readability */
+}
+
+.settings-sidebar li a:hover {
+  color: #3399CC; /* Hover color */
+  font-weight: bold;
+  transform: translateX(5px); /* Slide effect */
 }
 
 .settings-content {
@@ -151,7 +164,15 @@ body {
   border-radius: 25px;
   cursor: pointer;
   display: none; /* hidden by default */
+  transition: all 0.3s ease-in-out;
 }
+
+.settings-content button:hover {
+  background-color: #2B7DA4;
+  transform: scale(1.08); /* Slight grow animation */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
 
 footer {
   background-color: #3399CC;

@@ -451,7 +451,6 @@ function attachPostEventListeners() {
 }
 
 
-
 // On window load
 window.addEventListener("load", async () => {
   currentUser = await getToken(token);
