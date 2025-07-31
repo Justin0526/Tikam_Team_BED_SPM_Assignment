@@ -18,16 +18,18 @@ goBtn.addEventListener('click', async (event) => {
     nextPageToken = null;
 
     if (!currentQuery) return alert("Please enter a search term.");
+    const loadingMessage = document.getElementById("loading-message");
+    loadingMessage.textContent = `Loading nearby ${currentQuery}`;
 
     resultsTitle.textContent = "";
     resultsGrid.innerHTML = "";
     loadMoreWrapper.innerHTML = "";
     quickSearchContainer.style.display = "block";
     resultsSection.style.display = "block";
-
-    loadingMsg.textContent = `Loading results for ${currentQuery}...`;
     
     await fetchFacilities(currentQuery);
+
+    loadingMessage.textContent = ""; // Hide after loaded
 });
 
 // search facilities via quicksearch card

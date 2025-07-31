@@ -60,10 +60,12 @@ async function updateBookmarkCategory(req, res){
         const originalCategoryID = req.body.originalCategoryID;
         const newCategoryID = req.body.newCategoryID;
 
+        // Check if the category updated is the same
         if (originalCategoryID == newCategoryID){
             return res.status(409).json({message: "No change in category."});
         }
 
+        // If not, then update bookmark to the new category
         const bookmarkCategoryID = await bookmarkCategoryModel.getBookmarkCategoryID(userID, bookmarkID, originalCategoryID);
         await bookmarkCategoryModel.updateBookmarkCategory(bookmarkCategoryID, newCategoryID);
         return res.status(200).json({message: "Bookmark successfully updated to new category"});
@@ -102,13 +104,17 @@ async function deleteBookmarksInCategory(req, res){
         const categoryID = req.body.categoryID;
         const alsoDeleteBookmarks = req.body.alsoDeleteBookmarks;
 
+        // If user chooses to delete bookmarks
         if (alsoDeleteBookmarks){
+            // Get all bookmarks by the category
             const bookmarksInCategory = await bookmarkCategoryModel.getBookmarksByCategory(userID, categoryID);
 
+            // For each bookmark, remove the bookmark from the category
             for (const bookmark of bookmarksInCategory){
                 const bookmarkID = bookmark.bookmarkID;
                 const categoryLinks = await bookmarkCategoryModel.countCategoriesForBookmark(userID, bookmarkID);
 
+                // If the bookmark only have one category, then delete the bookmark
                 if (categoryLinks > 1){
                     await bookmarkCategoryModel.detachAllBookmarksFromCategory(userID, categoryID);
                 } else{
@@ -116,9 +122,11 @@ async function deleteBookmarksInCategory(req, res){
                 }
             }
 
+            // After all bookmarks removed from category, delete the category
             await categoryModel.deleteCategory(userID, categoryID);
             return res.status(200).json({message: "Category and bookmarks deleted successfully"});
         }else{
+            // If the user choose not to delete bookmarks, then detach all bookmarks from the category and delete the category
             const success = await bookmarkCategoryModel.detachAllBookmarksFromCategory(userID, categoryID);
             if(!success){
                 return res.status(404).json({error: "No bookmarks were associated with this category"});

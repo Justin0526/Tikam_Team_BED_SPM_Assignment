@@ -66,6 +66,7 @@ async function getPhoto(req, res) {
     }
 }
 
+// Get facilities by the placeID provided by google
 async function getFacilitiesByPlaceID(req, res){
     try{
         const placeID = req.params.placeID;
