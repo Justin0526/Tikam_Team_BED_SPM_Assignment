@@ -237,7 +237,7 @@ function attachPostEventListeners() {
   postContainer.querySelectorAll(".post-item").forEach(item => {
     const postID = item.dataset.postId;
 
-    // ─── Lightbox ────────────────────────────────
+    // image enlargement when click on the image and popup
     const lightbox = document.getElementById("imageLightbox");
     const lightboxImage = lightbox.querySelector(".lightbox-image");
     const closeBtn = lightbox.querySelector(".close-btn");
@@ -254,7 +254,7 @@ function attachPostEventListeners() {
       if (e.target === lightbox) lightbox.hidden = true;
     });
 
-    // ─── Comments Toggle & Submission ────────────────────────────────
+    // Toggle comment items and buttons
     const toggle = item.querySelector(".comment-toggle");
     const section = item.querySelector(".comments-section");
     const listEl = item.querySelector(".comment-list");
@@ -293,7 +293,7 @@ function attachPostEventListeners() {
       }
     });
 
-    // ─── Likes ────────────────────────────────
+    // Likes
     const likeBtn = item.querySelector(".like-btn");
     const likeCountEl = item.querySelector(".like-count");
 
@@ -326,7 +326,7 @@ function attachPostEventListeners() {
       }
     });
 
-    // ─── Dropdown Menu ────────────────────────────────
+    // Dropdown menu items and event listeners
     const menuBtn = item.querySelector(".post-menu-btn");
     const dropdown = item.querySelector(".post-menu-dropdown");
     const editBtn = item.querySelector(".post-menu-edit");
@@ -352,7 +352,7 @@ function attachPostEventListeners() {
       });
     }
 
-    // ─── Edit Post ────────────────────────────────
+    // Edit post
     if (editBtn && editForm) {
       editBtn.addEventListener("click", () => {
         dropdown.hidden = true;
