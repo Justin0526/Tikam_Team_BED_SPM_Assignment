@@ -119,6 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.profile-form').addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    const dobInput = document.getElementById("dob").value;
+    if (dobInput) {
+      const enteredDate = new Date(dobInput);
+      const today = new Date();
+      if (enteredDate > today) {
+        alert("❌ Date of birth cannot be in the future.");
+        return;
+      }
+    }
+
     const formData = {
       userID: currentUser.userID,
       fullName: document.getElementById("fullname").value,
