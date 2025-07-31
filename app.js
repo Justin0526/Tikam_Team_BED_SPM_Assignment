@@ -40,6 +40,8 @@ const { validateRegistration } = require('./middlewares/registration_validation'
 const { validateLogin } = require('./middlewares/login_validation');
 const mealValidator =require("./middlewares/meal_validation");
 
+const { profile } = require("console");
+
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
 const port = process.env.PORT || 3000;
@@ -114,13 +116,13 @@ app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.v
 app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
 
 // Health page route
-// app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
+app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
 
 // Medication routes
-app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
-app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
-app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
-app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+app.get("/api/medications/today", verifyJWT, medicationsController.getTodayMeds );
+app.post("/api/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
+app.put("/api/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
+app.get("/api/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
 
 // Edit medication routes
 app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
@@ -171,6 +173,7 @@ app.listen(3000, () => {
 // Profile-related routes
 app.get('/api/profile/:userID', verifyJWT, profileController.getProfile);
 app.post('/api/profile/update', verifyJWT, validateUserProfile, profileController.updateProfile);
+app.delete("/api/profile/:userID/remove-picture", verifyJWT, profileController.removeProfilePicture);
 
 // Health Records routes
 app.get("/api/healthRecords/:userID", healthRecordsController.getHealthRecords); // Read

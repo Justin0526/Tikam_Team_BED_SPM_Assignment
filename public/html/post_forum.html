@@ -30,13 +30,13 @@
   <main>
     <!-- Post composer -->
     <section class="post-section">
-      <h2>Post</h2>
+      <h2>Post about your day!</h2>
       <textarea id="postContent"
                 placeholder="What would you like to post about today?"
                 rows="4"></textarea>
       <div class="share-container">
         <div class="left-upload">
-          <label class="upload-btn" for="postImage">📁 Drag or click to upload image</label>
+          <label class="upload-btn" for="postImage">📁 Click to upload image</label>
           <input type="file" id="postImage" accept="image/*" style="display:none;">
         </div>
         <button class="share-btn">Share Post</button>
@@ -61,7 +61,7 @@
     </section>
     <!-- Posts list -->
     <section class="today-posts">
-      <h3>Today's Posts</h3>
+      <h3>Community Posts</h3>
       <div class="posts-list"></div>
     </section>
   </main>
@@ -77,7 +77,12 @@
       <a href="credits.html">Credits</a>
     </p>
   </footer>
-
+    <div id="imageLightbox" class="lightbox" hidden>
+    <button class="close-btn">
+      <img src="../images/close_button.png" alt="Close Button">
+    </button>
+    <img class="lightbox-image" src="" alt="Full View">
+  </div>
   <!-- JWT Decode & your other scripts -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script src="../js/auth.js"></script>
