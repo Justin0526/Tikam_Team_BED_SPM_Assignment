@@ -236,40 +236,97 @@ async function loadPosts(filters = {}) {
 function attachPostEventListeners() {
   postContainer.querySelectorAll(".post-item").forEach(item => {
     const postID = item.dataset.postId;
-     // Lightbox elements
-      const lightbox = document.getElementById("imageLightbox");
-      const lightboxImage = lightbox.querySelector(".lightbox-image");
-      const closeBtn = lightbox.querySelector(".close-btn");
 
-      // Image click to open lightbox
-      item.querySelectorAll(".post-image").forEach(img => {
-        img.addEventListener("click", () => {
-          lightboxImage.src = img.src;
-          lightbox.hidden = false;
-        });
+    // ─── Lightbox ────────────────────────────────
+    const lightbox = document.getElementById("imageLightbox");
+    const lightboxImage = lightbox.querySelector(".lightbox-image");
+    const closeBtn = lightbox.querySelector(".close-btn");
+
+    item.querySelectorAll(".post-image").forEach(img => {
+      img.addEventListener("click", () => {
+        lightboxImage.src = img.src;
+        lightbox.hidden = false;
       });
+    });
 
-      // Close button
-      closeBtn.addEventListener("click", () => {
-        lightbox.hidden = true;
-      });
+    closeBtn.addEventListener("click", () => (lightbox.hidden = true));
+    lightbox.addEventListener("click", e => {
+      if (e.target === lightbox) lightbox.hidden = true;
+    });
 
-      // Close if clicking outside image
-      lightbox.addEventListener("click", (e) => {
-        if (e.target === lightbox) lightbox.hidden = true;
-      });
-
-    // Comment toggle
+    // ─── Comments Toggle & Submission ────────────────────────────────
     const toggle = item.querySelector(".comment-toggle");
     const section = item.querySelector(".comments-section");
     const listEl = item.querySelector(".comment-list");
+    const commentInput = item.querySelector(".new-comment");
+    const submitCommentBtn = item.querySelector(".submit-comment");
 
+    // Toggle comments section
     toggle.addEventListener("click", () => {
       if (section.hidden) loadComments(postID, listEl);
       section.hidden = !section.hidden;
     });
 
-    // Dropdown menu
+    // Submit new comment
+    submitCommentBtn.addEventListener("click", async () => {
+      const content = commentInput.value.trim();
+      if (!content) return alert("Comment cannot be empty.");
+
+      try {
+        const res = await fetch(`${apiBaseUrl}/posts/${postID}/comments`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ content })
+        });
+
+        if (!res.ok) throw new Error("Failed to post comment");
+
+        // Clear input and reload comments
+        commentInput.value = "";
+        await loadComments(postID, listEl);
+      } catch (err) {
+        console.error("Error posting comment:", err);
+        alert("Failed to post comment. Please try again.");
+      }
+    });
+
+    // ─── Likes ────────────────────────────────
+    const likeBtn = item.querySelector(".like-btn");
+    const likeCountEl = item.querySelector(".like-count");
+
+    // Load current like status
+    updateLikeStatus(postID, likeBtn, likeCountEl);
+
+    likeBtn.addEventListener("click", async () => {
+      try {
+        const isLiked = likeBtn.classList.contains("liked");
+
+        if (isLiked) {
+          // Unlike
+          const res = await fetch(`${apiBaseUrl}/posts/${postID}/unlike`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error("Failed to unlike");
+        } else {
+          // Like
+          const res = await fetch(`${apiBaseUrl}/posts/${postID}/like`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error("Failed to like");
+        }
+
+        await updateLikeStatus(postID, likeBtn, likeCountEl);
+      } catch (err) {
+        console.error("Error toggling like:", err);
+      }
+    });
+
+    // ─── Dropdown Menu ────────────────────────────────
     const menuBtn = item.querySelector(".post-menu-btn");
     const dropdown = item.querySelector(".post-menu-dropdown");
     const editBtn = item.querySelector(".post-menu-edit");
@@ -295,7 +352,7 @@ function attachPostEventListeners() {
       });
     }
 
-    // Edit button
+    // ─── Edit Post ────────────────────────────────
     if (editBtn && editForm) {
       editBtn.addEventListener("click", () => {
         dropdown.hidden = true;
@@ -306,22 +363,19 @@ function attachPostEventListeners() {
       });
     }
 
-    // Cancel edit
     if (cancelBtn) {
       cancelBtn.addEventListener("click", () => {
         editForm.hidden = true;
       });
     }
 
-    // Change image
+    // Change image in edit mode
     if (changeBtn && editInput) {
       changeBtn.addEventListener("click", () => editInput.click());
       editInput.addEventListener("change", async () => {
         const file = editInput.files[0];
         if (!file) return;
 
-        // Use FileReader to show image preview before upload
-        // FileReader will read the content of the image file and show the preview of the image in the website. it is completely client-sided
         const reader = new FileReader();
         reader.onload = evt => {
           let previewImg = editPreview;
@@ -333,9 +387,8 @@ function attachPostEventListeners() {
           }
           previewImg.src = evt.target.result;
         };
-        reader.readAsDataURL(file); // Start reading file
+        reader.readAsDataURL(file);
 
-        // Upload image
         const form = new FormData();
         form.append("file", file);
         try {
@@ -350,7 +403,7 @@ function attachPostEventListeners() {
       });
     }
 
-    // Save changes
+    // Save post edits
     if (saveBtn) {
       saveBtn.addEventListener("click", async () => {
         const updatedContent = editContent.value.trim();
@@ -379,7 +432,7 @@ function attachPostEventListeners() {
       });
     }
 
-    // Delete button
+    // Delete post
     if (delBtn) {
       delBtn.addEventListener("click", async () => {
         if (!confirm("Delete this post?")) return;
@@ -397,7 +450,7 @@ function attachPostEventListeners() {
   });
 }
 
-// --- Keep all your filter handlers, image preview, share post handlers here ---
+
 
 // On window load
 window.addEventListener("load", async () => {
