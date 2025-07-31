@@ -20,25 +20,29 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
+  padding: 10px 20px; /* Reduced padding for shorter container */
   background-color: #F9FFF4;
   border-bottom: 2px solid #A4D038;
+  height: 90px; /* Set a fixed height */
 }
 
 .logo-container {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .logo-img {
-  height: 50px;
-  margin-right: 10px;
+  height: 250px; /* Increased logo size */
+  width: auto; /* Maintain aspect ratio */
+  transform: translateY(0px); /* Move logo up slightly if it looks too low */
 }
 
 .logo-text {
-  font-size: 1.8em;
+  font-size: 2.5em; /* Adjust font size to match new logo size */
   font-weight: bold;
   color: #3399CC;
+  margin-left: 10px; /* Space between logo and text */
 }
 
 .profile {

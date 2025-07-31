@@ -5,6 +5,7 @@
   <title>Transport and Facilities - HealthyLah</title>
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/transport_and_facilities.css">
+  <link rel="stylesheet" href="../css/reminder_alert.css">
 </head>
 <body>
      <header class="top-bar">
@@ -24,15 +25,16 @@
         <a href="Transport_and_Facilities.html">Transport & Facilities</a>
         <a href="health.html">Health</a>
         <a href="post_forum.html">Post</a>
+        <a href="settings.html">Settings</a>
         </nav>
     </header>
     <section class="transport-top">
       <div class="transport-info">
         <h2>Transport & Facilities</h2>
         <div class="buttons">
-          <a href="view_bus.html" class="btn">View MRT/Bus Stops</a>
           <a href="browse_facilities.html" class="btn">Browse Facilities</a>
-          <a href="#" class="btn">View Bookmarks & History</a>
+          <a href="view_bookmarks.html" class="btn">View Bookmarks</a>
+          <a href="view_bus.html" class="btn">View Bus Stops and Bus Arrivals</a>
         </div>
       </div>
       <div class="picture-placeholder">
@@ -56,7 +58,6 @@
         <div class="card-container" id="train-card-container">
         <!-- Train information will be added dynamically here -->
         </div>
-        <p class="see-more">See more >>></p>
       </div>
 
       <div class="transport-box bus">
@@ -64,7 +65,6 @@
         <div class="card-container" id="bus-card-container">
           <!-- Bus information will be added dynamically here -->
         </div>
-        <p class="see-more">See more >>></p>
       </div>
     </div>
   </section>
@@ -89,7 +89,8 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="../js/auth.js"></script>
-    <!-- <script src="../js/settings_translation.js" defer></script> -->
+    <script src="../js/settings_translation.js" defer></script>
     <script src="../js/transport_and_facilities.js"></script>
+    <script src="../js/reminder_alert.js" defer></script>
 </body>
 </html>

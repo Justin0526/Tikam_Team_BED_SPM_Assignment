@@ -19,12 +19,13 @@
             </div>
         </div>
         <nav class="nav-bar">
-        <a href="index.html">Home</a>
+        <a href="#">Home</a>
         <a href="about_us.html">About us</a>
         <a href="weather.html">Weather</a>
         <a href="Transport_and_Facilities.html">Transport & Facilities</a>
         <a href="health.html">Health</a>
         <a href="post_forum.html">Post</a>
+        <a href="settings.html">Settings</a>
         </nav>
     </header>
 
@@ -73,23 +74,31 @@
       <div class="icon-box"><img src="../images/health.jpg" alt="Health"></div>
       <div>Update Health Profile</div>
     </a>
-    <a href="bmi.html" class="card">
+    <a href="../html/healthRecords.html" class="card">
       <div class="icon-box"><img src="../images/bmi.jpg" alt="BMI"></div>
       <div>BMI Calculator</div>
     </a>
   </div>
   </section>
 
-  <section class="health-summary">
-    <h2>Your Health Summary</h2>
-    <!-- Logged-in version -->
-    <div class="health-summary-box">
-      <p><strong>BMI:</strong> 23.4 (Normal)</p>
-      <p><strong>Weight:</strong> 64kg</p>
-      <p><strong>Tip of the Day:</strong> Remember to drink at least 8 glasses of water.</p>
-    </div>
-    <!-- Guest version -->
-    <!-- <p>Please log in to view your health summary.</p> -->
+  <!-- BMI CALCULATOR -->
+  <section class="bmi-section">
+      <h2>BMI Calculator</h2>
+      <div class="bmi-card">
+          <div class="bmi-inputs">
+              <label for="bmiWeight">Weight (kg):</label>
+              <input type="number" id="bmiWeight" placeholder="e.g., 70">
+
+              <label for="bmiHeight">Height (m):</label>
+              <input type="number" id="bmiHeight" step="0.01" placeholder="e.g., 1.70">
+          </div>
+          <button class="bmi-btn" onclick="calculateBMI()">Calculate BMI</button>
+            <p id="bmiResult" class="bmi-result">Enter your details to calculate BMI.</p>
+            <div class="tip-of-the-day">
+            <strong>Tip of the Day:</strong>
+            <span id="tipText">Stay hydrated! Drink at least 8 glasses of water daily.</span>
+            </div>
+      </div>
   </section>
 
   <footer>

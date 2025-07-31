@@ -1,8 +1,10 @@
 const axios = require("axios");
 const APIKEY = process.env.BROWSE_FACILITY_API_KEY;
-const FieldMask = 'places.displayName,places.formattedAddress,places.photos,places.googleMapsLinks,places.currentOpeningHours,places.accessibilityOptions,nextPageToken';
+const FieldMask = 'places.id,places.displayName,places.formattedAddress,places.photos,places.googleMapsLinks,places.currentOpeningHours,places.accessibilityOptions,nextPageToken';
+const placeIdFieldMask = 'id,displayName,formattedAddress,googleMapsLinks,currentOpeningHours,accessibilityOptions,photos'
 const browseFacilityURL = "https://places.googleapis.com/v1/places:searchText";
 const placePhotoURL = "https://places.googleapis.com/v1"
+const placeIdURL = "https://places.googleapis.com/v1/places";
 
 // Function to get facilities searched by user
 async function getFacilities(req, res){
@@ -64,7 +66,27 @@ async function getPhoto(req, res) {
     }
 }
 
+async function getFacilitiesByPlaceID(req, res){
+    try{
+        const placeID = req.params.placeID;
+        const url = `${placeIdURL}/${placeID}`;
+
+        const response = await axios.get(url, {
+            headers:{
+                "X-Goog-Api-Key": APIKEY,
+                "X-Goog-FieldMask": placeIdFieldMask
+            }
+        })
+
+        return res.json(response.data);
+    }catch(error){
+        console.error("Controller error: ", error);
+        res.status(500).json({error: "Error retrieving place via placeID from googleapis.com"});
+    }
+}
+
 module.exports = {
     getFacilities,
     getPhoto,
+    getFacilitiesByPlaceID
 }

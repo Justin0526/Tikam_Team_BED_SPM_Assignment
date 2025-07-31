@@ -23,13 +23,11 @@
           <a href="Transport_and_Facilities.html">Transport & Facilities</a>
           <a href="health.html">Health</a>
           <a href="post_forum.html">Post</a>
+          <a href="settings.html">Settings</a>
           </nav>
       </header>
       <div class="body-section">
-        <div class="transport-toggle">
-          <button class="bus-transport-btn">BUS</button>
-          <button class="transport-btn">MRT/LRT</button>
-        </div>
+         <h1 class="page-title">Bus Stops near you</h1>
 
         <div class="search-bar">
           <input type="text" id="textQuery" placeholder="Search by address, stop name or bus number…" />
@@ -38,11 +36,31 @@
 
         <main >
           <h2 class="section-title" id="section-title">Nearby Bus Stops</h2>
+          <p id="loading-message" style="text-align: center; font-style: italic; color: gray;">Loading nearby bus stops...</p>
 
           <!-- Bus Stop Block -->
           <section class="bus-stop-section" id="bus-stop-section">
             <!-- Bus arrival info added dynamically -->
           </section>
+          <!-- Bookmark Category Modal -->
+          <div id="categoryModal" class="modal-overlay" style="display:none">
+            <div class="modal">
+              <h3>Select Categories</h3>
+              <form id="categoryForm">
+                <div id="categoryCheckboxes" class="checkbox-group"></div>
+
+                <label for="newCategory">Add New Category:</label>
+                <input type="text" id="newCategory" placeholder="e.g. Favourite Clinics" />
+
+                <div id="message" class="message"></div>
+                <div class="modal-buttons">
+                  <button type="button" id="addCategoryBtn" class="btn add-btn">+ New Category</button>
+                  <button type="submit" class="btn confirm-btn">Confirm</button>
+                  <button type="button" id="cancelModal" class="btn cancel-btn">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </main>
       </div>
       <footer>
@@ -66,7 +84,8 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="../js/auth.js"></script>
-    <!-- <script src="../js/settings_translation.js" defer></script> -->
+    <script src="../js/settings_translation.js" defer></script>
+    <script src="../js/bookmark_handler.js"></script>
     <script src="../js/view_bus.js"></script>
   </body>
 </html>

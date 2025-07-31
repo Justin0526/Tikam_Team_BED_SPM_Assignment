@@ -30,25 +30,29 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
+  padding: 10px 20px; /* Reduced padding for shorter container */
   background-color: #F9FFF4;
   border-bottom: 2px solid #A4D038;
+  height: 90px; /* Set a fixed height */
 }
 
 .logo-container {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .logo-img {
-  height: 50px;
-  margin-right: 10px;
+  height: 250px; /* Increased logo size */
+  width: auto; /* Maintain aspect ratio */
+  transform: translateY(0px); /* Move logo up slightly if it looks too low */
 }
 
 .logo-text {
-  font-size: 1.8em;
+  font-size: 2.5em; /* Adjust font size to match new logo size */
   font-weight: bold;
   color: #3399CC;
+  margin-left: 10px; /* Space between logo and text */
 }
 
 .profile {
@@ -441,4 +445,92 @@ footer a {
 
 .cancel-comment-edit:hover {
   background-color: #5a6268;
+}
+
+.like-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.like-btn.liked {
+  color: red;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f1f8e9;
+  border: 2px solid #a4d038;
+  border-radius: 10px;
+}
+
+.filter-bar label {
+  font-weight: bold;
+}
+
+.filter-bar input,
+.filter-bar button {
+  padding: 8px;
+  border: 2px solid #a4d038;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.filter-bar button {
+  background: #3eaee2;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.filter-bar button:hover {
+  background: #2b7da4;
+}
+
+.lightbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+}
+.lightbox[hidden] {
+  display: none !important; /* ✅ Ensures hidden actually hides */
+}
+.lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+  padding: 0;
+}
+
+.close-btn img {
+  width: 50px;        /* Adjust size as needed */
+  height: 50px;
+  object-fit: contain; /* Maintain aspect ratio */
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)); /* Makes white icon visible */
+  transition: transform 0.2s ease;
+}
+
+.close-btn:hover img {
+  transform: scale(1.2); /* Slight zoom effect on hover */
 }

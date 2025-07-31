@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>HealthyLah – Settings</title>
   <link rel="stylesheet" href="../css/settings.css" />
+  <link rel="stylesheet" href="../css/reminder_alert.css">
   <script src="../js/settings_translation.js" defer></script>
 </head>
 <body>
@@ -23,6 +24,7 @@
         <a href="Transport_and_Facilities.html">Transport & Facilities</a>
         <a href="health.html">Health</a>
         <a href="post_forum.html">Post</a>
+        <a href="#">Settings</a>
       </nav>
     </header>
 
@@ -30,13 +32,16 @@
      <aside class="settings-sidebar">
     <ul>
       <li data-i18n="sidebar_account">
-        <a href="./profile.html" data-i18n="sidebar_account">Account Settings</a>
+        <a href="./user_profile.html" data-i18n="sidebar_account">Account Settings</a>
       </li>
       <li data-i18n="sidebar_appointment">
         <a href="./appointment_management.html" data-i18n="sidebar_appointment">Appointment</a>
       </li>
       <li data-i18n="sidebar_language">
         <a href="./settings.html" data-i18n="sidebar_language">Language</a>
+      </li>
+      <li data-i18n="sidebar_logout">
+        <a href="#" id="logoutLink" data-i18n="sidebar_logout">Logout</a>
       </li>
     </ul>
   </aside>
@@ -51,6 +56,7 @@
         <option value="zh-TW" data-i18n="lang_zh_tw">繁體中文 (Traditional Chinese)</option>
         <option value="ms" data-i18n="lang_ms">Malay</option>
         <option value="ta" data-i18n="lang_ta">Tamil</option>
+        <option value="my" data-i18n="lang_my">Burmese</option>
       </select>
 
       <button id="applyButton" style="display:none;" data-i18n="apply_button">
@@ -77,6 +83,9 @@
         </div>
         <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
   </footer>
-
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/reminder_alert.js" defer></script>
 </body>
 </html>

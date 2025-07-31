@@ -65,7 +65,7 @@ async function getFavouriteOutfits(){
                     month: 'long',
                     year: 'numeric'
                 })
-
+                
                 // Get other attributes
                 const outfitImage = outfit.outfitImageURL;
                 const outfitName = outfit.outfitName
@@ -78,6 +78,7 @@ async function getFavouriteOutfits(){
 
                 // Show popup when any outfit card is clicked
                 outfitGrid.appendChild(outfitCard);
+                 translateElementScope(outfitCard)
 
                 outfitCard.addEventListener('click', ()=>{
                     // Clear popup first
@@ -86,7 +87,6 @@ async function getFavouriteOutfits(){
                     // Append outfit details for popup
                     const popupCard = document.createElement("div");
                     popupCard.classList.add("popup-card");
-
                     popupCard.innerHTML = `
                         <span class="close-btn" id="close-btn">x</span>
                         <div class="popup-content">
@@ -101,7 +101,7 @@ async function getFavouriteOutfits(){
                     `;
                     popup.appendChild(popupCard);
                     popup.style.display = 'flex';
-
+                    translateElementScope(popupCard);
                     // Add event listeners for unlike button after they are added to the DOM
                     const unlikeButton = popupCard.querySelector(".unlike-btn");
                     unlikeButton.addEventListener("click", (event) =>{

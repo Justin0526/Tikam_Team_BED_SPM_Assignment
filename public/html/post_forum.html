@@ -21,8 +21,9 @@
         <a href="about_us.html">About us</a>
         <a href="weather.html">Weather</a>
         <a href="Transport_and_Facilities.html">Transport & Facilities</a>
-        <a href="#">Health</a>
+        <a href="health.html">Health</a>
         <a href="post_forum.html">Post</a>
+        <a href="settings.html">Settings</a>
       </nav>
     </header>
 
@@ -47,10 +48,20 @@
         Remove Image
       </button>
     </section>
+    <!-- Filter Bar -->
+    <section class="filter-bar">
+      <label for="filterDate">Filter by Date:</label>
+      <input type="date" id="filterDate">
 
+      <label for="filterOwner">Filter by Owner:</label>
+      <input type="text" id="filterOwner" placeholder="Enter owner's name">
+
+      <button id="applyFilterBtn">Apply Filter</button>
+      <button id="resetFilterBtn">Reset</button>
+    </section>
     <!-- Posts list -->
     <section class="today-posts">
-      <h3>Today's Posts</h3>
+      <h3>Community Posts</h3>
       <div class="posts-list"></div>
     </section>
   </main>
@@ -66,7 +77,12 @@
       <a href="credits.html">Credits</a>
     </p>
   </footer>
-
+    <div id="imageLightbox" class="lightbox" hidden>
+    <button class="close-btn">
+      <img src="../images/close_button.png" alt="Close Button">
+    </button>
+    <img class="lightbox-image" src="" alt="Full View">
+  </div>
   <!-- JWT Decode & your other scripts -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script src="../js/auth.js"></script>
