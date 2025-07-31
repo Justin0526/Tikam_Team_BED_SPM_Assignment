@@ -43,19 +43,29 @@ const medicationSchema = Joi.object({
     }),
 
   startDate: Joi.date()
-    .iso()
-    .required()
-    .messages({
-      'date.base': 'Start date must be a valid date.',
-      'any.required': 'Start date is required.'
-    }),
+  .iso()
+  .custom((value, helpers) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // normalize to midnight
+    const selected = new Date(value);
+    selected.setHours(0, 0, 0, 0);
+
+    if (selected < today) {
+      return helpers.message('Start date cannot be in the past.');
+    }
+    return value;
+  })
+  .required(),
 
   endDate: Joi.date()
     .iso()
+    .greater(Joi.ref('startDate')) // End date must be after start date
     .allow(null, '')
     .messages({
-      'date.base': 'End date must be a valid date.'
+      'date.base': 'End date must be a valid date.',
+      'date.greater': 'End date must be after the start date.'
     }),
+
 
   userID: Joi.number()
     .integer()
