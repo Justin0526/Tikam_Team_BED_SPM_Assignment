@@ -1,4 +1,4 @@
-const outfitModel = require("../models/favouriteOutfit_model");
+const outfitModel = require("../models/favourite_outfit_model");
 
 // Function to get the favourited outfit for the user 
 async function getFavouriteOutfit(req, res){
