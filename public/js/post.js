@@ -45,6 +45,10 @@ async function updateLikeStatus(postID, likeBtn, likeCountEl) {
 
 // Load and display all comments for a specific post
 async function loadComments(postID, listEl) {
+  if (!currentUser) {
+  alert("Please log in to view comments.");
+  return (window.location.href = "/html/login.html");
+  }
   try {
     const res = await fetch(`${apiBaseUrl}/posts/${postID}/comments`, {
       headers: { "Authorization": `Bearer ${token}` }
@@ -269,6 +273,10 @@ function attachPostEventListeners() {
 
     // Submit new comment
     submitCommentBtn.addEventListener("click", async () => {
+      if (!currentUser) {
+        alert("Please log in to comment.");
+        return (window.location.href = "/html/login.html");
+      }
       const content = commentInput.value.trim();
       if (!content) return alert("Comment cannot be empty.");
 
@@ -289,7 +297,7 @@ function attachPostEventListeners() {
         await loadComments(postID, listEl);
       } catch (err) {
         console.error("Error posting comment:", err);
-        alert("Failed to post comment. Please try again.");
+        alert("Failed to comment. Please try again");
       }
     });
 
