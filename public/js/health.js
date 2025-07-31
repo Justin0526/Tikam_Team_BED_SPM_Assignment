@@ -27,6 +27,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Parse the JSON response to get profile data
     const profile = await res.json();
 
+        // Check if health information is missing
+    if (!profile || !profile.fullName || !profile.dob || !profile.gender) {
+      document.querySelector(".profile-section").innerHTML = `
+        <div style="opacity:0.5; pointer-events:none;">
+          <h2>My Health Profile</h2>
+          <p>Your health profile is incomplete.</p>
+        </div>
+        <p><a href="user_profile.html" style="color:blue; text-decoration:underline;">Click here to complete your profile</a></p>
+      `;
+      return;
+    }
+
     // Calculate age based on date of birth
     let age = "null";
     if (profile.dob) {
