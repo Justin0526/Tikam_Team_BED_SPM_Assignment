@@ -28,15 +28,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const profile = await res.json();
 
     // Calculate age based on date of birth
-    const dob = new Date(profile.dob);
-    const age = new Date().getFullYear() - dob.getFullYear();
+    let age = "null";
+    if (profile.dob) {
+      const dob = new Date(profile.dob);
+      if (!isNaN(dob)) {
+        age = new Date().getFullYear() - dob.getFullYear();
+      }
+    }
 
     // Dynamically inject the health profile HTML into the page
     document.querySelector(".profile-section").innerHTML = `
       <h2>My Health Profile</h2>
       <div class="profile-name">${profile.fullName}</div>
       <div class="profile-details">
-        <div class="detail-item"><strong>Age:</strong> <span>${age} years</span></div>
+        <div class="detail-item"><strong>Age:</strong> <span>${age === "null" ? "null" : age + " years"}</span></div>
         <div class="detail-item"><strong>Gender:</strong> <span>${profile.gender}</span></div>
         <div class="detail-item"><strong>Allergies:</strong> <span>${profile.allergies}</span></div>
         <div class="detail-item"><strong>Chronic Conditions:</strong> <span>${profile.chronicConditions}</span></div>
