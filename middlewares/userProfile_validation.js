@@ -6,7 +6,9 @@ const profileSchema = Joi.object({
     'string.empty': 'Full name is required.',
     'string.max': 'Full name must not exceed 100 characters.'
   }),
-  dob: Joi.date().iso().optional().allow('', null),
+  dob: Joi.date().iso().max('now').optional().allow('', null).messages({
+    'date.max': 'Date of birth cannot be in the future.'
+  }),
   gender: Joi.string().valid('Male', 'Female', 'Prefer not to say').optional().allow('', null),
   allergies: Joi.string().max(255).allow('', null),
   conditions: Joi.string().max(255).allow('', null),
@@ -14,7 +16,7 @@ const profileSchema = Joi.object({
   emergencyNumber: Joi.string().pattern(/^[0-9\-+ ]*$/).max(20).allow('', null),
   address: Joi.string().max(255).allow('', null),
   bio: Joi.string().max(500).allow('', null),
-  profilePicture: Joi.string().uri().allow('', null)  // ✅ Add this line
+  profilePicture: Joi.string().uri().allow('', null)  
 });
 
 const validateProfile = (req, res, next) => {
