@@ -155,7 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(`❌ Failed to update profile: ${data.error}`);
+        if (data.errors && Array.isArray(data.errors)) {
+          alert("❌ Failed to update profile:\n" + data.errors.join("\n"));
+        } else {
+          alert(`❌ Failed to update profile: ${data.error || "Unknown error occurred"}`);
+        }
         return;
       }
 
