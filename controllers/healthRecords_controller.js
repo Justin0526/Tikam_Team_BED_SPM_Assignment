@@ -1,6 +1,6 @@
 const healthRecordsModel = require("../models/healthRecords_model");
 
-// ✅ READ - Get all health records for a user
+//READ - Get all health records for a user
 async function getHealthRecords(req, res) {
   try {
     const userID = parseInt(req.params.userID);
@@ -12,7 +12,7 @@ async function getHealthRecords(req, res) {
   }
 }
 
-// ✅ CREATE - Add new health record
+//CREATE - Add new health record
 async function addRecord(req, res) {
   try {
     const { userID, recordType, value1, value2, recordedAt } = req.body;
@@ -29,7 +29,7 @@ async function addRecord(req, res) {
   }
 }
 
-// ✅ UPDATE - Update an existing record by recordID
+//UPDATE - Update an existing record by recordID
 async function updateRecord(req, res) {
   try {
     const recordID = parseInt(req.params.recordID);
@@ -47,7 +47,7 @@ async function updateRecord(req, res) {
   }
 }
 
-// ✅ DELETE - Delete record by recordID
+//DELETE - Delete record by recordID
 async function deleteRecord(req, res) {
   try {
     const recordID = parseInt(req.params.recordID);

@@ -16,7 +16,7 @@ const profileSchema = Joi.object({
   emergencyNumber: Joi.string().pattern(/^[0-9\-+ ]*$/).max(20).allow('', null),
   address: Joi.string().max(255).allow('', null),
   bio: Joi.string().max(500).allow('', null),
-  profilePicture: Joi.string().uri().allow('', null)  // ✅ Add this line
+  profilePicture: Joi.string().uri().allow('', null)  
 });
 
 const validateProfile = (req, res, next) => {

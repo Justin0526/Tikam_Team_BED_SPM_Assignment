@@ -1,7 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-// ✅ READ - Get all health records for a user
+//READ - Get all health records for a user
 async function getHealthRecordsByUser(userID) {
   let connection;
   try {
@@ -23,7 +23,7 @@ async function getHealthRecordsByUser(userID) {
   }
 }
 
-// ✅ CREATE - Add new health record
+//CREATE - Add new health record
 async function addHealthRecord(userID, recordType, value1, value2, recordedAt) {
   let connection;
   try {
@@ -48,7 +48,7 @@ async function addHealthRecord(userID, recordType, value1, value2, recordedAt) {
   }
 }
 
-// ✅ UPDATE - Update record by recordID
+//UPDATE - Update record by recordID
 async function updateHealthRecord(recordID, value1, value2, recordedAt) {
   let connection;
   try {
@@ -73,7 +73,7 @@ async function updateHealthRecord(recordID, value1, value2, recordedAt) {
   }
 }
 
-// ✅ DELETE - Delete a health record by ID
+//DELETE - Delete a health record by ID
 async function deleteHealthRecord(recordID) {
   let connection;
   try {

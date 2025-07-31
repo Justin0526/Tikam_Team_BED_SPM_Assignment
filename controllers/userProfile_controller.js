@@ -8,7 +8,7 @@ exports.getProfile = async (req, res) => {
     }
     const data = await profileModel.getUserProfile(userID);
      if (data && data.profilePicture == null) {
-      data.profilePicture = '../images/default_avatar.png'; // Default image path
+      data.profilePicture = '../images/default_avatar.png'; //Default image path
     }
 
     if (!data) return res.status(404).json({ error: "Profile not found." });
