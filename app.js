@@ -119,10 +119,10 @@ app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealContro
 app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
 
 // Medication routes
-app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
-app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
-app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
-app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+app.get("/api/medications/today", verifyJWT, medicationsController.getTodayMeds );
+app.post("/api/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
+app.put("/api/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
+app.get("/api/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
 
 // Edit medication routes
 app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
