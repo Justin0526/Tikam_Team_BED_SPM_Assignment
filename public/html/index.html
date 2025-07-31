@@ -81,6 +81,26 @@
   </div>
   </section>
 
+  <!-- BMI CALCULATOR -->
+  <section class="bmi-section">
+      <h2>BMI Calculator</h2>
+      <div class="bmi-card">
+          <div class="bmi-inputs">
+              <label for="bmiWeight">Weight (kg):</label>
+              <input type="number" id="bmiWeight" placeholder="e.g., 70">
+
+              <label for="bmiHeight">Height (m):</label>
+              <input type="number" id="bmiHeight" step="0.01" placeholder="e.g., 1.70">
+          </div>
+          <button class="bmi-btn" onclick="calculateBMI()">Calculate BMI</button>
+            <p id="bmiResult" class="bmi-result">Enter your details to calculate BMI.</p>
+            <div class="tip-of-the-day">
+            <strong>Tip of the Day:</strong>
+            <span id="tipText">Stay hydrated! Drink at least 8 glasses of water daily.</span>
+            </div>
+      </div>
+  </section>
+
   <footer>
     <p>© 2025 HealthyLah – Designed with care for our seniors</p>
     <div class="social-links" style="display:inline-block;">

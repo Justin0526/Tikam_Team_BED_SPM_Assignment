@@ -210,3 +210,62 @@ box-shadow: 0 0 8px rgba(0, 0, 0, 0.03);
   line-height: 1;
 }
 
+/* BMI Calculator */
+.bmi-section {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+.bmi-card {
+    background-color: #FFFFFF;
+    border: 2px solid #A4D038;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.bmi-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.bmi-inputs label {
+    text-align: left;
+    color: #2B7DA4;
+    font-weight: bold;
+}
+
+.bmi-inputs input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+.bmi-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #3399CC;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.bmi-btn:hover {
+    background-color: #A4D038;
+    color: #000;
+}
+
+.bmi-result {
+    font-size: 1em;
+    color: #2B7DA4;
+    font-weight: bold;
+}

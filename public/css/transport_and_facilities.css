@@ -162,10 +162,10 @@ h2 {
 
 .card-container {
   padding-top: 3vw;
-  display: flex;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 1.5rem;
   justify-content: center;
-  flex-wrap: nowrap;
   margin-bottom: 1rem;
 }
 
