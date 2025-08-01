@@ -14,7 +14,7 @@ async function getRemindersByUser(userID) {
   return result.recordset;
 }
 
-// ✅ FIXED: Proper model-level fetchUpcomingReminders
+// Proper model-level fetchUpcomingReminders
 async function fetchUpcomingReminders(userID, now, oneHourLater) {
   const pool = await sql.connect(dbConfig);
   const nowStr = now.toTimeString().split(" ")[0]; 

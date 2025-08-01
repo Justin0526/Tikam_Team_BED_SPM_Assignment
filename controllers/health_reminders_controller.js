@@ -32,7 +32,7 @@ async function markReminderTaken(req, res) {
   }
 }
 
-// ✅ NEW: GET /reminders/upcoming
+// NEW: GET /reminders/upcoming
 async function getUpcomingReminders(req, res) {
   const userID = req.user.userID;
   const now = new Date();

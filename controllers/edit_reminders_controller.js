@@ -11,7 +11,7 @@ async function getReminderById(req, res) {
 
     res.json(reminder);
   } catch (err) {
-    console.error("❌ Error fetching reminder:", err);
+    console.error("Error fetching reminder:", err);
     res.status(500).json({ message: "Failed to fetch reminder" });
   }
 }
@@ -22,7 +22,7 @@ async function updateReminder(req, res) {
     await Reminder.updateReminder(id, req.body);
     res.sendStatus(200);
   } catch (err) {
-    console.error("❌ Error updating reminder:", err);
+    console.error("Error updating reminder:", err);
     res.status(500).json({ message: "Failed to update reminder" });
   }
 }
@@ -33,7 +33,7 @@ async function deleteReminder(req, res) {
     await Reminder.deleteReminder(id);
     res.sendStatus(200);
   } catch (err) {
-    console.error("❌ Error deleting reminder:", err);
+    console.error("Error deleting reminder:", err);
     res.status(500).json({ message: "Failed to delete reminder" });
   }
 }
