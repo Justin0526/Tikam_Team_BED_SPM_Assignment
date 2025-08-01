@@ -1,3 +1,11 @@
+beforeAll(() => {
+  jest.spyOn(console, "error").mockImplementation(() => {}); // Silence console.error
+});
+
+afterAll(() => {
+  jest.restoreAllMocks(); // Restore after tests
+});
+
 const medicationsController = require("../controllers/medications_controller");
 const medicationModel = require("../models/medication_models");
 

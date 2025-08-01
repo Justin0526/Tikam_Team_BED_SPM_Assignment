@@ -1,3 +1,11 @@
+beforeAll(() => {
+  jest.spyOn(console, "error").mockImplementation(() => {}); // Silence console.error
+});
+
+afterAll(() => {
+  jest.restoreAllMocks(); // Restore after tests
+});
+
 const sql = require("mssql");
 const medicationModel = require("../models/medication_models");
 
