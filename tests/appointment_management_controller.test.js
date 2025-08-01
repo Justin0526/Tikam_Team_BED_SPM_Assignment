@@ -1,3 +1,12 @@
+// 🔇 Silence console.error during test runs
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  console.error.mockRestore();
+});
+
 const appointmentController = require("../controllers/appointment_controller");
 const appointmentModel = require("../models/appointment_model");
 

@@ -1,3 +1,12 @@
+// Silence console.error during test runs
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  console.error.mockRestore();
+});
+
 const appointmentModel = require("../models/appointment_model");
 const sql = require("mssql");
 
