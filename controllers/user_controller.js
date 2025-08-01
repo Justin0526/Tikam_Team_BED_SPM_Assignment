@@ -32,19 +32,19 @@ async function getUserByUsername(req, res) {
 async function registerUser(req, res) {
     const { fullName, username, email, password } = req.body;
     try {
-        // ✅ Check if username exists
+        // Check if username exists
         const existingUser = await userModel.getUserByUsername(username);
         if (existingUser) {
             return res.status(400).json({ message: "Username already exists. Please choose another one." });
         }
 
-        // ✅ Check if email exists
+        //Check if email exists
         const existingUserByEmail = await userModel.getUserByEmail(email);
         if (existingUserByEmail) {
             return res.status(400).json({ message: "Email already registered. Please use another email." });
         }
 
-        // ✅ Hash password
+        // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
