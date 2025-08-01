@@ -2,93 +2,101 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user_model");
 
-// get all users
-async function getAllUsers(req, res){
-    try{
+// Get all users
+async function getAllUsers(req, res) {
+    try {
         const user = await userModel.getAllUsers();
         res.json(user);
-    }catch(error){
+    } catch (error) {
         console.error("Controller error: ", error);
-        res.status(500).json({error: "Error retrieving user"});
+        res.status(500).json({ message: "Error retrieving users" });
     }
 }
 
-// get user by username
-async function getUserByUsername(req, res){
-    try{
+// Get user by username
+async function getUserByUsername(req, res) {
+    try {
         const username = req.body.username;
         const user = await userModel.getUserByUsername(username);
-        if(!user){
-            return res.status(404).json({error: "User not found!"});
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
         }
-
         res.json(user);
-    }catch(error){
+    } catch (error) {
         console.error("Controller error: ", error);
-        res.status(500).json({error: "Error retrieving user"});
+        res.status(500).json({ message: "Error retrieving user" });
     }
 }
 
-// create new user
-async function registerUser(req, res){
-    const {fullName, username, email, password} = req.body;
-    try{
-        // check for exisiting user;
+// Register a new user
+async function registerUser(req, res) {
+    const { fullName, username, email, password } = req.body;
+    try {
+        // ✅ Check if username exists
         const existingUser = await userModel.getUserByUsername(username);
-        if(existingUser){
-            return res.status(400).json({message: "Username already exist!"});
+        if (existingUser) {
+            return res.status(400).json({ message: "Username already exists. Please choose another one." });
         }
 
-        // Hash password 
+        // ✅ Check if email exists
+        const existingUserByEmail = await userModel.getUserByEmail(email);
+        if (existingUserByEmail) {
+            return res.status(400).json({ message: "Email already registered. Please use another email." });
+        }
+
+        // ✅ Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const user = {
-            fullName: fullName,
-            username: username,
-            email: email,
+            fullName,
+            username,
+            email,
             passwordHash: hashedPassword,
-        }
+        };
+
         const newUser = await userModel.createUser(user);
-        res.status(201).json({message: newUser});
-    }catch(error){
+        res.status(201).json({
+            message: "Account created successfully!",
+            user: {
+                userID: newUser.userID,
+                fullName: newUser.fullName,
+                username: newUser.username,
+                email: newUser.email
+            }
+        });
+    } catch (error) {
         console.error("Controller error: ", error);
-        res.status(500).json({error: "Error creating user"});
+        res.status(500).json({ message: "Error creating user" });
     }
 }
 
-async function loginUser(req, res){
-    const {username, password} = req.body;
+// Login user
+async function loginUser(req, res) {
+    const { username, password } = req.body;
 
-    try{
+    try {
         const user = await userModel.getUserByUsername(username);
-        if(!user){
-            return res.status(401).json(
-                {message: "Invalid credentials"}
-            )
+        if (!user) {
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // Compare password with hash
-        const isMatch = await bcrypt.compare(password, user.passwordHash)
-        if(!isMatch){
-            return res.status(401).json(
-                {message: "Invalid credentials"}
-            )
+        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // Generate JWT token
+        // ✅ Generate JWT token
         const payload = {
-            userID : user.userID,
+            userID: user.userID,
             username: user.username,
         };
 
-        console.log(user);
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "28000s"}) // Expire in 8 hourS
-
-        return res.status(200).json({token});
-    }catch(error){
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "28000s" }); // 8 hours
+        return res.status(200).json({ message: "Login successful", token });
+    } catch (error) {
         console.error(error);
-        return res.status(500).json({message: "Internal server error"})
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
 
@@ -97,4 +105,4 @@ module.exports = {
     getUserByUsername,
     registerUser,
     getAllUsers,
-}
+};

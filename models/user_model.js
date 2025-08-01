@@ -55,6 +55,20 @@ async function getUserByUsername(username){
     }
 }
 
+// Get user by email
+async function getUserByEmail(email) {
+    try {
+        const pool = await sql.connect(dbConfig);
+        const result = await pool.request()
+            .input('email', sql.VarChar, email)
+            .query('SELECT * FROM Users WHERE email = @email');
+        return result.recordset[0];
+    } catch (error) {
+        console.error("Model error: ", error);
+        throw error;
+    }
+}
+
 // Create new user
 async function createUser(userData){
     let connection;
@@ -92,5 +106,6 @@ async function createUser(userData){
 module.exports = {
     getAllUsers,
     getUserByUsername,
+    getUserByEmail,
     createUser,
 }
