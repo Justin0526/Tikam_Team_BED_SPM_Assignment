@@ -17,11 +17,6 @@ const mealSchema = Joi.object({
         "string.empty": "Log date is required",
         "string.pattern.base": "Log date must be in YYYY-MM-DD format"
     }),
-    // manualCalories: Joi.alternatives().try(
-    //     Joi.string().valid("unknown"),
-    //     Joi.string().pattern(/^\d+$/), // allows numeric string like "100"
-    //     Joi.allow(null)
-    //test
     manualCalories: Joi.alternatives().try(
     Joi.string().valid("unknown"),
     Joi.string().pattern(/^\d+$/).messages({
@@ -31,11 +26,6 @@ const mealSchema = Joi.object({
     ).optional().messages({
     "any.only": "Manual calories must be a number or 'unknown'"
     })
-
-    // ).optional().messages({
-    //     "any.only": "Manual calories must be a number or 'unknown'",
-    //     "string.pattern.base": "Manual calories must be digits only or 'unknown'"
-    // })
 });
 
 const mealDateQuerySchema = Joi.object({
