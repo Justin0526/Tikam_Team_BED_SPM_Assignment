@@ -30,7 +30,7 @@ padding: 20px;
 max-width: 300px;
 margin: 0 auto 15px;
 background-color: #FFFFFF;
-box-shadow: 0 0 10px rgba(0,0,0,0.03);
+box-shadow: 0 4px 16px rgba(44, 125, 164, 0.10);
 }
 .weather-box strong {
 color: #2B7DA4;
@@ -59,7 +59,7 @@ color: #000;
 /* Section container */
 .quick-access {
   /* background-color: #dddddd; */
-  background-color: #F9FFF4;
+  background-color: #fafef6;
   padding: 30px;
   text-align: center;
 }
@@ -79,19 +79,23 @@ color: #000;
   flex-wrap: wrap;
 }
 
-/* Card styling */
 .card {
   text-decoration: none;
   color: #2B7DA4;
   font-weight: bold;
   font-size: 0.95em;
   width: 160px;
-  background-color: #f4fdf4;
+  height: 220px; /* NEW: Set taller height */
+  background-color:  white;
   border: 2px solid #A4D038;
   border-radius: 6px;
-  padding: 10px;
+  padding: 15px 10px; /* Increase vertical padding */
   text-align: center;
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Space out icon and text */
+  box-shadow: 0 4px 16px rgba(44, 125, 164, 0.10);
 }
 
 /* Hover effect */
@@ -100,10 +104,9 @@ color: #000;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Icon box */
 .icon-box {
   background-color: #D9D9D9;
-  height: 100px;
+  height: 120px; /* Increased from 100px */
   margin-bottom: 10px;
   border: 2px solid #C0FFC0;
   display: flex;
@@ -121,44 +124,6 @@ color: #000;
   border: none;
 }
 
-
-
-/* .quick-buttons a {
-text-decoration: none;
-color: #3399CC;
-font-weight: bold;
-font-size: 1em;
-max-width: 120px;
-text-align: center;
-display: inline-block;
-background-color: #ffffff;
-border: 1px solid #e0e0e0;
-padding: 12px 8px;
-border-radius: 10px;
-transition: box-shadow 0.2s ease, transform 0.2s ease;
-} */
-
-/* .quick-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-items: center;
-  gap: 25px;
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.quick-buttons a:hover {
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-transform: translateY(-2px);
-}
-
-.quick-access img {
-width: 60px;
-height: 60px;
-margin-bottom: 8px;
-} */
-
 /* === Health Summary Box === */
 .health-summary-box {
 border: 2px solid #A4D038;
@@ -169,45 +134,6 @@ margin: 0 auto;
 background-color: #FFFFFF;
 font-weight: normal;
 box-shadow: 0 0 8px rgba(0, 0, 0, 0.03);
-}
-
-
-/* === Reminder Banner Styles === */
-/* Base styles for the reminder banner */
-#reminderBanner {
-  position: fixed;
-  top: -100px;
-  left: 0;
-  width: 100%;
-  background-color: #F9FFDE;
-  color: #2A3B20;
-  font-weight: 600;
-  text-align: center;
-  padding: 15px 40px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  font-size: 1rem;
-  z-index: 9999;
-  border-bottom: 2px solid #A4D038;
-  transition: top 0.4s ease-in-out;
-  box-sizing: border-box;
-}
-
-/* Slide in when active */
-#reminderBanner.active {
-  top: 0;
-}
-
-#reminderBanner .close-banner {
-  position: absolute;
-  top: 12px;
-  right: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #2A3B20;
-  background: none;
-  border: none;
-  line-height: 1;
 }
 
 /* BMI Calculator */
@@ -224,7 +150,7 @@ box-shadow: 0 0 8px rgba(0, 0, 0, 0.03);
     padding: 20px;
     max-width: 400px;
     margin: 0 auto;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 16px rgba(44, 125, 164, 0.10);
 }
 
 .bmi-inputs {
