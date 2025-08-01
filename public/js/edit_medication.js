@@ -1,72 +1,65 @@
-// Wait for the DOM to finish loading before running the script
-document.addEventListener("DOMContentLoaded", () => {
-  // Get the medication ID from the query string (e.g., ?id=5)
+document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
+  const token = localStorage.getItem("authToken");
+
+  // Validate token and render profile using getToken from auth.js
+  const user = await getToken(token);
+  if (!user) {
+    alert("You must be logged in to edit medications.");
+    window.location.href = "/html/login.html";
+    return;
+  }
 
   // Populate the hidden field in the form with the medication ID
   document.getElementById('med-id').value = id;
 
-  // Fetch the medication details from the backend
-  fetch(`/medications/${id}`)
-    .then(async r => {
-      if (!r.ok) throw new Error(`Failed to fetch medication: ${r.status}`);
-      const med = await r.json();
-
-      console.log("Loaded medication:", med);
-      console.log("Frequency from DB:", med.frequency);
-
-      // Populate the form fields with data from the medication object
-      const nameEl = document.getElementById('med-name');
-      if (nameEl) nameEl.value = med.medicineName;
-
-      const dosageEl = document.getElementById('dosage');
-      if (dosageEl) dosageEl.value = med.dosage;
-
-      const freqEl = document.getElementById('frequency');
-      if (freqEl) {
-        console.log("med.frequency =", med.frequency);
-        console.log("options =", Array.from(freqEl.options).map(o => o.value));
-        freqEl.value = med.frequency; // Pre-select the current frequency value
-      }
-
-      const timeEl = document.getElementById('time');
-      if (timeEl && med.consumptionTime) {
-        // Format the time string to HH:mm format for input type="time"
-        const timeOnly = new Date(med.consumptionTime).toISOString().slice(11, 16); // "07:30"
-        timeEl.value = timeOnly;
-      }
-
-      const startDateEl = document.getElementById('start-date');
-      if (startDateEl && med.startDate) {
-        // Trim the date string to YYYY-MM-DD format
-        startDateEl.value = med.startDate.slice(0, 10);
-      }
-
-      const endDateEl = document.getElementById('end-date');
-      if (endDateEl && med.endDate) {
-        endDateEl.value = med.endDate.slice(0, 10);
-      }
-
-      const notesEl = document.getElementById('notes');
-      if (notesEl) notesEl.value = med.notes || "";
-    })
-    .catch(err => {
-      console.error("Error loading medication:", err);
-      alert("Failed to load medication data. Check console.");
+  // Fetch the medication details securely
+  try {
+    const res = await fetch(`/medications/${id}`, {
+      headers: { "Authorization": `Bearer ${token}` }
     });
 
-  // Handle delete button click
+    if (!res.ok) throw new Error(`Failed to fetch medication: ${res.status}`);
+    const med = await res.json();
+
+    console.log("Loaded medication:", med);
+
+    // Populate the form fields
+    document.getElementById('med-name').value = med.medicineName || "";
+    document.getElementById('dosage').value = med.dosage || "";
+    document.getElementById('frequency').value = med.frequency || "Daily";
+
+    if (med.consumptionTime) {
+      const timeOnly = new Date(med.consumptionTime).toISOString().slice(11, 16); // HH:mm
+      document.getElementById('time').value = timeOnly;
+    }
+
+    if (med.startDate) {
+      document.getElementById('start-date').value = med.startDate.slice(0, 10);
+    }
+
+    if (med.endDate) {
+      document.getElementById('end-date').value = med.endDate.slice(0, 10);
+    }
+
+    const notesEl = document.getElementById('notes');
+    if (notesEl) notesEl.value = med.notes || "";
+  } catch (err) {
+    console.error("Error loading medication:", err);
+    alert("Failed to load medication data. Check console.");
+  }
+
+  // Handle delete button
   document.getElementById('delete-btn').addEventListener('click', async () => {
     if (confirm("Are you sure you want to delete this medication?")) {
-      // Send a DELETE request to remove the medication
       const res = await fetch(`/medications/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
       if (res.ok) {
         alert("Medication deleted.");
-        // Redirect back to the medication management page
         location.href = '/html/medication_management.html';
       } else {
         alert("Failed to delete medication.");
@@ -74,33 +67,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Handle form submission to update the medication
+  // Handle form submission (update medication)
   document.getElementById('edit-form').addEventListener('submit', async e => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
-    // Build the updated medication data from form inputs
     const payload = {
-      medicineName:    document.getElementById('med-name').value,
-      dosage:          document.getElementById('dosage').value,
-      frequency:       document.getElementById('frequency').value,
-      consumptionTime: document.getElementById('time').value + ':00', // Add seconds for backend format
-      startDate:       document.getElementById('start-date').value,
-      endDate:         document.getElementById('end-date').value || null,
-      notes:           document.getElementById('notes')?.value || ""
+      medicineName: document.getElementById('med-name').value,
+      dosage: document.getElementById('dosage').value,
+      frequency: document.getElementById('frequency').value,
+      consumptionTime: document.getElementById('time').value + ':00',
+      startDate: document.getElementById('start-date').value,
+      endDate: document.getElementById('end-date').value || null,
+      notes: document.getElementById('notes')?.value || ""
     };
 
-    // Send a PUT request to update the medication
     const res = await fetch(`/medications/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(payload)
     });
 
     if (res.ok) {
-      alert('Saved!');
-      location.href = '/html/medication_management.html'; // Redirect after saving
+      alert('Medication updated!');
+      location.href = '/html/medication_management.html';
     } else {
-      alert('Error saving');
+      alert('Error updating medication.');
     }
   });
 });

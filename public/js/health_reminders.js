@@ -214,28 +214,48 @@ function attachMarkButtons() {
 async function handleAddReminder(e, token) {
   e.preventDefault();
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const startDateInput = document.getElementById("start-date").value;
+  const endDateInput = document.getElementById("end-date").value || null;
+
+  const startDate = new Date(startDateInput);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = endDateInput ? new Date(endDateInput) : null;
+  if (endDate) endDate.setHours(0, 0, 0, 0);
+
+  // Validate dates
+  if (startDate < today) {
+    showNotification("Start date cannot be in the past.", "error");
+    return;
+  }
+  if (endDate && endDate < today) {
+    showNotification("End date cannot be in the past.", "error");
+    return;
+  }
+  if (endDate && endDate < startDate) {
+    showNotification("End date cannot be earlier than start date.", "error");
+    return;
+  }
+
+  // Continue existing code...
   const title = document.getElementById("reminder-name").value.trim();
   const timeInput = document.getElementById("time").value;
   const reminderTime = timeInput.length === 5 ? `${timeInput}:00` : timeInput || null;
   const frequency = document.getElementById("frequency").value;
-  const startDate = document.getElementById("start-date").value;
-  const endDate = document.getElementById("end-date").value || null;
   const message = document.getElementById("notes").value.trim() || null;
 
-  const payload = { title, reminderTime, frequency, message, startDate, endDate };
+  const payload = { title, reminderTime, frequency, message, startDate: startDateInput, endDate: endDateInput };
 
   try {
     const res = await fetch(`${apiBaseUrl}/reminders`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify(payload)
     });
 
     if (!res.ok) throw new Error("Failed to create reminder");
-
     alert("Reminder added successfully!");
     document.querySelector(".reminders-form").reset();
     loadReminders(token);
@@ -248,11 +268,19 @@ async function handleAddReminder(e, token) {
 
 /**
  * Displays a floating notification.
+ * @param {string} message - The message to show.
+ * @param {string} type - 'success' (default) or 'error'
  */
-function showNotification(message) {
+function showNotification(message, type = "success") {
   const notification = document.createElement("div");
-  notification.className = "notification";
-  notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+  notification.className = `notification ${type}`;
+
+  const icon =
+    type === "error"
+      ? `<i class="fas fa-times-circle"></i>` // Red cross for error
+      : `<i class="fas fa-check-circle"></i>`; // Green check for success
+
+  notification.innerHTML = `${icon} ${message}`;
   document.body.appendChild(notification);
 
   setTimeout(() => notification.classList.add("show"), 10);

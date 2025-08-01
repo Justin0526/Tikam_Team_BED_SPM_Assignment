@@ -28,10 +28,13 @@
     "node": "^20.19.4",
     "node-cron": "^4.2.1",
     "node-fetch": "^2.7.0",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^30.0.5",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   }
 }

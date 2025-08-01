@@ -6,6 +6,7 @@ window.addEventListener('load', async()=>{
     currentUser = await getToken(token);
 })
 
+// Function to get authentication headers
 getAuthHeaders = function getAuthHeaders(){
     if(!token) throw new Error("User not authenticated. ");
     return{
@@ -35,6 +36,7 @@ function resetPopupButtons() {
     return { newYesBtn, newNoBtn, newCancelBtn };
 }
 
+// Function to check if the facility is bookmarked
 async function isFacilityBookmarked(placeID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark/${placeID}`, {
@@ -68,6 +70,7 @@ async function isFacilityBookmarked(placeID){
     }
 }
 
+// Function to create a bookmark if not already created
 async function createBookmarkIfNotExists(placeID, placeName){
     console.log(placeID);
     try{
@@ -92,6 +95,7 @@ async function createBookmarkIfNotExists(placeID, placeName){
     }
 }
 
+// Function to ceate a category if it doesn't exists
 window.createCategoryIfNotExists = async function createCategoryIfNotExists(categoryName){
     try {
         if (!token) {
@@ -124,6 +128,7 @@ window.createCategoryIfNotExists = async function createCategoryIfNotExists(cate
     }
 };
 
+// Functino to fetch all categories of the user
 async function fetchCategories(){
     try{
         const response = await fetch(`${apiBaseUrl}/categories`, {
@@ -181,6 +186,7 @@ window.fetchPhoto = async function fetchPhoto(placePhoto, maxHeightPx, maxWidthP
     }
 }
 
+// Function to assign bookmark to category
 window.assignBookmarkToCategory = async function assignBookmarkToCategory(bookmarkID, categoryID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark-category`, {
@@ -210,6 +216,7 @@ window.assignBookmarkToCategory = async function assignBookmarkToCategory(bookma
     }
 }
 
+// Function to delete bookmarks
 window.deleteBookmark = async function deleteBookmark(bookmarkID){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmark`, {
@@ -238,6 +245,7 @@ window.deleteBookmark = async function deleteBookmark(bookmarkID){
     }
 }
 
+// Function to delete bookmarks in category
 window.deleteBookmarksInCategory = async function deleteBookmarksInCategory(categoryID, alsoDeleteBookmarks){
     try{
         const response = await fetch(`${apiBaseUrl}/bookmarks/and/category`,{
@@ -266,6 +274,7 @@ window.deleteBookmarksInCategory = async function deleteBookmarksInCategory(cate
     }
 }
 
+// When user clicks on bookmark
 window.handleBookmarkClick = async function (placeID, placeName){
     const messageDiv = document.getElementById("message");
 
@@ -354,6 +363,7 @@ window.handleBookmarkClick = async function (placeID, placeName){
     })
 }
 
+// Update bookmark icon
 window.updateBookmarkIcon = function(placeID, isBookmarked) {
     const icon = document.querySelector(`img[data-place-id="${placeID}"]`);
     if (icon) {
@@ -364,6 +374,7 @@ window.updateBookmarkIcon = function(placeID, isBookmarked) {
     }
 };
 
+// Show all the categories
 function showCategoryModal(categories, onSubmit){
     const modal = document.getElementById("categoryModal");
     const form = document.getElementById("categoryForm");

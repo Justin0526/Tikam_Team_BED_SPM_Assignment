@@ -185,10 +185,10 @@ async function loadPosts(filters = {}) {
       const date = toLocaleDate(p.CreatedAt);
       const isOwner = currentUser && currentUser.userID === p.UserID;
 
-      return `
+        return `
       <div class="post-item" data-post-id="${p.PostID}">
         <div class="post-header">
-          <div class="avatar"></div>
+          <img class="avatar" src="${p.profilePicture || '/images/default_avatar.png'}" alt="Profile Picture">
           <div class="meta">
             <strong class="author">${p.Author}</strong>
             <span class="date">${date}</span>
