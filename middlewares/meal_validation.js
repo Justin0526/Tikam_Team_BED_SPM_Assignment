@@ -18,12 +18,22 @@ const mealSchema = Joi.object({
         "string.pattern.base": "Log date must be in YYYY-MM-DD format"
     }),
     manualCalories: Joi.alternatives().try(
-        Joi.string().valid("unknown"),
-        Joi.string().pattern(/^\d+$/), // allows numeric string like "100"
-        Joi.allow(null)
+    Joi.string().valid("unknown"),
+    Joi.string().pattern(/^\d+$/).messages({
+        "string.pattern.base": "Manual calories must be a non-negative whole number"
+    }),
+    Joi.allow(null)
     ).optional().messages({
-        "any.only": "Manual calories must be a number or 'unknown'",
-        "string.pattern.base": "Manual calories must be digits only or 'unknown'"
+    "any.only": "Manual calories must be a number or 'unknown'"
+    })
+});
+
+const mealDateQuerySchema = Joi.object({
+  mealDate: Joi.string()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .optional()
+    .messages({
+      "string.pattern.base": "mealDate must be in YYYY-MM-DD format"
     })
 });
 
@@ -60,7 +70,18 @@ function validateMealId(req, res, next) {
     next();
 }
 
+// Middleware to validate mealDate in req.params
+function validateMealQuery(req, res, next) {
+  const { error } = mealDateQuerySchema.validate(req.query, { abortEarly: false });
+  if (error) {
+    const errorMessage = error.details.map(d => d.message).join(", ");
+    return res.status(400).json({ error: errorMessage });
+  }
+  next();
+}
+
 module.exports = {
     validateMeal,
     validateMealId,
+    validateMealQuery,
 };

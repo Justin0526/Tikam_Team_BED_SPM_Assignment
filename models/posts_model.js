@@ -1,6 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
+//get all post from database sql
 async function getAllPosts(date, owner) {
   const pool = await sql.connect(dbConfig);
   let query = `
@@ -33,7 +34,7 @@ async function getAllPosts(date, owner) {
   return result.recordset;
 }
 
-
+//get each post by PostId and UseId
 async function getPostById(id) {
   const pool  = await sql.connect(dbConfig);
   const result = await pool.request()
@@ -53,6 +54,7 @@ async function getPostById(id) {
   return result.recordset[0] || null;
 }
 
+//Create post and add to database
 async function createPost({ UserID, Content, ImageURL }) {
   const pool = await sql.connect(dbConfig);
   const result = await pool.request()
@@ -69,7 +71,8 @@ async function createPost({ UserID, Content, ImageURL }) {
   return getPostById(newId);
 }
 
-// ─── Comments ──────────────────────────────────────────────────────────────────
+//Posts
+//get all comments
 async function getAllComments() {
   const pool = await sql.connect(dbConfig);
   const { recordset } = await pool.request().query(`
@@ -85,6 +88,7 @@ async function getAllComments() {
   return recordset;
 }
 
+//get each comment by commentID
 async function getCommentByID(commentID) {
   const pool = await sql.connect(dbConfig);
   const { recordset } = await pool
@@ -103,6 +107,7 @@ async function getCommentByID(commentID) {
   return recordset[0] || null;
 }
 
+//get all comments under a specific code via postId
 async function getCommentsByPostID(postID) {
   const pool = await sql.connect(dbConfig);
   const { recordset } = await pool
@@ -124,6 +129,7 @@ async function getCommentsByPostID(postID) {
   return recordset;
 }
 
+//create each comment with post id and user id then content is for the words 
 async function createComment({ PostID, UserID, Content }) {
   const pool = await sql.connect(dbConfig);
   const { recordset } = await pool
@@ -143,7 +149,7 @@ async function createComment({ PostID, UserID, Content }) {
   return recordset[0];
 }
 
-//delete post model
+//delete post by each post id 
 async function deletePostById(postID) {
   try {
     const pool = await sql.connect(dbConfig); 
@@ -157,6 +163,7 @@ async function deletePostById(postID) {
   }
 }
 
+//edit post by each post id
 async function updatePostById(postID, userID, content, imageURL) {
   try {
     const pool = await sql.connect(dbConfig);
@@ -178,6 +185,7 @@ async function updatePostById(postID, userID, content, imageURL) {
   }
 }
 
+//update comment with comment id
 async function updateComment(commentID, content) {
   const pool = await sql.connect(dbConfig);
   const result = await pool.request()
@@ -191,6 +199,7 @@ async function updateComment(commentID, content) {
   return result.rowsAffected[0];
 }
 
+//delete comment by postid, commentid and userid
 async function deleteComment(postID, commentID, userID) {
   try {
     const pool = await sql.connect(dbConfig); 
@@ -209,6 +218,7 @@ async function deleteComment(postID, commentID, userID) {
   }
 }
 
+//unlike a post removing the like from the database
 async function removeLike(postID, userID) {
   const pool = await sql.connect(dbConfig);
   const result = await pool.request()
@@ -223,7 +233,7 @@ async function removeLike(postID, userID) {
   return result.rowsAffected[0];
 }
 
-// Add a like
+//like a post
 async function addLike(postID, userID) {
   const pool = await sql.connect(dbConfig);
   await pool.request()
@@ -235,7 +245,7 @@ async function addLike(postID, userID) {
     `);
 }
 
-// Get like count and whether user liked the post
+//get like count and whether user liked the post
 async function getLikes(postID, userID) {
   const pool = await sql.connect(dbConfig);
 

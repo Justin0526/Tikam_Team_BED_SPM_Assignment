@@ -1,6 +1,7 @@
 const postModel = require("../models/posts_model");
 
-// ─── Posts ───────────────────────────────────────────────────────────────────
+//Posts
+// get all post from the database
 async function getAllPosts(req, res) {
   try {
     const { date, owner } = req.query; // capture filters from query params
@@ -12,6 +13,7 @@ async function getAllPosts(req, res) {
   }
 }
 
+//get each post by id (via PostID)
 async function getPostById(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
@@ -24,9 +26,10 @@ async function getPostById(req, res) {
   }
 }
 
+//create a new post
 async function createPost(req, res) {
   try {
-    const UserID   = req.user.userID;
+    const UserID = req.user.userID;
     const { Content, ImageURL } = req.body;
 
     const newPost = await postModel.createPost({ UserID, Content, ImageURL });
@@ -37,40 +40,6 @@ async function createPost(req, res) {
   }
 }
 
-// ─── Comments ────────────────────────────────────────────────────────────────
-async function getCommentsForPost(req, res) {
-  try {
-    const postID = parseInt(req.params.postID, 10);
-    const comments = await postModel.getCommentsByPostID(postID);
-    res.json(comments);
-  } catch (err) {
-    console.error("getCommentsForPost:", err);
-    res.status(500).json({ error: "Error retrieving comments" });
-  }
-}
-
-async function createCommentForPost(req, res) {
-  try {
-    const postID = parseInt(req.params.postID, 10);
-    const userID = req.user.userID;
-    const content = req.body.content;          
-
-    if (!content) {
-      return res.status(400).json({ error: "content is required" });
-    }
-
-    const newComment = await postModel.createComment({
-      PostID:  postID,
-      UserID:  userID,
-      Content: content
-    });
-
-    res.status(201).json(newComment);
-  } catch (err) {
-    console.error("createCommentForPost:", err);
-    res.status(500).json({ error: "Error creating comment" });
-  }
-}
 //delete post controller
 async function deletePost(req, res) {
   const postID = parseInt(req.params.id);
@@ -98,6 +67,7 @@ async function deletePost(req, res) {
   }
 }
 
+//edit post and update or add image
 async function updatePost(req, res) {
   try {
     const postID = parseInt(req.params.id);
@@ -122,6 +92,61 @@ async function updatePost(req, res) {
   }
 }
 
+//Comments 
+//get all comments for each post
+async function getCommentsForPost(req, res) {
+  try {
+    const postID = parseInt(req.params.postID, 10);
+    const comments = await postModel.getCommentsByPostID(postID);
+    res.json(comments);
+  } catch (err) {
+    console.error("getCommentsForPost:", err);
+    res.status(500).json({ error: "Error retrieving comments" });
+  }
+}
+
+//create comment for a specific post through PostID
+async function createCommentForPost(req, res) {
+  try {
+    const postID = parseInt(req.params.postID, 10);
+    const userID = req.user.userID;
+    const content = req.body.content;          
+
+    if (!content) {
+      return res.status(400).json({ error: "content is required" });
+    }
+
+    const newComment = await postModel.createComment({
+      PostID:  postID,
+      UserID:  userID,
+      Content: content
+    });
+
+    res.status(201).json(newComment);
+  } catch (err) {
+    console.error("createCommentForPost:", err);
+    res.status(500).json({ error: "Error creating comment" });
+  }
+}
+
+//delete comment controller 
+async function deleteComment(req, res) {
+  const { postID, commentID } = req.params;
+  const userID = req.user.userID; 
+
+  try {
+    const deleted = await postModel.deleteComment(postID, commentID, userID);
+    if (!deleted) {
+      return res.status(403).json({ error: "Not allowed or comment not found" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Delete comment error:", err);
+    res.status(500).json({ error: "Server error while deleting comment" });
+  }
+}
+
+//update comment 
 async function updateComment(req, res) {
   const { commentID } = req.params;
   const { content } = req.body;
@@ -141,22 +166,8 @@ async function updateComment(req, res) {
   }
 }
 
-async function deleteComment(req, res) {
-  const { postID, commentID } = req.params;
-  const userID = req.user.userID; 
 
-  try {
-    const deleted = await postModel.deleteComment(postID, commentID, userID);
-    if (!deleted) {
-      return res.status(403).json({ error: "Not allowed or comment not found" });
-    }
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Delete comment error:", err);
-    res.status(500).json({ error: "Server error while deleting comment" });
-  }
-}
-
+//Like Posts
 async function likePost(req, res) {
   const { postID } = req.params;
   const userID = req.user.userID;
@@ -176,6 +187,7 @@ async function likePost(req, res) {
   }
 }
 
+//Unlike Posts 
 async function unlikePost(req, res) {
   const postID = parseInt(req.params.postID);
   const userID = req.user?.userID || req.body.userID;
@@ -197,9 +209,10 @@ async function unlikePost(req, res) {
   }
 }
 
+//Get all likes to diplay total like count
 async function getLikes(req, res) {
   const { postID } = req.params;
-  const userID = req.user?.userID; // ← pulled from JWT
+  const userID = req.user?.userID; 
 
   try {
     const result = await postModel.getLikes(postID, userID);

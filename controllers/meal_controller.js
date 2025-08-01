@@ -35,6 +35,9 @@ async function createMealLog(req, res){
         if (isNaN(parsed)) {
           return res.status(400).json({ message: "Invalid calorie input" });
         }
+        if (parsed < 0) {
+          return res.status(400).json({ message: "Calories cannot be negative" });
+        }
         calories = parsed;
       } 
       else {
@@ -65,20 +68,23 @@ async function updateMealLogByMealID(req, res) {
     const { foodItem, timeFrame, mealDate, manualCalories } = req.body;
 
     let calories = null;
-
-        // Case 1: User manually entered something
-    if (typeof manualCalories === 'string' && manualCalories.trim() !== "") {
-      if (manualCalories.trim().toLowerCase() === "unknown") {
+    // Case 1: User input manual calorie
+    if (manualCalories !== undefined && manualCalories !== null) {
+      if (manualCalories === "unknown" || manualCalories.toString().toLowerCase() === "unknown") {
         calories = null;
-      }
+      } 
       else {
         const parsed = parseInt(manualCalories);
         if (isNaN(parsed)) {
           return res.status(400).json({ error: "Invalid calorie input." });
         }
+        if (parsed < 0) {
+          return res.status(400).json({ error: "Calories cannot be negative." });
+        }
         calories = parsed;
       }
     }
+
     // Case 2: User left it empty → try to fetch from OpenFoodFacts
     else {
       const fetched = await fetchCalories(foodItem);
