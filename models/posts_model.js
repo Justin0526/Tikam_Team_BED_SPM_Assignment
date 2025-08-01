@@ -7,16 +7,18 @@ async function getAllPosts(date, owner) {
   let query = `
     SELECT 
       p.PostID,
-      p.UserID, 
+      p.UserID,
       u.FullName AS Author,
+      up.profilePicture, 
       p.Content,
       p.ImageURL,
       p.CreatedAt
     FROM dbo.Posts p
     JOIN dbo.Users u ON p.UserID = u.UserID
+    LEFT JOIN dbo.UserProfile up ON u.UserID = up.userID 
     WHERE 1=1
   `;
-  // Dynamic filters
+
   if (date) {
     query += ` AND CAST(p.CreatedAt AS DATE) = @date`;
   }
@@ -36,23 +38,26 @@ async function getAllPosts(date, owner) {
 
 //get each post by PostId and UseId
 async function getPostById(id) {
-  const pool  = await sql.connect(dbConfig);
+  const pool = await sql.connect(dbConfig);
   const result = await pool.request()
     .input("id", sql.Int, id)
     .query(`
-      SELECT
+      SELECT 
         p.PostID,
         p.UserID,
         u.FullName AS Author,
+        up.profilePicture, 
         p.Content,
         p.ImageURL,
         p.CreatedAt
       FROM dbo.Posts p
       JOIN dbo.Users u ON p.UserID = u.UserID
+      LEFT JOIN dbo.UserProfile up ON u.UserID = up.userID 
       WHERE p.PostID = @id
     `);
   return result.recordset[0] || null;
 }
+
 
 //Create post and add to database
 async function createPost({ UserID, Content, ImageURL }) {
