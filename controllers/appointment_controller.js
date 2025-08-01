@@ -1,18 +1,5 @@
 const appointmentModel = require("../models/appointment_model");
 
-//Get All Appointments
-async function getAllAppointments(req, res){
-    console.log("Controller: getAllAppointments() was called");
-    try{
-        const appointments = await appointmentModel.getAllAppointments();
-        res.json(appointments);
-    }
-    catch(error){
-        console.error("Controller error:", error);
-        res.status(500).json({error: "Error retrieving appointments"});
-    }
-}
-
 //Get Appointments by UserID
 async function getAppointmentsByUserID(req, res){
     const userID = req.user.userID;
@@ -111,7 +98,6 @@ async function searchAppointments(req, res) {
 }
 
 module.exports = {
-    getAllAppointments,
     getAppointmentsByUserID,
     createAppointment,
     updateAppointmentByAppointmentID,

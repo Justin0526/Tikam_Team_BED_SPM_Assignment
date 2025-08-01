@@ -1,33 +1,6 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-//Get All Appointments
-async function getAllAppointments(){
-    console.log("getAllAppointments() was called");
-    let connection;
-    try{
-        connection = await sql.connect(dbConfig);
-        console.log("DB conntected");//To debug if connection is successful
-        const query = "SELECT * FROM Appointments ORDER BY appointmentDate, appointmentTime";
-        const result = await connection.request().query(query);
-        return result.recordset;
-    }
-    catch(error){
-        console.error("Database error", error);
-        throw error;
-    }
-    finally{
-        if(connection){
-            try{
-                await connection.close();
-            }
-            catch(error){
-                console.error("Error closing connection:", error);
-            }
-        }
-    }
-}
-
 //Get All Appointments by UserId
 async function getAppointmentsByUserID(userID) {
     let connection;
@@ -258,7 +231,6 @@ async function searchAppointments(searchTerm, userID, appointmentDate){
 }
 
 module.exports = {
-    getAllAppointments,
     getAppointmentsByUserID,
     createAppointment,
     updateAppointmentByAppointmentID,
