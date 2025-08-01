@@ -8,7 +8,7 @@ const reminderSchema = Joi.object({
     "string.max": "Title must be less than or equal to 100 characters"
   }),
   reminderTime: Joi.string()
-    .pattern(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/) // HH:MM:SS format
+    .pattern(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/)
     .required()
     .messages({
       "string.empty": "Reminder time is required",
@@ -21,12 +21,32 @@ const reminderSchema = Joi.object({
   message: Joi.string().max(255).allow(null, "").messages({
     "string.max": "Message must be less than or equal to 255 characters"
   }),
-  startDate: Joi.date().required().messages({
-    "date.base": "Start date must be a valid date",
-    "any.required": "Start date is required"
+
+  // Custom validation for dates (ignoring time)
+  startDate: Joi.date().required().custom((value, helpers) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selected = new Date(value);
+    selected.setHours(0, 0, 0, 0);
+
+    if (selected < today) {
+      return helpers.message("Start date cannot be in the past");
+    }
+    return value;
   }),
-  endDate: Joi.date().min(Joi.ref("startDate")).allow(null).messages({
-    "date.min": "End date cannot be earlier than start date"
+
+  endDate: Joi.date().allow(null).custom((value, helpers) => {
+    if (!value) return value;
+    const start = new Date(helpers.state.ancestors[0].startDate);
+    const end = new Date(value);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    if (end < start) {
+      return helpers.message("End date cannot be earlier than start date");
+    }
+    return value;
   })
 });
 

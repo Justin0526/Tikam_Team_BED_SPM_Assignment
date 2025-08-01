@@ -3,10 +3,17 @@ window.addEventListener("load", async() => {
     const categorySection = document.getElementById("category-section");
     const bookmarkSection = document.getElementById("bookmark-section");
     authMessage.innerHTML = ""
-    if(!currentUser){
-        authMessage.innerHTML = `<a href="login.HTML">Login to view your bookmarks! </a>`
+
+    if (!window.currentUser) {
+        window.currentUser = await getToken(token);
+    }
+
+    const currentUser = window.currentUser;
+    if (!currentUser) {
+        authMessage.innerHTML = `<a href="login.HTML">Login to view your bookmarks! </a>`;
         return;
     }
+
     categorySection.style.display = "block";
     bookmarkSection.style.display = "block";
 
@@ -103,7 +110,6 @@ async function renderCategories(isEditing) {
 
     if (categories.length === 0) {
         categoryMessage.textContent = "You currently have 0 categories";
-        return;
     }
 
     if (isEditing) categoryGrid.classList.add("editing");
