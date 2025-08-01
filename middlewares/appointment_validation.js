@@ -32,6 +32,13 @@ const appointmentSchema = Joi.object({
 
 // Middleware to validate req.body
 function validateAppointment(req, res, next) {
+     // Clean up empty string fields before validation
+    Object.keys(req.body).forEach(key => {
+        if (req.body[key] === "") {
+            delete req.body[key];
+        }
+    });
+
     const { error } = appointmentSchema.validate(req.body, { abortEarly: false });
     if (error) {
         const errorMessage = error.details.map(d => d.message).join(", ");

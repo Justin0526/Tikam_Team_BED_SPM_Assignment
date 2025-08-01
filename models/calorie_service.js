@@ -1,7 +1,8 @@
 const axios = require('axios');
 
+// Asynchronously fetch calories from the OpenFoodFacts API based on a food item's name
 async function fetchCalories(foodItem) {
-  try {
+  try { // sends a GET request to OpenFoodFacts using Axios
     const response = await axios.get(
       'https://world.openfoodfacts.org/cgi/search.pl',
       {

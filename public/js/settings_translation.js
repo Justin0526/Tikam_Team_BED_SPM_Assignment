@@ -3,19 +3,24 @@ console.log("settings_translation.js loaded");
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM ready");
 
+  //Buttons for settings page
   const sel = document.getElementById("languageSelect");
   const btn = document.getElementById("applyButton");
+  //Retrieve saved language or default to English
   const savedLang = localStorage.getItem("language") || "en";
   console.log("Saved language:", savedLang);
-
+  
+  // Handle language selection dropdown
   if (sel && btn) {
     sel.value = savedLang;
     btn.style.display = "none";
-
+    
+    //Show "Apply" button only if a new language is selected
     sel.addEventListener("change", () => {
       btn.style.display = sel.value !== savedLang ? "inline-block" : "none";
     });
-
+    
+    //Save selected language and reload page to apply translation
     btn.addEventListener("click", () => {
       localStorage.setItem("language", sel.value);
       btn.style.display = "none";
@@ -23,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  //If language is not English, translate page immediately on load
   if (savedLang !== "en") {
     console.log("Translating page to:", savedLang);
     translatePage(savedLang);
@@ -31,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGlobalObserver();
 });
 
+//Translates specific elements within a given scope (used for dynamic content like posts/comments).
 function translateElementScope(element = document.body) { 
   const lang = localStorage.getItem("language") || "en";
   if (lang !== "en" && typeof translateText === "function") {
@@ -55,6 +62,7 @@ function translateElementScope(element = document.body) {
   }
 }
 
+//Translates the entire page content, including text nodes and placeholders.
 async function translatePage(targetLang, container = document.body) {
   const nodes = [];
   const placeholders = [];
@@ -73,14 +81,15 @@ async function translatePage(targetLang, container = document.body) {
   );
 
   while (walker.nextNode()) nodes.push(walker.currentNode);
-
+  //Collect placeholder attributes (e.g., input placeholders, alt text)
   container.querySelectorAll("[placeholder], [alt], [value]").forEach(el => {
     if (el.dataset.translated === "true") return; // ✅ Skip already translated
     if (el.placeholder) placeholders.push({ el, attr: "placeholder", value: el.placeholder });
     if (el.alt) placeholders.push({ el, attr: "alt", value: el.alt });
     if (el.value && el.tagName === "INPUT") placeholders.push({ el, attr: "value", value: el.value });
   });
-
+ 
+  // Combine all visible text and attribute text for translation
   const visibleText = nodes.map(n => n.textContent.trim());
   const attrText = placeholders.map(p => p.value.trim());
   const allTexts = [...visibleText, ...attrText];
@@ -89,6 +98,7 @@ async function translatePage(targetLang, container = document.body) {
   if (allTexts.length === 0) return;
 
   try {
+    // Send request to backend translation API
     const res = await fetch("http://localhost:3000/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -97,7 +107,7 @@ async function translatePage(targetLang, container = document.body) {
 
     const { translatedText } = await res.json();
     const translations = translatedText.split("\n@@\n");
-
+    // Replace text content with translations and mark as translated
     nodes.forEach((node, i) => {
     node.textContent = translations[i] || node.textContent;
     if (node.parentNode && node.parentNode.nodeType === Node.ELEMENT_NODE) {
@@ -117,6 +127,7 @@ async function translatePage(targetLang, container = document.body) {
   }
 }
 
+//Sends a single text string to be translated (used for targeted translations).
 async function translateText(text, lang) {
   const res = await fetch("http://localhost:3000/translate", {
     method: "POST",
@@ -129,6 +140,7 @@ async function translateText(text, lang) {
   return translatedText;
 }
 
+//Observes the DOM for changes and auto-translates dynamically added content.
 function setupGlobalObserver() {
   const lang = localStorage.getItem("language") || "en";
   if (lang === "en") return;
@@ -179,4 +191,5 @@ window.translateElements = async function translateElements(selector, lang) {
   console.log("Scoped translation complete");
 };
 
+//Initial scoped translation for full page content
 translateElementScope(document.body); 

@@ -9,11 +9,13 @@ dotenv.config()
 // ─── Controllers ────────────────────────────────────────────────────────────────
 const userController = require("./controllers/user_controller");
 const weatherController = require("./controllers/weather_controller");
-const favouriteOutfitController = require("./controllers/favouriteOutfit_controller");
+const favouriteOutfitController = require("./controllers/favourite_outfit_controller");
 const appointmentController = require("./controllers/appointment_controller");
 const { getUserHealthProfile } = require('./controllers/health_controller');
 const medicationsController = require("./controllers/medications_controller");
 const editMedicationsController = require('./controllers/edit_medication_controller');
+const healthRemindersController = require("./controllers/health_reminders_controller");
+const editRemindersController = require("./controllers/edit_reminders_controller");
 const { translateText } = require("./controllers/translation_controller");
 const postsController = require("./controllers/posts_controller");
 const browseFacilityController = require('./controllers/browse_facility_controller');
@@ -22,8 +24,10 @@ const viewBusController = require("./controllers/view_bus_controller");
 const profileController = require('./controllers/userProfile_controller');
 const { uploadImage } = require('./controllers/upload_controller')
 const mealController = require('./controllers/meal_controller');
+const bookmarkController = require("./controllers/bookmark_controller");
+const categoriesController = require("./controllers/category_controller");
+const bookmarkCategoryController = require("./controllers/bookmark_category_controller");
 const healthRecordsController = require("./controllers/healthRecords_controller");
-
 
 // ─── Validation Middleware ──────────────────────────────────────────────────────
 const appointmentValidator = require("./middlewares/appointment_validation");
@@ -35,6 +39,8 @@ const validateUserProfile = require('./middlewares/userProfile_validation');
 const { validateRegistration } = require('./middlewares/registration_validation');
 const { validateLogin } = require('./middlewares/login_validation');
 const mealValidator =require("./middlewares/meal_validation");
+
+const { profile } = require("console");
 
 // ─── Create Express App ─────────────────────────────────────────────────────────
 const app  = express();
@@ -49,6 +55,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ─── Routes ─────────────────────────────────────────────────────────────────────
+// Bookmark routes
+app.get("/bookmarks", verifyJWT, bookmarkController.getAllBookmarks);
+app.get("/bookmark/:placeID", verifyJWT, bookmarkController.getBookmarkByPlaceID);
+app.get("/search/bookmarks", verifyJWT, bookmarkController.searchBookmarks);
+app.post("/bookmark", verifyJWT, bookmarkController.createBookmark);
+app.delete("/bookmark", verifyJWT, bookmarkController.deleteBookmark);
+
+// Category routes
+app.get("/categories", verifyJWT, categoriesController.getAllCategories)
+app.post("/category", verifyJWT, categoriesController.createCategory);
+app.put("/category", verifyJWT, categoriesController.updateCategoryName);
+app.delete("/category", verifyJWT, categoriesController.deleteCategory);
+
+// Bookmark category routes
+app.get("/bookmark-category/category/:categoryID", verifyJWT, bookmarkCategoryController.getBookmarksByCategory);
+app.get("/bookmark-category/bookmark/:bookmarkID", verifyJWT, bookmarkCategoryController.getCategoriesByBookmarkID);
+app.post("/bookmark-category", verifyJWT, bookmarkCategoryController.assignBookmarkToCategory);
+app.put("/bookmark-category", verifyJWT, bookmarkCategoryController.updateBookmarkCategory);
+app.delete("/bookmark-category", verifyJWT, bookmarkCategoryController.deleteBookmarkFromCategory);
+app.delete("/bookmarks/and/category", verifyJWT, bookmarkCategoryController.deleteBookmarksInCategory);
+
 // User routes
 app.get( "/users", userController.getAllUsers );
 app.post("/register", validateRegistration, userController.registerUser );
@@ -69,6 +96,7 @@ app.post("/nearbyPublicTransport", transportAndFacilitiesController.getpublicTra
 // Browse Facilities routes
 app.post('/facilities', browseFacilityController.getFacilities);
 app.get('/facilities/photo', browseFacilityController.getPhoto);
+app.get('/facilities/:placeID', browseFacilityController.getFacilitiesByPlaceID);
 
 // View Bus routes
 app.get("/busStops", viewBusController.getBusStops);
@@ -82,7 +110,7 @@ app.delete("/appointments/:appointmentID", verifyJWT, appointmentValidator.valid
 app.get("/appointments/search", verifyJWT, appointmentValidator.validateSearchQuery, appointmentController.searchAppointments);
 
 // Meal routes
-app.get("/meals/me", verifyJWT, mealController.getMealsByUserIDAndMealDate);
+app.get("/meals/me", verifyJWT, mealValidator.validateMealQuery, mealController.getMealsByUserIDAndMealDate);
 app.post("/meals", verifyJWT, mealValidator.validateMeal, mealController.createMealLog);
 app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.validateMealId, mealController.updateMealLogByMealID);
 app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
@@ -91,15 +119,27 @@ app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealContro
 app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
 
 // Medication routes
-app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
-app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
-app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
-app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+app.get("/api/medications/today", verifyJWT, medicationsController.getTodayMeds );
+app.post("/api/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
+app.put("/api/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
+app.get("/api/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
 
 // Edit medication routes
 app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
 app.put("/medications/:medicationID", editMedicationsController.updateMedication);
 app.delete("/medications/:medicationID", editMedicationsController.deleteMedication);
+
+// Health Reminders routes
+app.get("/reminders", verifyJWT, healthRemindersController.getReminders);
+app.get("/reminders/upcoming", verifyJWT, healthRemindersController.getUpcomingReminders);
+app.put("/reminders/:id/mark-taken", verifyJWT, healthRemindersController.markReminderTaken);
+app.post("/reminders", verifyJWT, healthRemindersController.createReminder);
+
+// Edit medication routes
+app.get("/reminders/:id", verifyJWT, editRemindersController.getReminderById);
+app.put("/reminders/:id", verifyJWT, editRemindersController.updateReminder);
+app.delete("/reminders/:id", verifyJWT, editRemindersController.deleteReminder);
+
 
 // Posts CRUD
 app.get("/posts", postsController.getAllPosts);
@@ -133,6 +173,7 @@ app.listen(3000, () => {
 // Profile-related routes
 app.get('/api/profile/:userID', verifyJWT, profileController.getProfile);
 app.post('/api/profile/update', verifyJWT, validateUserProfile, profileController.updateProfile);
+app.delete("/api/profile/:userID/remove-picture", verifyJWT, profileController.removeProfilePicture);
 
 // Health Records routes
 app.get("/api/healthRecords/:userID", healthRecordsController.getHealthRecords); // Read
@@ -144,9 +185,9 @@ app.delete("/api/healthRecords/:recordID", healthRecordsController.deleteRecord)
 require('./models/reset_medication_status');
 
 process.on("SIGINT", async () => {
-  console.log("Server is gracefully shutting down");
-  await sql.close();
-  console.log("Database connection closed");
-  process.exit(0);
+    console.log("Server is gracefully shutting down");
+    await sql.close();
+    console.log("Database connection closed");
+    process.exit(0);
 });
 

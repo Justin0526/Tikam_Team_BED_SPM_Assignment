@@ -18,11 +18,10 @@ async function getAppointmentsByUserID(req, res){
     const userID = req.user.userID;
     try{
         const appointment = await appointmentModel.getAppointmentsByUserID(userID);
-
-        if(!appointment || appointment.length === 0){
-            return res.status(404).json({error: "No appointments found for this user"});
+          if(!appointment || appointment.length === 0){
+            return res.status(200).json({appointments: []});
         }
-        res.json(appointment);
+        res.status(200).json(appointment);
     }
     catch(error){
         console.error("Controller error:", error);

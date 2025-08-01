@@ -1,4 +1,4 @@
-const apiBaseUrl = "http://localhost:3000";
+// const apiBaseUrl = "http://localhost:3000";
 const goBtn = document.getElementById("go-btn");
 const textQuery = document.getElementById("textQuery");
 const sectionTitle = document.getElementById("section-title");
@@ -7,11 +7,16 @@ const busStopSection = document.getElementById("bus-stop-section");
 // Load nearby bus stops and display it
 window.addEventListener('load', async() =>{
     await getToken(token);
+    const loadingMessage = document.getElementById("loading-message");
+    loadingMessage.textContent = "Loading nearby bus stops...";
+
     const location = await getLocation();
     const nearbyBusStops = await getBusStops(location);
     const allBusStopCode = await getBusStopCode(nearbyBusStops);
     const busArrivals = await getBusArrival(allBusStopCode)
     const displayBus = await renderBusArrival(busArrivals);
+
+    loadingMessage.textContent = ""; // Hide after loaded
 })
 
 // Search nearby bus stops via textbox
@@ -217,7 +222,7 @@ async function getBusStopCode(nearbyBusStops){
                             console.log("⚠️ Match found but already added:", lta.Description, lta.BusStopCode);
                         } else {
                             console.log("✅ New match:", nearby.displayName.text, "→", lta.Description, `(${lta.BusStopCode})`);
-                            filteredBusStops.push({ltaBusStops: lta, googleMapsLinks: nearby.googleMapsLinks.directionsUri});
+                            filteredBusStops.push({ltaBusStops: lta, googleMapsLinks: nearby.googleMapsLinks.directionsUri, placeID: nearby.id, placeName: nearby.displayName.text});
                             remainingNearby.splice(i, 1);
                         }
                         break;
@@ -267,8 +272,15 @@ async function getBusArrival(busStops){
                 throw new Error(`HTTP Error! status ${response.status}, message: ${errorBody.message}`);
             }
 
+            const stop = busStops[i];
             const busArrivals = await response.json();
-            allBusArrivals.push({busStopName: busStops[i].ltaBusStops.Description, arrivals: busArrivals, googleMapsLinks: busStops[i].googleMapsLinks});
+            allBusArrivals.push({
+                busStopName: stop.ltaBusStops.Description,
+                arrivals: busArrivals,
+                googleMapsLinks: stop.googleMapsLinks,
+                placeID: stop.placeID,
+                placeName: stop.placeName
+            });
 
         } catch (error) {
             console.error("Error getting bus arrival for", busStopCode, error.message);
@@ -282,12 +294,13 @@ async function renderBusArrival(busStops){
     const busStopSection = document.getElementById("bus-stop-section")
     busStops.forEach(async (busStop) => {
         const busServices = busStop.arrivals.Services;
+
         const busStopBlock = document.createElement("div");
         busStopBlock.classList.add("bus-stop-block");
         busStopBlock.innerHTML = `
             <div class="bus-stop-header">
               <strong>${busStop.busStopName}</strong>
-              <img class="bookmark" src="../images/icons8-bookmark-50.png">
+              <img width="50" height="50" src="../images/unfilled-bookmark-icon.png" class="bookmark-icon" data-place-id="${busStop.placeID}">
             </div>
             <div class="bus-cards"> </div>
             <div class="actions">
@@ -330,6 +343,38 @@ async function renderBusArrival(busStops){
         })
 
         busStopSection.appendChild(busStopBlock);
+
+        const bookmarkImg = busStopBlock.querySelector(".bookmark-icon");
+        const placeID = busStop.placeID;
+        const placeName = busStop.placeName;
+
+        isFacilityBookmarked(placeID).then(bookmarked => {
+            bookmarkImg.src = bookmarked ? window.filledIcon : window.unfilledIcon;
+            bookmarkImg.setAttribute("data-bookmarked", bookmarked);
+
+            bookmarkImg.addEventListener("mouseenter", () => {
+                bookmarkImg.style.cursor = "pointer";
+                if (bookmarkImg.getAttribute("data-bookmarked") === "false") {
+                    bookmarkImg.src = window.filledIcon;
+                }
+
+            });
+
+            bookmarkImg.addEventListener("mouseleave", () => {
+                if (bookmarkImg.getAttribute("data-bookmarked") === "false") {
+                    bookmarkImg.src = window.unfilledIcon;
+                }
+            });
+        });
+
+        bookmarkImg.addEventListener("click", async () => {
+            await window.handleBookmarkClick(placeID, placeName);
+            if (!token) {
+                alert("You must be signed in to create categories.");
+                return null;
+            }
+        });
+
         
     })
 }
