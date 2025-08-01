@@ -1,6 +1,6 @@
 const healthRecordsModel = require("../models/healthRecords_model");
 
-// ✅ READ - Get all health records for a user
+//READ - Get all health records for a user
 async function getHealthRecords(req, res) {
   try {
     const userID = parseInt(req.params.userID);
@@ -12,13 +12,31 @@ async function getHealthRecords(req, res) {
   }
 }
 
-// ✅ CREATE - Add new health record
+//CREATE - Add new health record
 async function addRecord(req, res) {
   try {
     const { userID, recordType, value1, value2, recordedAt } = req.body;
 
     if (!userID || !recordType || !value1 || !recordedAt) {
       return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    //Backend validation: no future dates
+    const today = new Date();
+    const selectedDate = new Date(recordedAt);
+    if (selectedDate > today) {
+      return res.status(400).json({ error: "Recorded date cannot be in the future." });
+    }
+
+    //Validate non-negative values
+    if (value1 < 0 || (value2 !== null && value2 < 0)) {
+      return res.status(400).json({ error: "Values cannot be negative." });
+    }
+
+    //Check if record already exists for the same date and type
+    const existing = await healthRecordsModel.checkDuplicateRecord(userID, recordType, recordedAt);
+    if (existing) {
+      return res.status(409).json({ error: "A record already exists for this date. Please edit the existing record." });
     }
 
     const result = await healthRecordsModel.addHealthRecord(userID, recordType, value1, value2, recordedAt);
@@ -29,7 +47,7 @@ async function addRecord(req, res) {
   }
 }
 
-// ✅ UPDATE - Update an existing record by recordID
+//UPDATE - Update an existing record by recordID
 async function updateRecord(req, res) {
   try {
     const recordID = parseInt(req.params.recordID);
@@ -37,6 +55,18 @@ async function updateRecord(req, res) {
 
     if (!recordID || !value1 || !recordedAt) {
       return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    //Validate future date
+    const today = new Date();
+    const selectedDate = new Date(recordedAt);
+    if (selectedDate > today) {
+      return res.status(400).json({ error: "Recorded date cannot be in the future." });
+    }
+
+    //Validate non-negative values
+    if (value1 < 0 || (value2 !== null && value2 < 0)) {
+      return res.status(400).json({ error: "Values cannot be negative." });
     }
 
     const result = await healthRecordsModel.updateHealthRecord(recordID, value1, value2, recordedAt);
@@ -47,7 +77,7 @@ async function updateRecord(req, res) {
   }
 }
 
-// ✅ DELETE - Delete record by recordID
+//DELETE - Delete record by recordID
 async function deleteRecord(req, res) {
   try {
     const recordID = parseInt(req.params.recordID);

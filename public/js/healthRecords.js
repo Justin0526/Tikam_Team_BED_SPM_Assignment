@@ -158,11 +158,49 @@ function editLog(id, date, val1, val2) {
 // ====================== SAVE (Add/Update) ======================
 async function saveLog(event) {
     event.preventDefault();
+
     const recordID = document.getElementById("recordID").value;
     const recordType = document.getElementById("recordType").value;
     const date = document.getElementById("logDate").value;
     const value1 = parseFloat(document.getElementById("value1").value);
-    const value2 = document.getElementById("value2").value ? parseFloat(document.getElementById("value2").value) : null;
+    const value2Raw = document.getElementById("value2").value;
+    const value2 = value2Raw ? parseFloat(value2Raw) : null;
+
+    // Future date validation
+    const today = new Date();
+    const selectedDate = new Date(date);
+    if (!date) {
+        alert("Please select a date.");
+        return;
+    }
+    if (selectedDate > today) {
+        alert("You cannot add a log for a future date.");
+        return;
+    }
+
+    // Negative values validation
+    if (Number.isNaN(value1) || value1 < 0) {
+        alert("Value 1 cannot be negative or empty.");
+        return;
+    }
+    if (value2 !== null && (Number.isNaN(value2) || value2 < 0)) {
+        alert("Value 2 cannot be negative.");
+        return;
+    }
+
+    //Check for duplicate date if adding a new record
+    if (!recordID) {
+        const existingLogs = await fetchHealthRecords();
+        const duplicate = existingLogs.find(log =>
+            log.recordType === recordType && log.recordedAt.split("T")[0] === date
+        );
+        if (duplicate) {
+            alert("You already have a record for this date. Please click Edit to make changes.");
+            return;
+        }
+    }
+
+    console.log("VALIDATION PASSED → Proceeding to fetch...");
 
     const payload = { userID, recordType, value1, value2, recordedAt: date };
 
@@ -231,6 +269,17 @@ function calculateBMI() {
     const weight = parseFloat(document.getElementById("bmiWeight").value);
     const height = parseFloat(document.getElementById("bmiHeight").value);
 
+    // Negative values validation
+    if (Number.isNaN(weight) || weight < 0) {
+        alert("Weight cannot be negative or empty.");
+        return;
+    }
+
+    if (Number.isNaN(height) || height < 0) {
+        alert("Height cannot be negative or empty."); 
+        return;
+    }
+    
     if (!weight || !height) {
         alert("Please enter both weight and height.");
         return;

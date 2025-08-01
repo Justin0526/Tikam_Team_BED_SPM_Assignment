@@ -13,7 +13,13 @@ async function getUserProfile(userID) {
     console.error("❌ Database error (getUserProfile):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
   }
 }
 
@@ -56,7 +62,13 @@ async function updateUserProfile(userID, data) {
     console.error("❌ Database error (updateUserProfile):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
   }
 }
 
@@ -76,7 +88,13 @@ async function removeProfilePicture(userID) {
     console.error("❌ Database error (removeProfilePicture):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
   }
 }
 

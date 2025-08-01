@@ -1,7 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-// ✅ READ - Get all health records for a user
+//READ - Get all health records for a user
 async function getHealthRecordsByUser(userID) {
   let connection;
   try {
@@ -19,11 +19,17 @@ async function getHealthRecordsByUser(userID) {
     console.error("Database error (getHealthRecordsByUser):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
   }
 }
 
-// ✅ CREATE - Add new health record
+//CREATE - Add new health record
 async function addHealthRecord(userID, recordType, value1, value2, recordedAt) {
   let connection;
   try {
@@ -44,11 +50,17 @@ async function addHealthRecord(userID, recordType, value1, value2, recordedAt) {
     console.error("Database error (addHealthRecord):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
   }
 }
 
-// ✅ UPDATE - Update record by recordID
+//UPDATE - Update record by recordID
 async function updateHealthRecord(recordID, value1, value2, recordedAt) {
   let connection;
   try {
@@ -69,11 +81,17 @@ async function updateHealthRecord(recordID, value1, value2, recordedAt) {
     console.error("Database error (updateHealthRecord):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
   }
 }
 
-// ✅ DELETE - Delete a health record by ID
+//DELETE - Delete a health record by ID
 async function deleteHealthRecord(recordID) {
   let connection;
   try {
@@ -87,7 +105,38 @@ async function deleteHealthRecord(recordID) {
     console.error("Database error (deleteHealthRecord):", error);
     throw error;
   } finally {
-    if (connection) await connection.close();
+    if (connection) {
+        try{
+            await connection.close();
+        }catch(closeError){
+            console.error("Error closing connection: ", closeError);
+        }
+    }
+  }
+}
+
+//check for duplicate on same day
+async function checkDuplicateRecord(userID, recordType, recordedAt) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = `
+      SELECT TOP 1 * FROM HealthRecords
+      WHERE userID = @userID AND recordType = @recordType AND recordedAt = @recordedAt
+    `;
+    const request = connection.request();
+    request.input("userID", sql.Int, userID);
+    request.input("recordType", sql.VarChar(20), recordType);
+    request.input("recordedAt", sql.Date, recordedAt);
+    const result = await request.query(query);
+    return result.recordset.length > 0; // true if duplicate exists
+  } catch (error) {
+    console.error("Database error (checkDuplicateRecord):", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try { await connection.close(); } catch (closeError) { console.error("Error closing connection: ", closeError); }
+    }
   }
 }
 
@@ -96,4 +145,5 @@ module.exports = {
   addHealthRecord,
   updateHealthRecord,
   deleteHealthRecord,
+  checkDuplicateRecord
 };

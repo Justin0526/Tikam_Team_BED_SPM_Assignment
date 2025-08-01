@@ -43,8 +43,21 @@ document.getElementById('meal-form').addEventListener('submit', async function (
   //If the user typed in calories manually, include it in the object
   //If the field is empty and set it to null
   const manualInput = document.getElementById('manualCalories').value.trim();
-  meal.manualCalories = manualInput !== "" ? manualInput : null;
-
+  if (manualInput !== "") {
+    if (manualInput.toLowerCase() === "unknown") {
+      meal.manualCalories = "unknown";
+    } else {
+      const parsedCalories = parseInt(manualInput);
+      if (isNaN(parsedCalories) || parsedCalories < 0) {
+        alert("❌ Manual calories must be a positive number or 'unknown'.");
+        return;
+      }
+      meal.manualCalories = parsedCalories.toString();
+    }
+  } 
+  else {
+    meal.manualCalories = null;
+  }
   try {
     let response;
     //If editing existing meal

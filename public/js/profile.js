@@ -26,7 +26,7 @@ async function getUserProfile(currentUser) {
       populateCheckboxes(data.allergies, "allergy-options", "other-allergy", "allergy-other-check");
       populateCheckboxes(data.chronicConditions, "condition-options", "other-conditions", "condition-other-check");
 
-      // ✅ Load profile picture
+      // Load profile picture
       const profilePic = data.profilePicture || "../images/default-avatar.png";
       document.getElementById("avatarPic").src = profilePic;
       document.getElementById("profilePicture").value = data.profilePicture || "";
@@ -72,7 +72,7 @@ function getCombinedCheckboxes(containerId, otherInputId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Toggle "Others"
+  //Toggle "Others" checkbox
   document.getElementById("allergy-other-check").addEventListener("change", e => {
     document.getElementById("other-allergy").style.display = e.target.checked ? "block" : "none";
   });
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadBtn = document.getElementById("uploadBtn");
   const avatarPic = document.getElementById("avatarPic");
 
-  // ✅ Cloudinary Upload
+  // Cloudinary Upload
   uploadBtn.addEventListener("click", function () {
     cloudinary.openUploadWidget({
       cloudName: 'dvgx5dw12',
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ✅ Remove Profile Picture
+  //Remove Profile Picture
   const removeBtn = document.getElementById("removeProfilePic");
   if (removeBtn) {
     removeBtn.addEventListener("click", () => {
@@ -115,9 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ✅ Form Submit
+  //Form Submit
   document.querySelector('.profile-form').addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    const dobInput = document.getElementById("dob").value;
+    if (dobInput) {
+      const enteredDate = new Date(dobInput);
+      const today = new Date();
+      if (enteredDate > today) {
+        alert("❌ Date of birth cannot be in the future.");
+        return;
+      }
+    }
 
     const formData = {
       userID: currentUser.userID,
@@ -145,7 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(`❌ Failed to update profile: ${data.error}`);
+        if (data.errors && Array.isArray(data.errors)) {
+          alert("❌ Failed to update profile:\n" + data.errors.join("\n"));
+        } else {
+          alert(`❌ Failed to update profile: ${data.error || "Unknown error occurred"}`);
+        }
         return;
       }
 
