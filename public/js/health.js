@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Dynamically inject the health profile HTML into the page
     document.querySelector(".profile-section").innerHTML = `
       <h2>My Health Profile</h2>
-      <div class="profile-name">${profile.fullName}</div>
+      <div class="health-profile-name">${profile.fullName}</div>
       <div class="profile-details">
         <div class="detail-item"><strong>Age:</strong> <span>${age === "null" ? "null" : age + " years"}</span></div>
         <div class="detail-item"><strong>Gender:</strong> <span>${profile.gender}</span></div>
