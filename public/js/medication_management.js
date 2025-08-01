@@ -1,5 +1,5 @@
 // Base URL for API calls — change this if deploying to a live server
-const apiBaseURL = 'http://localhost:3000';
+window.apiBaseURL = window.apiBaseURL || 'http://localhost:3000';
 
 // grab the JWT and build headers
 const authHeaders = {
@@ -219,6 +219,26 @@ window.addEventListener('DOMContentLoaded', async function() {
   document.querySelector('.medication-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
+    const today = new Date().setHours(0, 0, 0, 0);
+    const startDate = new Date(document.getElementById('start-date').value).setHours(0, 0, 0, 0);
+    const endDateInput = document.getElementById('end-date').value;
+    const endDate = endDateInput ? new Date(endDateInput).setHours(0, 0, 0, 0) : null;
+
+    // Validate dates
+    if (startDate < today) {
+      showNotification('Start date cannot be in the past.');
+      return;
+    }
+    if (endDate && endDate < today) {
+      showNotification('End date cannot be in the past.');
+      return;
+    }
+    if (endDate && endDate < startDate) {
+      showNotification('End date cannot be earlier than start date.');
+      return;
+    }
+
+    // Proceed if dates are valid
     const timeInput = document.getElementById('time').value;
     const formattedTime = timeInput ? `${timeInput}:00` : '';
 
@@ -228,7 +248,7 @@ window.addEventListener('DOMContentLoaded', async function() {
       frequency: document.getElementById('frequency').value,
       consumptionTime: formattedTime,
       startDate: document.getElementById('start-date').value,
-      endDate: document.getElementById('end-date').value || null,
+      endDate: endDateInput || null,
       notes: ''
     };
 

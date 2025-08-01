@@ -110,7 +110,7 @@ app.delete("/appointments/:appointmentID", verifyJWT, appointmentValidator.valid
 app.get("/appointments/search", verifyJWT, appointmentValidator.validateSearchQuery, appointmentController.searchAppointments);
 
 // Meal routes
-app.get("/meals/me", verifyJWT, mealController.getMealsByUserIDAndMealDate);
+app.get("/meals/me", verifyJWT, mealValidator.validateMealQuery, mealController.getMealsByUserIDAndMealDate);
 app.post("/meals", verifyJWT, mealValidator.validateMeal, mealController.createMealLog);
 app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.validateMealId, mealController.updateMealLogByMealID);
 app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
@@ -119,10 +119,10 @@ app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealContro
 app.get('/api/health-profile', verifyJWT, getUserHealthProfile);
 
 // Medication routes
-app.get("/medications/today", verifyJWT, medicationsController.getTodayMeds );
-app.post("/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
-app.put("/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
-app.get("/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
+app.get("/api/medications/today", verifyJWT, medicationsController.getTodayMeds );
+app.post("/api/medications", verifyJWT, medicationValidator, medicationsController.addMedication );
+app.put("/api/medications/:medicationID/mark-taken", verifyJWT, medicationsController.markTaken );
+app.get("/api/medications/upcoming", verifyJWT, medicationsController.getUpcomingMeds);
 
 // Edit medication routes
 app.get("/medications/:medicationID", editMedicationsController.getMedicationById);
