@@ -110,7 +110,7 @@ app.delete("/appointments/:appointmentID", verifyJWT, appointmentValidator.valid
 app.get("/appointments/search", verifyJWT, appointmentValidator.validateSearchQuery, appointmentController.searchAppointments);
 
 // Meal routes
-app.get("/meals/me", verifyJWT, mealController.getMealsByUserIDAndMealDate);
+app.get("/meals/me", verifyJWT, mealValidator.validateMealQuery, mealController.getMealsByUserIDAndMealDate);
 app.post("/meals", verifyJWT, mealValidator.validateMeal, mealController.createMealLog);
 app.put("/meals/:mealID", verifyJWT, mealValidator.validateMeal, mealValidator.validateMealId, mealController.updateMealLogByMealID);
 app.delete("/meals/:mealID", verifyJWT, mealValidator.validateMealId, mealController.deleteMealLogByMealID);
