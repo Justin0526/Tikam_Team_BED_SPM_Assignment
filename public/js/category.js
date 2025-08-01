@@ -50,6 +50,7 @@ async function reloadBookmarkSection() {
     renderBookmarks(bookmarkDetails);
 }
 
+// Function to reset popup buttons
 function resetPopupButtons() {
     const popup = document.getElementById("delete-popup");
 
