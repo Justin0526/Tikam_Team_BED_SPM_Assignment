@@ -18,10 +18,15 @@ const validateRegistration = (req, res, next) => {
       'string.empty': 'Email is required',
       'string.email': 'Email must be a valid email address'
     }),
-    password: Joi.string().min(6).required().messages({
-      'string.empty': 'Password is required',
-      'string.min': 'Password must be at least 6 characters'
-    }),
+    password: Joi.string()
+      .min(6)
+      .pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/)
+      .required()
+      .messages({
+        'string.empty': 'Password is required',
+        'string.min': 'Password must be at least 6 characters',
+        'string.pattern.base': 'Password must contain at least 1 uppercase letter and 1 special character'
+      }),
     confirmPassword: Joi.valid(Joi.ref('password')).required().messages({
       'any.only': 'Passwords do not match',
       'string.empty': 'Please confirm your password'

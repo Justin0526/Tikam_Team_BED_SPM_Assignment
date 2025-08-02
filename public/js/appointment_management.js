@@ -1,3 +1,5 @@
+// Name - Shein Wai Oo
+// ID - 10269743C 
 const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 let appointments = [];

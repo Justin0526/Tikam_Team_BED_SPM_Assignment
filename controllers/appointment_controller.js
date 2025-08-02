@@ -1,3 +1,5 @@
+//Name - Shein Wai Oo
+//ID - 10269743C
 const appointmentModel = require("../models/appointment_model");
 
 //Get Appointments by UserID

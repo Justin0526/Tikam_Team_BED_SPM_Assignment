@@ -32,6 +32,9 @@
                 },
                 "password": {
                   "example": "any"
+                },
+                "confirmPassword": {
+                  "example": "any"
                 }
               }
             }
@@ -1670,7 +1673,42 @@
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "doctorName": {
+                  "type": "string",
+                  "example": "Dr. Lim Mei Hua"
+                },
+                "clinicName": {
+                "type": "string",
+                "example": "Clementi Polyclinic"
+                },
+                "appointmentDate": {
+                  "type": "string",
+                  "example": "2025-08-10"
+                },
+                "appointmentTime":{
+                  "type": "string",
+                  "example": "09:30"
+                },
+                "purpose": {
+                  "type": "string",
+                  "example": "Health screening"
+                },
+                "reminderDate": {
+                  "type": "string",
+                  "example": "2025-08-09"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1703,6 +1741,40 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "doctorName": {
+                  "type": "string",
+                  "example": "Dr. Lim Mei Hua"
+                },
+                "clinicName": {
+                  "type": "string",
+                  "example": "Clementi Polyclinic"
+                },
+                "appointmentDate": {
+                  "type": "string",
+                  "example": "2025-08-10"
+                },
+                "appointmentTime": {
+                  "type": "string",
+                  "example": "09:30"
+                },
+                "purpose": {
+                  "type": "string",
+                  "example": "Health screening"
+                },
+                "reminderDate": {
+                  "type": "string",
+                  "example": "2025-08-09"
+                }
+              }
+            }
           }
         ],
         "responses": {
