@@ -1,3 +1,5 @@
+//Name - Shein Wai Oo
+//ID - 10269743C
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 const { fetchCalories } = require("../models/calorie_service");

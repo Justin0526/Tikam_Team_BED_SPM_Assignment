@@ -1,3 +1,5 @@
+// Name - Shein Wai Oo
+// ID - 10269743C 
 // ─── Reminder Alert Banner ─────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async function () {
   if (!token) return;
