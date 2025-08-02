@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 let categoryName; // GLOBAL category name (so we can update it anywhere)
 
 const params = new URLSearchParams(window.location.search);

@@ -1,3 +1,4 @@
+// Group
 const loginForm = document.getElementById("login-form");
 const message = document.getElementById("message");
 const apiBaseUrl = "http://localhost:3000";

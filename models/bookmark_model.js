@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const {sql, poolPromise} = require("../bookmarkDbConfig");
 
 // get all bookmarks of the user

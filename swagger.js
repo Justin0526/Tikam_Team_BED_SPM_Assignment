@@ -1,3 +1,4 @@
+// Group
 const swaggerAutogen = require("swagger-autogen")();
 
 const outputFile = "./swagger-output.json"; // Output file for the spec

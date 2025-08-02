@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 window.addEventListener("load", async() => {
     const authMessage = document.getElementById("authenticate-message");
     const categorySection = document.getElementById("category-section");

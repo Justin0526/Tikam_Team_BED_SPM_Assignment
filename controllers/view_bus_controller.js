@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const axios = require("axios");
 const APIKEY = process.env.BUS_API_KEY;
 const busStopsURL = "https://datamall2.mytransport.sg/ltaodataservice/BusStops";

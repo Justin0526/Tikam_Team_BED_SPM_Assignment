@@ -1,6 +1,6 @@
-.credit-section {
+/* Group */
+.credit-section, .acknowledgement-section {
     max-width: 800px;
-    min-height: 500px;
     margin: 40px auto;
     padding: 40px 60px;
     background-color: #f9fff4;
@@ -10,37 +10,81 @@
     text-align: left;
 }
 
-h2 {
-    text-align: center;
+.main-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.main-container h2 {
+    text-align: left;
     font-size: 1.8em;
     color: #3399CC;
     margin-bottom: 30px;
 }
 
-.credit-section ul {
-    text-align: left;
-    display: block;
-    width: 100%;
+.credit-section h3,
+.acknowledgement-section h3 {
+    font-size: 1.5em;
+    color: #2B7DA4;
+    margin-bottom: 15px;
+}
+
+.credit-section ul, 
+.acknowledgement-section ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-.credit-section li {
-    text-align: left;
-    display: block;
-    width: 100%;
-    word-wrap: break-word;
+.credit-section li, 
+.acknowledgement-section li {
     margin-bottom: 18px;
-    font-size: 1.5em;
+    font-size: 1.2em;
     color: #2B7DA4;
 }
 
-.credit-section li a {
+.credit-section li a, 
+.acknowledgement-section li a {
     color: #3399CC;
     text-decoration: none;
 }
 
-.credit-section li a:hover {
+.credit-section li a:hover,
+.acknowledgement-section li a:hover {
     text-decoration: underline;
     color: #A4D038;
 }
+
+.inspiration-section {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 40px 60px;
+    background-color: #f9fff4;
+    border: 2px solid #A4D038;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.03);
+    text-align: left;
+}
+
+.inspiration-section h3 {
+    font-size: 1.5em;
+    color: #2B7DA4;
+    margin-bottom: 15px;
+}
+
+.inspiration-section li {
+    margin-bottom: 16px;
+    font-size: 1.2em;
+    color: #2B7DA4;
+}
+
+.inspiration-section a {
+    color: #3399CC;
+    text-decoration: none;
+}
+
+.inspiration-section a:hover {
+    text-decoration: underline;
+    color: #A4D038;
+}
+

@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const bookmarkModel = require("../models/bookmark_model");
 
 // Function to get the all the bookmarks for the user

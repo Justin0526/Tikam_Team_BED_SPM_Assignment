@@ -1,96 +1,97 @@
+<!-- Justin Tang Jia Ze S10269496B -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Transport and Facilities - HealthyLah</title>
-  <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/transport_and_facilities.css">
-  <link rel="stylesheet" href="../css/reminder_alert.css">
-</head>
-<body>
-     <header class="top-bar">
-        <div class="logo-bar">
-            <div class="logo-container">
-                <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img"> <!-- Replace with actual logo path -->
-                
-            </div>
-            <div class="profile" id="user-profile">
-            <!-- Dynamic profile -->
-            </div>
+  <head>
+    <meta charset="UTF-8">
+    <title>Transport and Facilities - HealthyLah</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/transport_and_facilities.css">
+    <link rel="stylesheet" href="../css/reminder_alert.css">
+  </head>
+  <body>
+      <header class="top-bar">
+          <div class="logo-bar">
+              <div class="logo-container">
+                  <img src="../images/logo_horizontal copy.png" alt="HealthyLah Logo" class="logo-img"> <!-- Replace with actual logo path -->
+                  
+              </div>
+              <div class="profile" id="user-profile">
+              <!-- Dynamic profile -->
+              </div>
+          </div>
+          <nav class="nav-bar">
+          <a href="index.html">Home</a>
+          <a href="about_us.html">About us</a>
+          <a href="weather.html">Weather</a>
+          <a href="Transport_and_Facilities.html">Transport & Facilities</a>
+          <a href="health.html">Health</a>
+          <a href="post_forum.html">Post</a>
+          <a href="settings.html">Settings</a>
+          </nav>
+      </header>
+      <section class="transport-top">
+        <div class="transport-info">
+          <h2>Transport & Facilities</h2>
+          <div class="buttons">
+            <a href="browse_facilities.html" class="btn">Browse Facilities</a>
+            <a href="view_bookmarks.html" class="btn">View Bookmarks</a>
+            <a href="view_bus.html" class="btn">View Bus Stops and Bus Arrivals</a>
+          </div>
         </div>
-        <nav class="nav-bar">
-        <a href="index.html">Home</a>
-        <a href="about_us.html">About us</a>
-        <a href="weather.html">Weather</a>
-        <a href="Transport_and_Facilities.html">Transport & Facilities</a>
-        <a href="health.html">Health</a>
-        <a href="post_forum.html">Post</a>
-        <a href="settings.html">Settings</a>
-        </nav>
-    </header>
-    <section class="transport-top">
-      <div class="transport-info">
-        <h2>Transport & Facilities</h2>
-        <div class="buttons">
-          <a href="browse_facilities.html" class="btn">Browse Facilities</a>
-          <a href="view_bookmarks.html" class="btn">View Bookmarks</a>
-          <a href="view_bus.html" class="btn">View Bus Stops and Bus Arrivals</a>
+        <div class="picture-placeholder">
+          <img src="../images/rtsLink.jpg" alt="Link Train Exterior">
         </div>
-      </div>
-      <div class="picture-placeholder">
-        <img src="../images/rtsLink.jpg" alt="Link Train Exterior">
+      </section>
+
+
+    <section class="facilities-section">
+      <h2>Facilities Near you</h2>
+      <div class="facility-cards" id="facility-cards-section">
+        <!-- Facilities will be added dynamically here -->
       </div>
     </section>
 
+    <section class="transport-section">
+      <h2>Public Transport Near You</h2>
+      <div class="transport-container">
+        <div class="transport-box mrt">
+          <h3>MRT/LRT</h3>
+          <div class="card-container" id="train-card-container">
+          <!-- Train information will be added dynamically here -->
+          </div>
+        </div>
 
-  <section class="facilities-section">
-    <h2>Facilities Near you</h2>
-    <div class="facility-cards" id="facility-cards-section">
-      <!-- Facilities will be added dynamically here -->
-    </div>
-  </section>
-
-  <section class="transport-section">
-    <h2>Public Transport Near You</h2>
-    <div class="transport-container">
-      <div class="transport-box mrt">
-        <h3>MRT/LRT</h3>
-        <div class="card-container" id="train-card-container">
-        <!-- Train information will be added dynamically here -->
+        <div class="transport-box bus">
+          <h3>Bus Stop</h3>
+          <div class="card-container" id="bus-card-container">
+            <!-- Bus information will be added dynamically here -->
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="transport-box bus">
-        <h3>Bus Stop</h3>
-        <div class="card-container" id="bus-card-container">
-          <!-- Bus information will be added dynamically here -->
+      <footer>
+      <p>© 2025 HealthyLah – Designed with care for our seniors</p>
+      <div class="social-links" style="display:inline-block;">
+        <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
+        <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
+        </a>
+        <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
+        <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
+        </a>
+        <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
+        <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
+        </a>
+        <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
+          <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
+        </a>
         </div>
-      </div>
-    </div>
-  </section>
-
-    <footer>
-    <p>© 2025 HealthyLah – Designed with care for our seniors</p>
-    <div class="social-links" style="display:inline-block;">
-      <a href="https://www.facebook.com/" aria-label="Facebook" style="text-decoration:none;">
-      <img src="../images/icons8-facebook-50.png" alt="Facebook" style="height:30px;vertical-align:middle;">
-      </a>
-      <a href="https://www.twitter.com/" aria-label="Twitter" style="text-decoration:none;">
-      <img src="../images/icons8-twitter-50.png" alt="Twitter" style="height:30px;vertical-align:middle;">
-      </a>
-      <a href="https://www.instagram.com/" aria-label="Instagram" style="text-decoration:none;">
-      <img src="../images/icons8-instagram-48.png" alt="Instagram" style="height:35px;vertical-align:middle;">
-      </a>
-      <a href="mailto:info@healthy-lah.com" aria-label="Email" style="text-decoration:none;">
-        <img src="../images/icons8-email-48.png" alt="Email" style="height:30px;vertical-align:middle;">
-      </a>
-      </div>
-      <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/settings_translation.js" defer></script>
-    <script src="../js/transport_and_facilities.js"></script>
-    <script src="../js/reminder_alert.js" defer></script>
-</body>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="credits.html">Credits</a></p>
+      </footer>
+      <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+      <script src="../js/auth.js"></script>
+      <script src="../js/settings_translation.js" defer></script>
+      <script src="../js/transport_and_facilities.js"></script>
+      <script src="../js/reminder_alert.js" defer></script>
+  </body>
 </html>

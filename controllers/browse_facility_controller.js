@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const axios = require("axios");
 const APIKEY = process.env.BROWSE_FACILITY_API_KEY;
 const FieldMask = 'places.id,places.displayName,places.formattedAddress,places.photos,places.googleMapsLinks,places.currentOpeningHours,places.accessibilityOptions,nextPageToken';

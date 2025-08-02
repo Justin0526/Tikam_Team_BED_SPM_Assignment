@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 // const apiBaseUrl = "http://localhost:3000";
 const goBtn = document.getElementById("go-btn");
 const textQuery = document.getElementById("textQuery");
@@ -309,9 +310,13 @@ async function renderBusArrival(busStops){
         `
 
         const busCards = busStopBlock.querySelector(".bus-cards");
+
+        let hasAnyArrivalAtStop = false
         let arrivals = [];
         busServices.forEach(async (service) => {
             let arrivalInfo = { busNumber: service.ServiceNo};
+            let hasArrivalThisService = false;
+
             ["NextBus", "NextBus2", "NextBus3"].forEach((key, idx) => {
                 const bus = service[key];
                 let displayDifference = "Not Available";
@@ -323,24 +328,38 @@ async function renderBusArrival(busStops){
                     const diffMins = Math.round(diffMs / 60000); // Convert to minutes
 
                     displayDifference = diffMins > 0 ? `${diffMins} min` : "Arrived";
+                    hasArrivalThisService = true;
+                    hasAnyArrivalAtStop = true;
                 }
 
                 arrivalInfo[`bus${idx + 1}`] = displayDifference;
             });
+            console.log(arrivalInfo);
+            console.log(hasAnyArrival)
+
             arrivals.push(arrivalInfo);
         })
-
-        arrivals.forEach(async (arrival) => {
-            const busCard = document.createElement("div");
-            busCard.classList.add("bus-card");
-            busCard.innerHTML = `
-                Bus ${arrival.busNumber}
-                <button>${arrival.bus1}</button>
-                <button>${arrival.bus2}</button>
-                <button>${arrival.bus3}</button>
-            `
-            busCards.appendChild(busCard);
-        })
+        // If all are Not Available or empty, mark as no more buses
+       // If no services had any upcoming buses, show a single message
+        if (!hasAnyArrivalAtStop) {
+            const noBusMsg = document.createElement("div");
+            noBusMsg.classList.add("no-bus-msg");
+            noBusMsg.innerHTML = "<em>No more buses scheduled for this stop at this moment of time.</em>";
+            busCards.appendChild(noBusMsg);
+        } else {
+            // Show each service's arrival
+            arrivals.forEach(arrival => {
+                const busCard = document.createElement("div");
+                busCard.classList.add("bus-card");
+                busCard.innerHTML = `
+                    Bus ${arrival.busNumber}
+                    <button>${arrival.bus1}</button>
+                    <button>${arrival.bus2}</button>
+                    <button>${arrival.bus3}</button>
+                `;
+                busCards.appendChild(busCard);
+            });
+        }
 
         busStopSection.appendChild(busStopBlock);
 

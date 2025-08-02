@@ -1,3 +1,4 @@
+// Group
 const token = localStorage.getItem("authToken");
 const userProfile = document.getElementById("user-profile");
 const apiBaseURL = "http://localhost:3000/api";

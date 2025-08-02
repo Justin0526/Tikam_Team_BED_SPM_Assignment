@@ -1,3 +1,4 @@
+// Group
 const apiBaseUrl = "http://localhost:3000";
 
 window.addEventListener("DOMContentLoaded", async () => {

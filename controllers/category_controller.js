@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const categoryModel = require("../models/category_model");
 
 // Function to get all the user's category

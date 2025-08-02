@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const apiBaseUrl = "http://localhost:3000";
 let currentUser = null;
 
@@ -47,7 +48,7 @@ async function fetchAllData(){
 
     }catch(error){
         console.error("Error fetching weather information", error);
-        alert("Failed to load weather info")
+        alert("External Weather API temporary failure, please try again in a moment")
     }
 }
 async function displayWeatherSummary(weatherData){

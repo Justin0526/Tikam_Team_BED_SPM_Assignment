@@ -1,3 +1,5 @@
+/* Justin Tang Jia Ze
+S10269496B */
 /* Ensure html and body take full height */
 html, body {
   height: 100%;
@@ -68,6 +70,12 @@ main{
   color: #2b7da0;
   text-decoration: none;
   font-weight: 500;
+}
+
+.no-bus-msg {
+  color: #666;
+  font-style: italic;
+  padding: 0.5rem;
 }
 
 .bus-stop-block {

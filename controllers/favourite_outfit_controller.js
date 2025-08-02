@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const outfitModel = require("../models/favourite_outfit_model");
 
 // Function to get the favourited outfit for the user 

@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const axios = require("axios");
 const APIKEY = process.env.WEATHER_API_KEY;
 const location = "Singapore";

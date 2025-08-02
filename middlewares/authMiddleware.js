@@ -1,3 +1,4 @@
+// Justin Tang Jia Ze S10269496B
 const jwt = require("jsonwebtoken");
 
 function verifyJWT(req, res, next){
