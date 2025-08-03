@@ -64,9 +64,9 @@ _As a senior, I want to set reminders for health tasks like drinking water or ta
 
 ---
 
-### 📅 Appointment Management  
+### 📅 Appointment Management With Reminder and Smart Search
 **User Story:**  
-_As a senior user, I want to add and view my health appointments, so that I don’t forget important medical visits._
+_As a senior user, I would like to  update and delete my medical appointments, receive timely reminders, so that I never miss any important health appointments and can easily search for them when needed.._
 
 - Add doctor name, clinic, date/time, and purpose  
 - Reminder automatically set to 1 day before and can be customised as well 
