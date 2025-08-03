@@ -1,3 +1,5 @@
+// Khaleel Anis S10270243D
+
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
