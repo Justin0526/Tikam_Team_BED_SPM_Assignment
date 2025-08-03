@@ -1,3 +1,4 @@
+//Hia Wei Dai S10269256H
 const fetch = require("node-fetch");
 
 //Controller to handle text translation requests.
