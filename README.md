@@ -150,10 +150,10 @@ _As a non-English-speaking senior, I want to translate the website to my preferr
 ## 👥 Project Team - Tikam Team
 
 | Name         | Role      | Key Features Owned                      |
-|--------------|-----------|------------------------------------------|
-| Shein Wai Oo | Developer | Appointments, Meals             |
-| Rey Liow     | Developer | Profile, BMI, Health Logs               |
+|--------------|-----------|-----------------------------------------|
 | Justin Tang  | Developer | Weather, Outfit, Transport, Bookmarking |
+| Rey Liow     | Developer | Profile, BMI, Health Logs               |
+| Shein Wai Oo | Developer | Appointment Management, Meal Logging
 | Khaleel Anis | Developer | Medications, Health Reminders           |
 | Wei Dai      | Developer | Posts, Comments, Translations           |
 
