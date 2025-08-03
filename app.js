@@ -6,9 +6,6 @@ const path = require("path");
 const dotenv = require("dotenv");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger-output.json");
-const { verify } = require("crypto");
-const { profile } = require("console");
-
 // ─── Controllers ────────────────────────────────────────────────────────────────
 // Group 1: User + Health + JWT
 const userController = require("./controllers/user_controller");
