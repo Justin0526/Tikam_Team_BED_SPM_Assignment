@@ -189,19 +189,25 @@ async function loadUpcomingMeds() {
 }
 
 /**
- * Displays a floating notification on screen with a message.
- * Automatically disappears after 3 seconds.
- * @param {string} message - The message to show to the user.
+ * Displays a floating notification.
+ * @param {string} message - The message to show.
+ * @param {string} type - 'success' (default) or 'error'
  */
-function showNotification(message) {
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+function showNotification(message, type = "success") {
+  const notification = document.createElement("div");
+  notification.className = `notification ${type}`;
+
+  const icon =
+    type === "error"
+      ? `<i class="fas fa-times-circle"></i>` // Red cross for error
+      : `<i class="fas fa-check-circle"></i>`; // Green check for success
+
+  notification.innerHTML = `${icon} ${message}`;
   document.body.appendChild(notification);
-  
-  setTimeout(() => notification.classList.add('show'), 10);
+
+  setTimeout(() => notification.classList.add("show"), 10);
   setTimeout(() => {
-    notification.classList.remove('show');
+    notification.classList.remove("show");
     setTimeout(() => document.body.removeChild(notification), 300);
   }, 3000);
 }
@@ -228,15 +234,15 @@ window.addEventListener('DOMContentLoaded', async function() {
 
     // Validate dates
     if (startDate < today) {
-      showNotification('Start date cannot be in the past.');
+      showNotification("Start date cannot be in the past.", "error");
       return;
     }
     if (endDate && endDate < today) {
-      showNotification('End date cannot be in the past.');
+      showNotification("End date cannot be in the past.", "error");
       return;
     }
     if (endDate && endDate < startDate) {
-      showNotification('End date cannot be earlier than start date.');
+      showNotification("End date cannot be earlier than start date.", "error");
       return;
     }
 
