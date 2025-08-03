@@ -43,7 +43,7 @@ _As a user planning my day, I want to see weather updates and outfit suggestions
 
 ### 📉 Health Monitoring (Vitals & BMI)  
 **User Story:**  
-_As a user managing chronic conditions, I want to record and view trends in my vital signs and BMI, so that I can share accurate data with my doctor._
+_As a user managing chronic conditions, I want to record and view trends in my vital signs and BMI, so that I can share accurate data with my doctor and also maintain a healthier lifestyle.
 
 - Log blood pressure, sugar level, and weight  
 - Interactive charts for viewing trends  
@@ -104,7 +104,7 @@ _As a socially active user, I want to post and engage with community content, so
 **User Story:**  
 _As a user, I want to update my personal and emergency information, so that caregivers and medical staff can access the data if needed._
 
-- Edit name, birthday, gender, allergies, contact  
+- Edit name, birthday, gender, allergies, chronic conditions, emergency contact
 - Upload profile photo and bio  
 - All data linked to the logged-in user  
 
