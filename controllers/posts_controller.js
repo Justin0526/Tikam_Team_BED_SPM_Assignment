@@ -1,3 +1,4 @@
+//Hia Wei Dai S10269256H
 const postModel = require("../models/posts_model");
 
 //Posts

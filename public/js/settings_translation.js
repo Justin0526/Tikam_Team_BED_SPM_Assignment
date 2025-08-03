@@ -1,3 +1,4 @@
+//Hia Wei Dai S10269256H
 console.log("settings_translation.js loaded");
 
 document.addEventListener("DOMContentLoaded", () => {
