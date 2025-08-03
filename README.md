@@ -151,7 +151,7 @@ _As a non-English-speaking senior, I want to translate the website to my preferr
 
 | Name         | Role      | Key Features Owned                      |
 |--------------|-----------|------------------------------------------|
-| Shein Wai Oo | Developer | Appointments, Meals, Logout             |
+| Shein Wai Oo | Developer | Appointments, Meals             |
 | Rey Liow     | Developer | Profile, BMI, Health Logs               |
 | Justin Tang  | Developer | Weather, Outfit, Transport, Bookmarking |
 | Khaleel Anis | Developer | Medications, Health Reminders           |
