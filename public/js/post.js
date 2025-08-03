@@ -18,14 +18,18 @@ const resetFilterBtn = document.getElementById("resetFilterBtn");
 
 // Format a given ISO date string into a readable date/time format
 function toLocaleDate(iso) {
-  return new Date(iso).toLocaleString("en-GB", {
+  const date = new Date(iso);
+  date.setHours(date.getHours() + 16);
+  return date.toLocaleString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
+    hour12: true
   });
 }
+
 
 //refreshes like everytime a post is liked to keep data up to date
 async function updateLikeStatus(postID, likeBtn, likeCountEl) {
