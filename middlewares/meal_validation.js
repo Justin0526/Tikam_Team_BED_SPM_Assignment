@@ -14,8 +14,8 @@ const mealSchema = Joi.object({
         "any.required": "Time frame is required"
     }),
     mealDate: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).required().messages({
-        "string.empty": "Log date is required",
-        "string.pattern.base": "Log date must be in YYYY-MM-DD format"
+        "string.empty": "Meal date is required",
+        "string.pattern.base": "Meal date must be in YYYY-MM-DD format"
     }),
     manualCalories: Joi.alternatives().try(
     Joi.string().valid("unknown"),
