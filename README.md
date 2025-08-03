@@ -19,11 +19,14 @@ Each feature includes a user story to describe the functionality and purpose.
 **User Story:**  
 _As a senior navigating the city, I want to find nearby facilities and transport stops, so that I can travel safely and access essential services._
 
-- Browse nearby clinics, hawkers, MRT/bus stops  
+- Browse nearby clinics, hawkers, bus stops  
 - Filter by facility type  
 - View name, hours, and location with Google Maps  
-- Bookmark favourites  
+- Bookmark facilities or bus stops
 - Search bookmarks  
+- Create category to add bookmarks
+- View Bus stops and Bus arrivals
+- "Take me there" to the facility/bus stop desired
 
 ---
 
@@ -31,11 +34,10 @@ _As a senior navigating the city, I want to find nearby facilities and transport
 **User Story:**  
 _As a user planning my day, I want to see weather updates and outfit suggestions, so that I can dress appropriately and avoid health risks._
 
-- Live weather data with UV and air quality  
-- Outfit suggestions tagged by weather type  
-- Hourly and 7-day forecast  
-- Bookmark favourite outfits  
-- Optional “Read aloud” feature 
+- Live weather data (e.g. temperature, humidity, UV Index)
+- Outfit suggestions with weather conditions
+- Hourly and 3-day forecast  
+- Favourite an outfit for reference in the future
 
 ---
 
@@ -149,13 +151,13 @@ _As a non-English-speaking senior, I want to translate the website to my preferr
 
 ## 👥 Project Team - Tikam Team
 
-| Name         | Role      | Key Features Owned                      |
-|--------------|-----------|-----------------------------------------|
-| Justin Tang  | Developer | Weather, Outfit, Transport, Bookmarking |
-| Rey Liow     | Developer | Profile, BMI, Health Logs               |
-| Shein Wai Oo | Developer | Appointment Management, Meal Logging
-| Khaleel Anis | Developer | Medications, Health Reminders           |
-| Wei Dai      | Developer | Posts, Comments, Translations           |
+| Name         | Role      | Key Features Owned                                  |
+|--------------|-----------|-----------------------------------------------------|
+| Justin Tang  | Developer | Weather, Outfit, Transport, Bookmarking, Facilities |
+| Rey Liow     | Developer | Profile, BMI, Health Logs                           |
+| Shein Wai Oo | Developer | Appointment Management, Meal Logging                |
+| Khaleel Anis | Developer | Medications, Health Reminders                       |
+| Wei Dai      | Developer | Posts, Comments, Translations                       |
 
 ---
 
