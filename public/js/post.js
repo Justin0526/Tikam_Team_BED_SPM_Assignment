@@ -501,23 +501,30 @@ removeBtn.addEventListener("click", () => {
   preview.style.display = removeBtn.style.display = "none";
 });
 
-// Share new post
+// Share post handler 
 shareBtn.addEventListener("click", async () => {
   shareBtn.disabled = true;
+
+  // Ensures user does not post empty posts
   const content = contentEl.value.trim();
   if (!content) {
     alert("Please write something before sharing.");
     shareBtn.disabled = false;
     return;
   }
+
+  // Ensures user is logged in 
   if (!currentUser) {
     alert("Please log in to share a post.");
     shareBtn.disabled = false;
-    return window.location.href = "/html/login.html";
+    return (window.location.href = "/html/login.html");
   }
 
+  // Initialise imageURL as null; will store the final URL if an image is uploaded
   let imageURL = null;
   const file = imageInput.files[0];
+
+  // Handle image upload if present
   if (file) {
     const form = new FormData();
     form.append("file", file);
@@ -534,91 +541,7 @@ shareBtn.addEventListener("click", async () => {
     }
   }
 
-  const res = await fetch(`${apiBaseUrl}/posts`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify({ UserID: currentUser.userID, Content: content, ImageURL: imageURL })
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    alert(err.error || "Failed to share post");
-    shareBtn.disabled = false;
-    return;
-  }
-
-  contentEl.value = "";
-  imageInput.value = "";
-  preview.style.display = removeBtn.style.display = "none";
-  await loadPosts();
-  shareBtn.disabled = false;
-});
-
-// Handle new post image preview before upload
-imageInput.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) {
-    preview.style.display = removeBtn.style.display = "none";
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = evt => {
-    preview.src = evt.target.result;
-    preview.style.display = "block";
-    removeBtn.style.display = "inline-block";
-  };
-  reader.readAsDataURL(file);
-});
-
-// Remove selected image before sharing
-removeBtn.addEventListener("click", () => {
-  imageInput.value = "";
-  preview.style.display = removeBtn.style.display = "none";
-});
-
-// Share post handler
-shareBtn.addEventListener("click", async () => {
-  shareBtn.disabled = true;
- //Ensures user does not post empty posts
-  const content = contentEl.value.trim();
-  if (!content) {
-    alert("Please write something before sharing.");
-    shareBtn.disabled = false;
-    return;
-  }
-//Ensures user is logged in 
-  if (!currentUser) {
-    alert("Please log in to share a post.");
-    shareBtn.disabled = false;
-    return window.location.href = "/html/login.html";
-  }
-
-// Initialise imageURL as null; will store the final URL if an image is uploaded
-  let imageURL = null;
-  // Get the first file the user selected from the input element
-  const file = imageInput.files[0];
-  if (file) {
-    const form = new FormData();
-    // Append the file to the form data with the field name "file"
-    form.append("file", file);
-    try {
-      // Send the file to Cloudinary API to post to database via POST request
-      const uplRes = await fetch(`${apiBaseUrl}/api/upload`, {
-        method: "POST",
-        body: form
-      });
-      if (!uplRes.ok) throw new Error("Upload failed");
-      const { url } = await uplRes.json();
-      // Store the uploaded image's URL in the imageURL variable
-      imageURL = url;
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Image upload failed.");
-      shareBtn.disabled = false;
-      return;
-    }
-  }
-
+  // Post content to server
   const res = await fetch(`${apiBaseUrl}/posts`, {
     method: "POST",
     headers: {
@@ -638,15 +561,14 @@ shareBtn.addEventListener("click", async () => {
     shareBtn.disabled = false;
     return;
   }
-  
-  //Makes sure that the post form after posting a post is empty and refreshes the posts to display new ones
+
+  // Reset post form and reload posts
   contentEl.value = "";
   imageInput.value = "";
   preview.style.display = removeBtn.style.display = "none";
   await loadPosts();
   shareBtn.disabled = false;
 });
-
 
 // On window load, get token and fetch posts
 window.addEventListener("load", async () => {
