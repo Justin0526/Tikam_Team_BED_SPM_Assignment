@@ -1,3 +1,5 @@
+// Khaleel Anis S10270243D
+
 // Wait for the DOM content to be fully loaded before running the script
 document.addEventListener("DOMContentLoaded", async () => {
   // Retrieve the stored JWT token from localStorage
