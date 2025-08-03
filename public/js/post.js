@@ -19,7 +19,7 @@ const resetFilterBtn = document.getElementById("resetFilterBtn");
 // Format a given ISO date string into a readable date/time format
 function toLocaleDate(iso) {
   const date = new Date(iso);
-  date.setHours(date.getHours() + 16);
+  date.setHours(date.getHours() - 8 );
   return date.toLocaleString("en-GB", {
     day: "numeric",
     month: "short",
