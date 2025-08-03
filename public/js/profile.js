@@ -129,6 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    const emergencyNumber = document.getElementById("emergencyNumber").value.trim();
+    const contactPattern = /^[0-9]+$/;
+
+    if (!contactPattern.test(emergencyNumber)) {
+      alert("❌ Emergency contact must contain only numbers.");
+      return; // Stop form submission
+    }
+
     const formData = {
       userID: currentUser.userID,
       fullName: document.getElementById("fullname").value,
