@@ -20,12 +20,22 @@ async function getReminders(req, res) {
 // PUT /reminders/:id/mark-taken
 async function markReminderTaken(req, res) {
   const id = req.params.id;
+  const userID = req.user.userID;
 
   try {
     const pool = await sql.connect(dbConfig);
-    await pool.request()
+    const result = await pool.request()
       .input("id", sql.Int, id)
-      .query("UPDATE Reminders SET status = 'Taken' WHERE reminder_id = @id");
+      .input("userID", sql.Int, userID)
+      .query(`
+        UPDATE Reminders 
+        SET status = 'Taken'
+        WHERE reminder_id = @id AND userID = @userID
+      `);
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ message: "Reminder not found or unauthorized" });
+    }
 
     res.sendStatus(200);
   } catch (err) {

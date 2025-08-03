@@ -91,6 +91,9 @@ async function loadReminders(token) {
         }
       }
     });
+    // Rebind buttons after rendering
+    attachMarkButtons();
+    attachReminderMenuButtons();
 
   } catch (err) {
     console.error("Error loading reminders:", err);
@@ -196,15 +199,18 @@ function attachMarkButtons() {
 
         if (res.ok) {
           showNotification("Reminder marked as taken!");
-          const row = button.closest("tr");
-          if (row) row.remove();
-          loadUpcomingReminders(); // Refresh upcoming section
+
+          // Refresh both active and upcoming reminders
+          await loadReminders(userToken);
+          await loadUpcomingReminders();
         } else {
-          alert("Failed to mark as taken");
+          const errorData = await res.json();
+          console.error("Failed to mark reminder as taken:", errorData.message || res.statusText);
+          showNotification(errorData.message || "Failed to mark reminder as taken", "error");
         }
       } catch (err) {
-        console.error("Error:", err);
-        alert("Network error");
+        console.error("Network error while marking reminder:", err);
+        showNotification("Network error – could not mark reminder as taken.", "error");
       }
     });
   });
