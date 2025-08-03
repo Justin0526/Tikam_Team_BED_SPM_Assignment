@@ -55,7 +55,6 @@ async function updateCategoryName(req, res){
 
         // Get the new category
         newCategoryName = await categoryModel.getCategoryByName(userID, newCategoryName);
-        console.log(newCategoryName);
         return res.status(200).json(newCategoryName);
 
     }catch(error){

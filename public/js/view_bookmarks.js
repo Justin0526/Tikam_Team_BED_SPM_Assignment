@@ -477,6 +477,7 @@ async function getBookmarkDetails(bookmarks){
             }
 
             const googleData = await googleResponse.json();
+            console.log(googleData);
             const detailed = await convertToDetailedBookmark(bookmark, googleData);
             detailedBookmarks.push(detailed);
         } catch(error){
@@ -522,7 +523,7 @@ function createBookmarkCard(bookmark) {
         <div class="bookmark-content">
             <h3 class="bookmark-title" data-bookmark-id="${bookmark.bookmarkID}">${bookmark.name}</h3>
             <p><strong>Address:</strong> ${bookmark.address}</p>
-            <p><strong>Open Now:</strong> ${bookmark.openNow}</p>
+            <p><strong>${bookmark.transportType.includes("Transport") ? "Transport" : "Open Now"}:</strong> ${bookmark.transportType.replace(/^(Open Now: |Transport: )/, "")}</p>
             <p class="category-line"><strong>Category:</strong> ${bookmark.category}</p>
             <p><strong>Bookmarked Date:</strong> ${bookmark.bookmarkedDate}</p>
             <div class="bookmark-footer">
@@ -634,6 +635,17 @@ async function convertToDetailedBookmark(bookmark, placeData) {
             console.warn("Photo fetch failed, showing original.");
         }
     }
+
+    let transportType;
+
+    if (placeData.types?.includes("bus_stop") || placeData.types?.includes("transit_station")) {
+        transportType = "Transport: Bus Stop";
+    } else if (placeData.currentOpeningHours?.openNow) {
+        transportType = "Open Now: Open";
+    } else {
+        transportType = "Open Now: Closed";
+    }
+
     return {
         bookmarkID: bookmark.bookmarkID,
         placeID: bookmark.placeID,
@@ -641,10 +653,11 @@ async function convertToDetailedBookmark(bookmark, placeData) {
         bookmarkedDate: formatDate(bookmark.bookmarkedAt),
         name: placeData.displayName?.text || "Unknown",
         address: placeData.formattedAddress || "No address available",
-        openNow: placeData.currentOpeningHours?.openNow ? "Open" : "Closed",
+        transportType: transportType,
         accessibility: interpretAccessibility(placeData.accessibilityOptions),
         mapsLink: placeData.googleMapsLinks?.placeUri || "#",
-        photo: placePhotoHTML
+        photo: placePhotoHTML,
+
     };
 }
 

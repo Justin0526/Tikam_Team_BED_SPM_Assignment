@@ -313,32 +313,30 @@ async function renderBusArrival(busStops){
 
         let hasAnyArrivalAtStop = false
         let arrivals = [];
-        busServices.forEach(async (service) => {
-            let arrivalInfo = { busNumber: service.ServiceNo};
+        for (const service of busServices) {
+            let arrivalInfo = { busNumber: service.ServiceNo };
             let hasArrivalThisService = false;
 
             ["NextBus", "NextBus2", "NextBus3"].forEach((key, idx) => {
                 const bus = service[key];
                 let displayDifference = "Not Available";
-                if(bus && bus.EstimatedArrival){
+                if (bus && bus.EstimatedArrival) {
                     const arrivalTime = new Date(bus.EstimatedArrival);
                     const now = new Date();
 
-                    const diffMs = arrivalTime - now; // This is difference in milliseconds
-                    const diffMins = Math.round(diffMs / 60000); // Convert to minutes
-
+                    const diffMs = arrivalTime - now;
+                    const diffMins = Math.round(diffMs / 60000);
                     displayDifference = diffMins > 0 ? `${diffMins} min` : "Arrived";
+
                     hasArrivalThisService = true;
                     hasAnyArrivalAtStop = true;
                 }
 
                 arrivalInfo[`bus${idx + 1}`] = displayDifference;
             });
-            console.log(arrivalInfo);
-            console.log(hasAnyArrival)
 
             arrivals.push(arrivalInfo);
-        })
+        }
         // If all are Not Available or empty, mark as no more buses
        // If no services had any upcoming buses, show a single message
         if (!hasAnyArrivalAtStop) {
