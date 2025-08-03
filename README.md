@@ -15,28 +15,27 @@ While seniors may turn to technology for support, most digital platforms are not
 
 Each feature includes a user story to describe the functionality and purpose.
 
-### 📅 Appointment Management  
+### 📍 Transport & Nearby Facilities  
 **User Story:**  
-_As a senior user, I want to add and view my health appointments, so that I don’t forget important medical visits._
+_As a senior navigating the city, I want to find nearby facilities and transport stops, so that I can travel safely and access essential services._
 
-- Add doctor name, clinic, date/time, and purpose  
-- Reminder automatically set to 1 day before and can be customised as well 
-- Alert shown on every page on the website if it’s reminder day  
-- Search appointments by keyword  
-- Filter by appointment date
-- Edit or delete entries  
+- Browse nearby clinics, hawkers, MRT/bus stops  
+- Filter by facility type  
+- View name, hours, and location with Google Maps  
+- Bookmark favourites  
+- Search bookmarks  
 
 ---
 
-### 🍽️ Meal Logging with Calorie Tracking  
+### 🌤️ Weather & Outfit Suggestions  
 **User Story:**  
-_As a health-conscious senior, I want to log and track my meals with calorie info, so that I can monitor my daily nutrition intake._
+_As a user planning my day, I want to see weather updates and outfit suggestions, so that I can dress appropriately and avoid health risks._
 
-- Log meals by time frame and food name  
-- Calories auto-fetched from OpenFoodFacts API  
-- Manual calorie entry supported  
-- View total daily calories grouped by meal date 
-- Edit/delete meals  
+- Live weather data with UV and air quality  
+- Outfit suggestions tagged by weather type  
+- Hourly and 7-day forecast  
+- Bookmark favourite outfits  
+- Optional “Read aloud” feature 
 
 ---
 
@@ -63,27 +62,28 @@ _As a senior, I want to set reminders for health tasks like drinking water or ta
 
 ---
 
-### 📍 Transport & Nearby Facilities  
+### 📅 Appointment Management  
 **User Story:**  
-_As a senior navigating the city, I want to find nearby facilities and transport stops, so that I can travel safely and access essential services._
+_As a senior user, I want to add and view my health appointments, so that I don’t forget important medical visits._
 
-- Browse nearby clinics, hawkers, MRT/bus stops  
-- Filter by facility type  
-- View name, hours, and location with Google Maps  
-- Bookmark favourites  
-- Search bookmarks  
+- Add doctor name, clinic, date/time, and purpose  
+- Reminder automatically set to 1 day before and can be customised as well 
+- Alert shown on every page on the website if it’s reminder day  
+- Search appointments by keyword  
+- Filter by appointment date
+- Edit or delete entries  
 
 ---
 
-### 🌤️ Weather & Outfit Suggestions  
+### 🍽️ Meal Logging with Calorie Tracking  
 **User Story:**  
-_As a user planning my day, I want to see weather updates and outfit suggestions, so that I can dress appropriately and avoid health risks._
+_As a health-conscious senior, I want to log and track my meals with calorie info, so that I can monitor my daily nutrition intake._
 
-- Live weather data with UV and air quality  
-- Outfit suggestions tagged by weather type  
-- Hourly and 7-day forecast  
-- Bookmark favourite outfits  
-- Optional “Read aloud” feature  
+- Log meals by time frame and food name  
+- Calories auto-fetched from OpenFoodFacts API  
+- Manual calorie entry supported  
+- View total daily calories grouped by meal date 
+- Edit/delete meals  
 
 ---
 
